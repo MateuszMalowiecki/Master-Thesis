@@ -1,0 +1,14 @@
+Tytuł: "Gra w automat"
+Wstępny plan działania:
+1. Implementacja backend'u - poziomów gry - październik, listopad, grudzień
+2. Implementacja frontend'u: strona, przejścia między poziomami - styczeń, luty
+3. Wprowadzenie stanowości, logowania, liczenia punktów, rankingów - marzec, kwiecień, maj
+4. Pozostałe funkcjonalności, dokończenie aplikacji - czerwiec
+
+1. Logika gry:
+Możliwe rodzaje automatów:
+DFA, NFA, automaty ze stosem(det. i niedet.), automaty na słowach nieskończonych(det. i niedet.) plus być może jakieś inne.
+Pomysł na grę - 2 warianty:
+a) "Zgadnij automat" - dany mamy pewien język, na tej podstawie mamy zgadnąć automat. Żeby było ciekawiej wprowadzone będą pewne ograniczenia 
+(np. ograniczenie na liczbę stanów, podanie części języka, możliwość zapytania o przynależność danego słowa do języka)
+b) "Zgadnij język" - dany jest automat, mamy zgadnąć rozpoznawany przez niego język, będą pewne ograniczenia(dana część automatu)
