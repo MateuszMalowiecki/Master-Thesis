@@ -7,7 +7,6 @@ class Game_PDA:
     def __init__(self, automata):
         print("Welcome to guess an automata game")
         self.automata=automata
-        self.level_1()
     
     def try_guess_automata(self):
         try:
@@ -22,6 +21,7 @@ class Game_PDA:
                     print("States must be integers within range(1, n)")
                     continue
                 finals.append(state)
+
             m=int(input("Please tell how much symbols stack alphabet will have: "))
             stack_alphabet = []
             for _ in range(m):
@@ -66,8 +66,8 @@ class Game_PDA:
                 else:
                     print("Sorry, you passed the wrong automata")
             word, state, stack_string=input("Please give the word, state and stack: ")
-            stack=[w for w in stack_string]
-            (states, stacks)=self.automata.give_states_and_stacks_when_starting_from_given_configuration(state, stack, word)
+            #stack=[w for w in stack_string]
+            (states, stacks)=self.automata.give_states_and_stacks_when_starting_from_given_configuration(state, stack_string, word)
             print(f"Possible states: {states}, possible stacks: {stacks}")
     
     def version_3(self):
@@ -98,4 +98,4 @@ class Game_PDA:
             word, state, stack_string=input("Please give the word, state and stack: ")
             stack=[w for w in stack_string]
             (_, stacks)=self.automata.give_states_and_stacks_when_starting_from_given_configuration(state, stack, word)
-            print(f"Ppossible stacks: {stacks}")
+            print(f"Possible stacks: {stacks}")
