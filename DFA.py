@@ -1,24 +1,40 @@
-#transitions is dict
+#transitions is dict for word in self.language:
+                #if not guessed_automata.check_if_word_in_language(word):
+                #    return False
+            #return True
 class DFA:
-    def __init__(self, alphabet, states, initial, finals, transitions):
-        assert initial in states
-        for state in finals:
+    def __init__(self, alphabet, states, initial_state, final_states, transitions):
+        assert initial_state in states
+        for state in final_states:
             assert state in states
         for (old_state, letter) in transitions:
             assert old_state in states and transitions[(old_state, letter)] in states and letter in alphabet
         self.alphabet = alphabet
         self.states = states
-        self.initial = initial
-        self.finals = finals
+        self.initial_state = initial_state
+        self.final_states = final_states
         self.transitions = transitions
+
+    def is_equal_to(self, another):
+        words=[""]
+        limit=20
+        while(len(words[0]) < limit):
+            print(f"Words length: {len(words[0])}")
+            for word in words:
+                if self.check_if_word_in_language(word) != another.check_if_word_in_language(word):
+                    print(f"Automatas don't match on word:{word}")
+                    return False
+            words=[letter + word for letter in self.alphabet for word in words]
+        return True
+
     def check_if_word_in_language(self, word):
-        actual=self.initial
+        actual=self.initial_state
         for w in word:
             actual=self.transitions[(actual, w)]
-        return actual in self.finals
-'''def diff(self, other):
-        return DFA(self.alphabet, 
-            [(my_state, others_state) for my_state in self.states for others_state in other.states],
-            (self.initial, other.initial), 
-            [(my_final_state, others_non_final_state) for my_final_state in self.finals for others_non_final_state in other.states if others_non_final_state not in other.finals]
-            {((first_old_state, second_old_state), letter) : (first_new_state, second_new_state)})'''
+        return actual in self.final_states
+
+    def give_state_when_starting_from_given_configuration(self, state, word):
+        actual = state
+        for w in word:
+            actual=self.transitions[(actual, w)]
+        return actual
