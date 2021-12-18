@@ -1,14 +1,30 @@
-Tytuł: "Gra w automat"
-Wstępny plan działania:
-1. Implementacja backend'u - poziomów gry - październik, listopad, grudzień
-2. Implementacja frontend'u: strona, przejścia między poziomami - styczeń, luty
-3. Wprowadzenie stanowości, logowania, liczenia punktów, rankingów - marzec, kwiecień, maj
+Tytuł: Gra "Zgadnij automat"
+
+Opis: 
+1. Gra będzie miała postać strony internetowej.
+2. Użytkownik będzie zgadywać jeden typ automatów - automaty ze stosem. Jeśli już mamy automaty ze stosem, to za darmo możemy też mieć bez stosu. To lepiej mieć dwa niż jeden.
+3. Rozgrywka będzie polegać na zgadywaniu automatu na podstawie pewnych jego własności, przykładowo dla PDA: 
+     3.1 Czy automat akceptuje dane słowo
+     3.2 Uruchamiając automat na danym słowie i przy danym stosie, w jakich stanach skończymy i przy jakich zawartościach stosu (zakładając niedeterminizm)
+     3.3 jw. ale interesują nas tylko stany, w których kończymy (nie podajemy końcowej zawartości stosu)
+     3.4 jw. ale interesuje nas tylko końcowa zawartość stosu (nie podajemy stanów)
+     3.5 jw. ale podajemy tylko część końcowych konfiguracji
+4. Poprawność podawanego przez gracza automatu będzie sprawdzan poprzez porównanie go ze wzorcowym automatem; w przypadku niezgodności będzie zwracane słowo rozróżniajace podany automat i automat wzorcowy..
+5. Będzie kilka poziomów trudności - na każdym z poziomów będzie inny automat do zgadnięcia
+6. Poziomy trudności będą posegeregowane względem wielkości zgadywanego automatu (na łatwiejszych poziomach mniejsze automaty)
+7. Kolejne poziomy będą odblokowywane dopiero po przejściu poprzedniego. Każdy poziom będzie można przejść ponownie (i poprawić swój wynik).
+8. Zapytań o własności automatu może być dowolnie dużo, na podstawie liczby potrzebnych zapytań wyliczane są punkty (patrz Punkt 9). Każda własność będzie inaczej punktowana.
+9. Za poziomy gry będzie można zdobywać punkty(na podstawie liczby zgadywań automatu lub ilości potrzebnych informacji do zgadnięcia automatu lub rozmiaru zgadniętego automatu - mniejszy to lepiej?).
+10. Gra będzie stanowa (będzie możliwość zalogowania się).
+11. Na podstawie zdobytych punktów za poszczególne poziomy tworzone będą rankingi graczy.
+12. Automaty docelowo będą automatycznie generowane. Fajnie, jakby był import i eksport możliwy (do importu przydałby się jakiś tryb “piaskownicy”, czyli niepunktowanej rozgrywki na zaimportowanym automacie).
+
+Narzędzia:
+język Python, framework Flask
+
+Plan działania:
+1. Implementacja backend'u - poziomów gry, wymyślenie automatów - grudzień,styczeń
+2. Implementacja frontend'u - strona, przejścia między poziomami - luty,marzec
+3. Automatyczne generowanie automatów, wprowadzenie stanowości, liczenia punktów, rankingów - kwiecień, maj
 4. Pozostałe funkcjonalności, dokończenie aplikacji - czerwiec
 
-1. Logika gry:
-Możliwe rodzaje automatów:
-DFA, NFA, automaty ze stosem(det. i niedet.), automaty na słowach nieskończonych(det. i niedet.) plus być może jakieś inne.
-Pomysł na grę - 2 warianty:
-a) "Zgadnij automat" - dany mamy pewien język, na tej podstawie mamy zgadnąć automat. Żeby było ciekawiej wprowadzone będą pewne ograniczenia 
-(np. ograniczenie na liczbę stanów, podanie części języka, możliwość zapytania o przynależność danego słowa do języka)
-b) "Zgadnij język" - dany jest automat, mamy zgadnąć rozpoznawany przez niego język, będą pewne ograniczenia(dana część automatu)
