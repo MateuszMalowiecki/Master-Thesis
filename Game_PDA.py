@@ -1,12 +1,11 @@
 import numpy as np
 from PDA import PDA
-#TODO(backend):
-#1. Dodac przejscia miedzy poziomami - do przemyslenia w fazie frontend'u 
 class Game_PDA:
     def __init__(self, automata):
         print("Welcome to guess an automata game")
         self.automata=automata
     
+    #Method for passing user's automata and checking its correctness
     def try_guess_automata(self):
         try:
             n=int(input("Please tell how much states automata have: "))
@@ -40,9 +39,10 @@ class Game_PDA:
             print("All states, number of states and number of final states, should be integers.")
             return False
         except AssertionError:
-            print("Either you put wrong initial/final state,  wrong transition or wrong acceptance condition")
+            print("Either you put wrong initial/final state, wrong initial stack symbol, wrong transition or wrong acceptance condition")
             return False
-        
+
+    #Some versions of our game:    
     def version_1(self):
         print(f"Alphabet is {self.automata.alphabet}")
         while(True):
@@ -73,7 +73,7 @@ class Game_PDA:
                     continue
             word, state, stack_string=tuple(input("Please give the word, state and stack: ").split())
             states_and_stacks=self.automata.give_states_and_stacks_when_starting_from_given_configuration(int(state), word, stack_string)
-            print(f"Possible states and stacks: {states_and_stacks}")
+            print(f"Possible states and stacks: ")
             for new_state, new_stack in states_and_stacks:
                 print(f"{new_state}, {new_stack}")
     
@@ -112,8 +112,9 @@ class Game_PDA:
             print(f"Possible stacks:")
             for _, new_stack in states_and_stacks:
                 print(new_stack)
+
 pda=PDA(["a", "b"], [0, 1, 2], ["A", "Z"], 0, [2], "Z", 
         [(0, "a", "Z", 0, "AZ"), (0, "a", "A", 0, "AA"), (0, "", "Z", 1, "Z"), 
             (0, "", "A", 1, "A"), (1, "b", "A", 1, ""), (1, "", "Z", 2, "Z")], "state")
 game_PDA = Game_PDA(pda)
-game_PDA.version_1()
+game_PDA.version_4()

@@ -1,16 +1,15 @@
 import numpy as np
 from DFA import DFA
-#TODO(backend):
-#1. Dodac przejscia miedzy poziomami - do przemyslenia w fazie frontend'u 
 class Game_DFA:
     def __init__(self, automata):
         print("Welcome to guess an automata game")
         self.automata=automata
 
+    #Method for passing user's automata and checking its correctness
     def try_guess_automata(self):
         try:
             n = int(input("Please tell how much states automata have: "))
-            l=int(input("Please tell how much accepted final states automata have: "))
+            l = int(input("Please tell how much accepted final states automata have: "))
             finals=[]
             for i in range(l):
                 state=int(input("Please give final state: "))
@@ -30,7 +29,8 @@ class Game_DFA:
         except AssertionError:
             print("Either you put wrong initial/final state,  wrong transition or wrong acceptance condition")
             return False
-        
+    
+    #Some versions of our game:
     def version_1(self):
         print(f"Alphabet is {self.automata.alphabet}")
         while(True):

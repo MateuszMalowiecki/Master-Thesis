@@ -6,13 +6,10 @@ class PDA:
             assert state in states
         assert initial_stack_symbol in stack_alphabet
         self.alphabet = alphabet
-        #self.states = states
-        #self.stack_alphabet= stack_alphabet
         self.initial_state = initial_state
         self.final_states = final_states
         self.initial_stack_symbol= initial_stack_symbol
         self.transitions = {}
-        print(f"Transitions: {transitions}")
         for (old_state, letter, stack_top, new_state, new_stack_symbols) in transitions:
             old_state = int(old_state)
             new_state = int(new_state)
@@ -28,12 +25,13 @@ class PDA:
         assert accepting_condition.lower() in ["state", "stack"]
         self.accepting_condition = accepting_condition
     
+    #Checking if two automatas are equal
     #Since checking if two PDA's are equivalent is undecidable, I make this check by 
     #comparing for all words with length shorter than 20 if they agree on it
     def is_equal_to(self, another):
         words=[""]
         limit=20
-        while(len(words[0]) < limit):
+        while(len(words[0]) <= limit):
             print(f"Words length: {len(words[0])}")
             for word in words:
                 if self.check_if_word_in_language(word) != another.check_if_word_in_language(word):
@@ -42,6 +40,7 @@ class PDA:
             words=[letter + word for letter in self.alphabet for word in words]
         return True
     
+    #Check if given trial is accepting
     def is_accepting(self, state, input, stack):
         if len(input) > 0:
             return False
@@ -51,6 +50,7 @@ class PDA:
             return state in self.final_states
         return False
 
+    #Get all possible moves from given configuration
     def get_possible_moves(self, state, input, stack):
         possible_transitions=self.transitions[state] if state in self.transitions.keys() else []
         possible_moves=[]
@@ -77,6 +77,7 @@ class PDA:
             possible_moves.append((state_after_transition, input_after_transition, stack_after_transition))
         return possible_moves
 
+    #Count how many accepting configs we can have with given input and state
     def generate_all_accepting_configs(self, state, input, stack):
         total_num_of_accepting_configs=0
         if self.found_accepting_configs_in_subtrees:
@@ -89,11 +90,13 @@ class PDA:
             total_num_of_accepting_configs += self.generate_all_accepting_configs(move[0], move[1], move[2])
         return total_num_of_accepting_configs
 
+    #Check if automata accepts given word
     def check_if_word_in_language(self, word):
         self.found_accepting_configs_in_subtrees=False
         total=self.generate_all_accepting_configs(self.initial_state, word, self.initial_stack_symbol)
         return total > 0
 
+    #generate all states in which automata can finish from given state and input
     def generate_all_configs_from_given_configuration(self, state, input, stack):
         all_configs=[]
 
@@ -112,14 +115,13 @@ class PDA:
         moves=self.get_possible_moves(state, input, stack)
         
         if len(moves) == 0:
-            return [(state, stack)]
+            return [(state, stack)] if len(input) == 0 else []
         
         for move in moves:
             all_configs += self.generate_all_configs_from_given_configuration(move[0], move[1], move[2])
         
         return all_configs
+    
+    #As above, but with duplicates removing
     def give_states_and_stacks_when_starting_from_given_configuration(self, state, input, stack):
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input, stack)))
-pda=PDA(["a", "b"], [0, 1, 2], ["A", "Z"], 0, [2], "Z", 
-        [(0, "a", "Z", 0, "AZ"), (0, "a", "A", 0, "AA"), (0, "", "Z", 1, "Z"), 
-            (0, "", "A", 1, "A"), (1, "b", "A", 1, ""), (1, "", "Z", 2, "Z")], "state")
