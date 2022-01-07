@@ -10,6 +10,16 @@ class Game_PDA:
         try:
             n=int(input("Please tell how much states automata have: "))
             
+            k=int(input("Please tell how much initial states automata have: "))
+            initials=[]
+            
+            while len(initials) != k:
+                state=int(input("Please give initial state: "))
+                if state not in range(n):
+                    print("States must be integers within range(0, n-1)")
+                    continue
+                initials.append(state)
+
             l=int(input("Please tell how much accepted final states automata have: "))
             finals=[]
             
@@ -25,15 +35,15 @@ class Game_PDA:
             for _ in range(m):
                 symbol = input("Please give stack symbol: ")
                 stack_alphabet.append(symbol)
+
             initial_stack_symbol = input("Please give initial stack symbol: ")
             k = int(input("Please give number of transitions: "))
             transitions=[]
             print(f"Please give {k} transitions.")
             for _ in range(k):
-                transition = tuple(input("Please give transition in form: old_state, letter, stack_top, new_state, new_stack_symbols: ").split())
+                transition = tuple(input("Please give transition in form: old_state, letter, new_state, stack_symbol: ").split())
                 transitions.append(transition)
-            accepting_condition = input(f"Please tell PDA accepting condition (state or stack): ")
-            guessed_automata=PDA(self.automata.alphabet, range(n), stack_alphabet, 0, finals, initial_stack_symbol, transitions, accepting_condition)
+            guessed_automata=PDA(self.automata.calls_alphabet, self.automata.return_alphabet, self.automata.internal_alpahbet, range(n), stack_alphabet, initials, finals, initial_stack_symbol, transitions)
             return self.automata.is_equal_to(guessed_automata)
         except ValueError:
             print("All states, number of states and number of final states, should be integers.")
@@ -44,7 +54,9 @@ class Game_PDA:
 
     #Some versions of our game:    
     def version_1(self):
-        print(f"Alphabet is {self.automata.alphabet}")
+        print(f"Alphabet of calls is {self.automata.calls_alphabet}")
+        print(f"Alphabet of returns is {self.automata.return_alphabet}")
+        print(f"Alphabet of internals is {self.automata.internal_alpahbet}")
         while(True):
             decision = input("Do you want now to guess the automata now? ")
             if decision.lower() == "yes":
@@ -60,7 +72,9 @@ class Game_PDA:
             print(res)
 
     def version_2(self):
-        print(f"Alphabet is {self.automata.alphabet}")
+        print(f"Alphabet of calls is {self.automata.calls_alphabet}")
+        print(f"Alphabet of returns is {self.automata.return_alphabet}")
+        print(f"Alphabet of internals is {self.automata.internal_alpahbet}")
         while(True):
             decision = input("Do you want now to guess the automata now? ")
             if decision.lower() == "yes":
@@ -78,7 +92,9 @@ class Game_PDA:
                 print(f"{new_state}, {new_stack}")
     
     def version_3(self):
-        print(f"Alphabet is {self.automata.alphabet}")
+        print(f"Alphabet of calls is {self.automata.calls_alphabet}")
+        print(f"Alphabet of returns is {self.automata.return_alphabet}")
+        print(f"Alphabet of internals is {self.automata.internal_alpahbet}")
         while(True):
             decision = input("Do you want now to guess the automata now? ")
             if decision.lower() == "yes":
@@ -96,7 +112,9 @@ class Game_PDA:
                 print(new_state)
     
     def version_4(self):
-        print(f"Alphabet is {self.automata.alphabet}")
+        print(f"Alphabet of calls is {self.automata.calls_alphabet}")
+        print(f"Alphabet of returns is {self.automata.return_alphabet}")
+        print(f"Alphabet of internals is {self.automata.internal_alpahbet}")
         while(True):
             decision = input("Do you want now to guess the automata now? ")
             if decision.lower() == "yes":
@@ -113,8 +131,8 @@ class Game_PDA:
             for _, new_stack in states_and_stacks:
                 print(new_stack)
 
-pda=PDA(["a", "b"], [0, 1, 2], ["A", "Z"], 0, [2], "Z", 
-        [(0, "a", "Z", 0, "AZ"), (0, "a", "A", 0, "AA"), (0, "", "Z", 1, "Z"), 
-            (0, "", "A", 1, "A"), (1, "b", "A", 1, ""), (1, "", "Z", 2, "Z")], "state")
+pda=PDA(["a"], ["b"], ["c"], [0, 1, 2], ["A", "Z"], [0], [2], "Z", 
+        [(0, "a", 0, "A"), (0, "c", 1, ""), (1, "b", 1, "A"), (1, "c", 2, "")])
+
 game_PDA = Game_PDA(pda)
 game_PDA.version_4()
