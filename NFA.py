@@ -1,3 +1,6 @@
+from itertools import chain, combinations
+import DFA
+
 class NFA:
     def __init__(self, alphabet, states, initial_state, final_states, transitions):
         assert initial_state in states
@@ -16,19 +19,66 @@ class NFA:
             if not old_state in self.transitions.keys():
                 self.transitions[old_state] = []
             self.transitions[old_state].append((letter, new_state))
+    def to_DFA(self):
+        states=list(chain.from_iterable(combinations(self.states, r) for r in range(len(self.states)+1)))
+        initial=[(self.initial_state,)]
+        final_states=[state for state in states if any(st in self.final_states for st in state)]
+        transitions={}
+        for state in states:
+            for letter in self.alphabet:
+                new_state=[]
+                for st in states:
+                    for trans in self.transitions[st]:
+                        (_, new_st)=trans
+                        if new_st not in new_state:
+                            new_state.append(new_st)
+                transitions[(state, letter)] = tuple(new_state)
+        return DFA(self.alphabet, states, initial, final_states, transitions)
 
+    def take_complement(self):
+        dfa_from_nfa = self.to_DFA()
+        return dfa_from_nfa.take_complement.toNFA()
+
+    def take_intersection(self, other):
+        assert self.alphabet == other.alphabet
+        states = []
+        initial_state=(self.initial_state, other.initial_state)
+        finals=[]
+        transitions=[]
+        for our_state in self.states:
+            for other_state in other.states:
+                states.append((our_state, other_state))
+                if our_state in self.final_states and other_state in other.final_states:
+                    finals.append((our_state, other_state))
+                our_transitions=self.transitions[our_state] if our_state in self.transitions.keys() else []
+                other_transitions=other.transitions[other_state] if other_state in other.transitions.keys() else []
+                for our_trans in our_transitions:
+                    for other_trans in other_transitions:
+                        (our_letter, our_new_state) = our_trans
+                        (other_letter, other_new_state) = other_trans
+                        if our_letter != other_letter:
+                            continue
+                        transitions.append(((our_state, other_state), our_letter, (our_new_state, other_new_state)))
+        return NFA(self.alphabet, states, initial_state, finals, transitions)
+    
+    def get_all_reachable_states(self):
+        reachable=[self.initial_state]
+        for _ in range(len(self.states)):
+            for state in reachable:
+                transitions=self.transitions[state] if state in self.transitions.keys() else []
+                for trans in transitions:
+                    _, new_state=trans
+                    if new_state not in reachable:
+                        reachable.append(new_state)
+        return reachable
+    def have_empty_language(self):
+        reachable=self.get_all_reachable_states()
+        return len([state for state in self.final_states if state in reachable]) == 0
+    
     #Checking if two automatas are equal
-    def is_equal_to(self, another):
-        words=[""]
-        limit=20
-        while(len(words[0]) <= limit):
-            print(f"Words length: {len(words[0])}")
-            for word in words:
-                if self.check_if_word_in_language(word) != another.check_if_word_in_language(word):
-                    print(f"Automatas don't match on word:{word}")
-                    return False
-            words=[letter + word for letter in self.alphabet for word in words]
-        return True
+    def is_equal_to(self, other):
+        return self.take_intersection(other.take_complement()).have_empty_language() and \
+            other.take_intersection(self.take_complement()).have_empty_language()
 
     #Check if given trial is accepting
     def is_accepting(self, state, input):
@@ -96,3 +146,7 @@ class NFA:
     #As above, but with duplicates removing
     def give_states_when_starting_from_given_configuration(self, state, input):
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input)))
+
+s=(1,2,3)
+print(any(e <= 1 for e in s))
+#print(list(chain.from_iterable(combinations(s, r) for r in range(len(s)+1))))
