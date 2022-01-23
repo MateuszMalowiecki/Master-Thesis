@@ -1,5 +1,5 @@
 import numpy as np
-from NFA import NFA
+from DFA import NFA
 class Game_NFA:
     def __init__(self, automata):
         print("Welcome to guess an automata game")
@@ -64,7 +64,7 @@ class Game_NFA:
             for state in states:
                 print(state)
 
-nfa=NFA(["a", "b"], [0, 1], 0, [1], 
+nfa = NFA(["a", "b"], [0, 1], 0, [1], 
         [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
 game_NFA = Game_NFA(nfa)
 game_NFA.version_2()

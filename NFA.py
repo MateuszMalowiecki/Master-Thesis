@@ -1,5 +1,5 @@
 from itertools import chain, combinations
-import DFA
+from DFA import DFA
 
 class NFA:
     def __init__(self, alphabet, states, initial_state, final_states, transitions):
@@ -19,6 +19,7 @@ class NFA:
             if not old_state in self.transitions.keys():
                 self.transitions[old_state] = []
             self.transitions[old_state].append((letter, new_state))
+    
     def to_DFA(self):
         states=list(chain.from_iterable(combinations(self.states, r) for r in range(len(self.states)+1)))
         initial=[(self.initial_state,)]
@@ -29,8 +30,8 @@ class NFA:
                 new_state=[]
                 for st in states:
                     for trans in self.transitions[st]:
-                        (_, new_st)=trans
-                        if new_st not in new_state:
+                        (new_letter, new_st)=trans
+                        if new_letter == letter and new_st not in new_state:
                             new_state.append(new_st)
                 transitions[(state, letter)] = tuple(new_state)
         return DFA(self.alphabet, states, initial, final_states, transitions)
