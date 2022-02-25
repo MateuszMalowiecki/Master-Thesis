@@ -1,7 +1,7 @@
 Tytuł: Gra "Zgadnij automat"
 
 Opis: 
-1. Gra będzie miała postać strony internetowej.
+1. Gra będzie miała postać aplikacji mobilnej.
 2. Użytkownik będzie zgadywać jeden typ automatów - automaty ze stosem. Jeśli już mamy automaty ze stosem, to za darmo możemy też mieć bez stosu. To lepiej mieć dwa niż jeden.
 3. Rozgrywka będzie polegać na zgadywaniu automatu na podstawie pewnych jego własności, przykładowo dla PDA: 
      3.1 Czy automat akceptuje dane słowo
@@ -17,14 +17,14 @@ Opis:
 9. Za poziomy gry będzie można zdobywać punkty(na podstawie liczby zgadywań automatu lub ilości potrzebnych informacji do zgadnięcia automatu lub rozmiaru zgadniętego automatu - mniejszy to lepiej?).
 10. Gra będzie stanowa (będzie możliwość zalogowania się).
 11. Na podstawie zdobytych punktów za poszczególne poziomy tworzone będą rankingi graczy.
-12. Automaty docelowo będą automatycznie generowane. Fajnie, jakby był import i eksport możliwy (do importu przydałby się jakiś tryb “piaskownicy”, czyli niepunktowanej rozgrywki na zaimportowanym automacie).
+
 
 Narzędzia:
-język Python, framework Flask
+język Python, framework Kivy
 
 Plan działania:
 1. Implementacja backend'u - poziomów gry, wymyślenie automatów - grudzień,styczeń
-2. Implementacja frontend'u - strona, przejścia między poziomami - luty,marzec
-3. Automatyczne generowanie automatów, wprowadzenie stanowości, liczenia punktów, rankingów - kwiecień, maj
+2. Implementacja aplikacji mobilnej - podstawowa wersja - luty,marzec
+3. Wprowadzenie stanowości, liczenia punktów, rankingów - kwiecień, maj
 4. Pozostałe funkcjonalności, dokończenie aplikacji - czerwiec
 
