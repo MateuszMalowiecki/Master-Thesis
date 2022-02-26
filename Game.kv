@@ -1,0 +1,419 @@
+WindowManager:
+    SecondWindow:
+    GameDFAv1Window:
+    GameDFAv2Window:
+    GameNFAv1Window:
+    GameNFAv2Window:
+    GameVPAv1Window:
+    GameVPAv2Window:
+    GameVPAv3Window:
+    GameVPAv4Window:
+    WinPage:
+    MainWindow:
+    DFAGuessForm:
+    NFAGuessForm:
+    VPAGuessForm:
+
+<MainWindow>:
+    name: "main"
+
+    GridLayout:
+        cols:1
+
+        GridLayout:
+            cols: 2
+            Label:
+                text: "User name: "
+
+            TextInput:
+                id: user_name
+                multiline: False
+
+            Label:
+                text: "Password: "
+
+            TextInput:
+                id: passw
+                multiline: False
+
+        Button:
+            text: "Submit"
+            on_release:
+                app.root.current = "second" if user_name.text == "tim" and passw.text == "tim" else "main"
+                root.manager.transition.direction = "left"
+
+
+<SecondWindow>:
+    name: "second"
+    GridLayout:
+        cols: 2
+        Button:
+            size_hint: .2, .2
+            text: "Start a DFA game v1"
+            on_release:
+                app.root.current = "game"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a DFA game v2"
+            on_release:
+                app.root.current = "game2"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a NFA game v1"
+            on_release:
+                app.root.current = "game_nfa1"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a NFA game v2"
+            on_release:
+                app.root.current = "game_nfa2"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a VPA game v1"
+            on_release:
+                app.root.current = "game_vpa1"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a VPA game v2"
+            on_release:
+                app.root.current = "game_vpa2"
+                root.manager.transition.direction = "right"
+        
+        Button:
+            size_hint: .2, .2
+            text: "Start a VPA game v3"
+            on_release:
+                app.root.current = "game_vpa3"
+                root.manager.transition.direction = "right"
+        Button:
+            size_hint: .2, .2
+            text: "Start a VPA game v4"
+            on_release:
+                app.root.current = "game_vpa4"
+                root.manager.transition.direction = "right"
+<GameDFAv1Window>:
+    name: "game"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .30}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .25}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "dfa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameDFAv2Window>:
+    name: "game2"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .3}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .25}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "dfa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameNFAv1Window>:
+    name: "game_nfa1"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .25}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "nfa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameNFAv2Window>:
+    name: "game_nfa2"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .25}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "nfa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameVPAv1Window>:
+    name: "game_vpa1"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .25}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "vpa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameVPAv2Window>:
+    name: "game_vpa2"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .25}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "vpa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameVPAv3Window>:
+    name: "game_vpa3"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .25}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "vpa_guess_form"
+                root.manager.transition.direction = "right"
+
+<GameVPAv4Window>:
+    name: "game_vpa4"
+    input: my_input
+    FloatLayout:
+        Label:
+            text: root.automata_text
+            size_hint: .5, .2
+            pos_hint: {'x': .085, 'y': .25}
+        Label:
+            text: root.tip_text
+            size_hint: .5, .2
+            pos_hint: {'x': .03, 'y': .3}
+        TextInput:
+            id: my_input
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': 0}
+        Button:
+            text: root.button_text
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': 0}
+            on_press: root.check_if_word_in_language()
+        Button:
+            text: "Guess an automata now"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release:
+                app.root.current = "vpa_guess_form"
+                root.manager.transition.direction = "right"
+
+<DFAGuessForm>:
+    name: "dfa_guess_form"
+    finals_input: finals_input
+    transitions_input: transitions_input
+    GridLayout:
+        cols:1
+        GridLayout:
+            cols:2
+            Label:
+                text: "Final states: "
+            TextInput:
+                id: finals_input
+            Label:
+                text: "Transitions:"
+            TextInput:
+                id: transitions_input
+        Button:
+            text: "Check"
+            on_release:
+                app.root.current = "win_page" if root.check_automata_correctness() else "game2"
+                root.manager.transition.direction = "left"
+
+<NFAGuessForm>:
+    name: "nfa_guess_form"
+    finals_input: finals_input
+    transitions_input: transitions_input
+    GridLayout:
+        cols:1
+        GridLayout:
+            cols:2
+            Label:
+                text: "Final states: "
+            TextInput:
+                id: finals_input
+            Label:
+                text: "Transitions:"
+            TextInput:
+                id: transitions_input
+        Button:
+            text: "Check"
+            on_release:
+                app.root.current = "win_page" if root.check_automata_correctness() else "game_vpa1"
+                root.manager.transition.direction = "left"
+
+<VPAGuessForm>:
+    name: "vpa_guess_form"
+    ini_stack_input: ini_stack_input
+    stack_input: stack_input
+    finals_input: finals_input
+    transitions_input: transitions_input
+    GridLayout:
+        cols:1
+        GridLayout:
+            cols:2
+            Label:
+                text: "Stack alphabet "
+            TextInput:
+                id: stack_input
+            Label:
+                text: "Initial stack symbol "
+            TextInput:
+                id: ini_stack_input
+            Label:
+                text: "Final states: "
+            TextInput:
+                id: finals_input
+            Label:
+                text: "Transitions:"
+            TextInput:
+                id: transitions_input
+        Button:
+            text: "Check"
+            on_release:
+                app.root.current = "win_page" if root.check_automata_correctness() else "game_nfa1"
+                root.manager.transition.direction = "left"
+<WinPage>:
+    name: "win_page"
+    FloatLayout:
+        Label:
+            size_hint: .5, .2
+            pos_hint: {'x': .25, 'y': .5}
+            text: "You won, congratulations"
+        Button:
+            size_hint: .5, .2
+            pos_hint: {'x': .25, 'y': .25}
+            text: "Click here, to go back to main menu"
+            on_release:
+                app.root.current = "second"
+                root.manager.transition.direction = "left"
