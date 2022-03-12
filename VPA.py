@@ -32,6 +32,9 @@ class DVPA:
                 #print(value)
                 #print("letter: ", old_letter)
                 #print("calls: ", calls_alphabet)
+                print(f"Old: {old_state}, New: {new_state}")
+                print(f"letter: {old_letter}")
+                print(f"stack: {new_stack_letter}")
                 assert old_state in states and new_state in states
                 assert old_letter in calls_alphabet 
                 assert new_stack_letter in stack_alphabet
@@ -529,7 +532,7 @@ class VPA:
                 states_and_string_stacks.append((state, "".join(stack)))
         return list(dict.fromkeys(states_and_string_stacks))
 
-dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
+'''dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
         {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
             (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
 print(dvpa.check_if_word_in_language("acbc"))
@@ -548,7 +551,7 @@ dvpa_inter=dvpa.take_intersection(dvpa_compl)
 print(dvpa_inter.have_empty_language())
 print(dvpa.is_equal_to(dvpa))
 print(dvpa.is_equal_to(dvpa_compl))
-'''
+
 vpa=VPA(["a"], ["b"], ["c"], [0, 1, 2], ["A", "Z"], [0], [2], "Z", 
         [(0, "a", 0, "A"), (0, "c", 1, ""), (1, "b", 1, "A"), (1, "b", 2, "Z"), (1, "c", 2, "")])
 second_vpa=VPA(["a"], ["b"], ["c"], [0, 1, 2], ["A", "Z"], [0], [2], "Z", 
