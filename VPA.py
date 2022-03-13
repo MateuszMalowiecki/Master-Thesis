@@ -4,7 +4,6 @@ from itertools import chain, combinations
 
 from urllib3 import Retry
 
-#TODO: Test functionalities
 class DVPA:
     def __init__(self, calls_alphabet, return_alphabet, internal_alpahbet, states, stack_alphabet, initial_state, final_states, initial_stack_symbol, transitions):
         assert initial_state in states
@@ -24,17 +23,6 @@ class DVPA:
             if len(key) == 2 and isinstance(value, tuple) and value[1] in stack_alphabet:
                 (old_state, old_letter) = key
                 (new_state, new_stack_letter) = value
-                #if old_state == () or new_state == ():
-                    #print(f"old_state: {old_state}, new_state: {new_state}")
-                #    old_state = ((), ())
-                #    new_state = ((), ())
-                #print(key)
-                #print(value)
-                #print("letter: ", old_letter)
-                #print("calls: ", calls_alphabet)
-                print(f"Old: {old_state}, New: {new_state}")
-                print(f"letter: {old_letter}")
-                print(f"stack: {new_stack_letter}")
                 assert old_state in states and new_state in states
                 assert old_letter in calls_alphabet 
                 assert new_stack_letter in stack_alphabet
@@ -47,10 +35,6 @@ class DVPA:
             elif len(key) == 3:
                 (old_state, old_letter, old_stack_top) = key
                 new_state=value
-                #print(f"Letter:", old_letter)
-                #print(f"Stack Top: ", old_stack_top)
-                #print(f"New: ", new_state)
-                #print(f"States: ", states)
                 assert old_state in states and new_state in states
                 assert old_letter in return_alphabet
                 assert old_stack_top in stack_alphabet    
@@ -111,7 +95,6 @@ class DVPA:
                         our_new_state = self.transitions[(our_state, letter, our_stack_letter)]
                         other_new_state = self.transitions[(other_state, letter, other_stack_letter)]
                         transitions[((our_state, other_state), letter, (our_stack_letter, other_stack_letter))] = (our_new_state, other_new_state)
-        #print(f"trans: {transitions}")
         return DVPA(self.calls_alphabet, self.return_alphabet, self.internal_alpahbet, 
             states, stack_alphabet, initial_state, finals, initial_stack_symbol, transitions)
 
@@ -148,7 +131,6 @@ class DVPA:
         actual_state=self.initial_state
         actual_stack=[self.initial_stack_symbol]
         for w in word:
-            #print(f"actual_stack: {actual_stack}")
             try:
                 new_state=actual_state
                 new_stack=actual_stack
@@ -174,9 +156,6 @@ class DVPA:
         actual_stack = stack
         for w in input:
             try:
-                #print(f"W: {w}")
-                #print(f"actual_state: {actual_state}")
-                #print(f"actual_stack: {actual_stack}")
                 new_state=actual_state
                 new_stack=actual_stack
                 if w in self.internal_alpahbet:
@@ -190,8 +169,6 @@ class DVPA:
                     if actual_stack_top != self.initial_stack_symbol:
                         new_stack = new_stack[1:]
                     new_state=self.transitions[(actual_state, w, actual_stack_top)]
-                #print(f"new_state: {new_state}")
-                #print(f"new_stack: {new_stack}")
                 actual_state=new_state
                 actual_stack=new_stack
             except:
@@ -214,17 +191,12 @@ class VPA:
         self.final_states = final_states
         self.initial_stack_symbol= initial_stack_symbol
         self.transitions = {}
-        #print(transitions)
         for (old_state, letter, new_state, stack_symbol) in transitions:
             if not isinstance(old_state, tuple):
                 old_state = int(old_state)
             if not isinstance(new_state, tuple):
                 new_state = int(new_state)
             type=""
-            #if old_state == () and new_state == ():
-                #print(f"old_state: {old_state}, new_state: {new_state}, states: {states}")
-            #if old_state not in states or new_state not in states:
-                #print(f"old_state: {old_state}, new_state: {new_state}")
             assert old_state in states and new_state in states
             stack_symbols = []
             if letter in internal_alpahbet:
@@ -244,7 +216,6 @@ class VPA:
             self.transitions[old_state].append((letter, type, stack_symbols, new_state))
 
     def get_transitions_from_state(self, state):
-        #print(f"st: {state}, keys:{ self.transitions.keys() }")
         return self.transitions[state] if state in self.transitions.keys() else []
 
     def create_internal_transitions(self, state_pairs, state):
@@ -266,7 +237,6 @@ class VPA:
                     if (q1, new_st) not in new_state_pairs and new_letter == letter:
                         new_state_pairs.append((q1, new_st))
             transitions[((state_pairs, state), letter)] = (tuple(new_state_pairs), tuple(new_state))
-        #print(f"transitions: {transitions}")
         return transitions
 
     def create_calls_transitions(self, state_pairs, state):
@@ -275,7 +245,6 @@ class VPA:
             new_state=[]
             for q in state:
                 transis=self.get_transitions_from_state(q)
-                #print(f"transis, {transis}")
                 for trans in transis:
                     (new_letter, _, _, new_st)=trans
                     if new_st not in new_state and new_letter == letter:
@@ -309,13 +278,11 @@ class VPA:
         for q in state:
             transis=self.get_transitions_from_state(q)
             for trans in transis:
-                #print("tr: ", trans)
                 (new_letter, _, stack_symbols, new_st)=trans
                 if new_st not in new_state_for_initial and new_letter == letter and stack_symbols[0] == self.initial_stack_symbol:
                     new_state_for_initial.append(new_st)
         for (q1, q2) in state_pairs:
             transis=self.get_transitions_from_state(q2)
-            #print(f"transis, {transis}")
             for trans in transis:
                 (new_letter, _, stack_symbols, new_st)=trans
                 if (q1, new_st) not in new_state_pairs_for_initial and new_letter == letter and stack_symbols[0] == self.initial_stack_symbol:
@@ -325,12 +292,10 @@ class VPA:
 
     def create_return_transitions(self, state_pairs, state, stack_alphabet):
         transitions={}
-        #print(f"stack_alphabet: {stack_alphabet}")
         for letter in self.return_alphabet:
             for stack_letter in stack_alphabet:
                 if stack_letter == 'Z':
                     continue
-                #print(stack_letter)
                 (S, R, a) = stack_letter
                 update=self.create_update_pairs(state_pairs, letter, a)
                 new_state=[]
@@ -347,10 +312,7 @@ class VPA:
     
     def create_transitions(self, states,stack_alphabet):
         transitions={}
-        #print(f"stack_alphabet: {stack_alphabet}")
-        #print("debug:", ((), ()) in states)
         for (state_pairs, state) in states:
-            #print(f"state_pairs: {state_pairs}, state: {state}")
             transitions.update(self.create_internal_transitions(state_pairs, state))
             transitions.update(self.create_calls_transitions(state_pairs, state))
             transitions.update(self.create_return_transitions(state_pairs, state, stack_alphabet))
@@ -361,19 +323,15 @@ class VPA:
         subsets_of_states=list(chain.from_iterable(combinations(self.states, r) for r in range(len(self.states)+1)))
         subsets_of_pair_of_states=list(chain.from_iterable(combinations(states_pairs, r) for r in range(len(states_pairs)+1)))
         states=[(q1, q2) for q1 in subsets_of_pair_of_states for q2 in subsets_of_states]
-        print(f"debug1")
         stack_alphabet=[(S, R, a) for S in subsets_of_pair_of_states for R in subsets_of_states for a in self.calls_alphabet] + [self.initial_stack_symbol]
         initial=(tuple([(q, q) for q in self.states]), tuple(self.initial_states))
         finals=[(state_pairs, state) for (state_pairs, state) in states if any(st in self.final_states for st in state)]
         initial_stack_symbol = self.initial_stack_symbol
-        print(f"debug2")
         transitions=self.create_transitions(states, stack_alphabet)
-        print("debug3")
         return DVPA(self.calls_alphabet, self.return_alphabet, self.internal_alpahbet, states, stack_alphabet, initial, finals, initial_stack_symbol, transitions)
 
     def take_complement(self):
         dvpa_from_vpa = self.to_DVPA()
-        #print(f"states: {dvpa_from_vpa.states}")
         return dvpa_from_vpa.take_complement().to_VPA()
         
     def take_intersection(self, other):
@@ -426,21 +384,6 @@ class VPA:
         reachable=self.get_all_reachable_states()
         return len([state for state in self.final_states if state in reachable]) == 0
     
-    #Checking if two automatas are equal
-    '''
-    def is_equal_to(self, another):
-        words=[""]
-        limit=15
-        alphabet = self.calls_alphabet + self.return_alphabet + self.internal_alpahbet
-        while(len(words[0]) <= limit):
-            print(f"Words length: {len(words[0])}")
-            for word in words:
-                if self.check_if_word_in_language(word) != another.check_if_word_in_language(word):
-                    print(f"Automatas don't match on word:{word}")
-                    return False
-            words=[letter + word for letter in alphabet for word in words]
-        return True
-    '''
     def is_equal_to(self, other):
         return self.take_intersection(other.take_complement()).have_empty_language() and \
             other.take_intersection(self.take_complement()).have_empty_language()
@@ -531,62 +474,3 @@ class VPA:
             else:
                 states_and_string_stacks.append((state, "".join(stack)))
         return list(dict.fromkeys(states_and_string_stacks))
-
-'''dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
-        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
-            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
-print(dvpa.check_if_word_in_language("acbc"))
-print(dvpa.check_if_word_in_language("acb"))
-print(dvpa.check_if_word_in_language("bacbc"))
-print(dvpa.have_empty_language())
-print(dvpa.give_state_and_stack_when_starting_from_given_configuration(0, "acb",["A", "Z"]))
-print(dvpa.give_state_and_stack_when_starting_from_given_configuration(0, "abacb",["A", "Z"]))
-
-dvpa_compl=dvpa.take_complement()
-print(dvpa_compl.check_if_word_in_language("acbc"))
-print(dvpa_compl.check_if_word_in_language("acb"))
-print(dvpa_compl.check_if_word_in_language("bacbc"))
-print(dvpa_compl.have_empty_language())
-dvpa_inter=dvpa.take_intersection(dvpa_compl)
-print(dvpa_inter.have_empty_language())
-print(dvpa.is_equal_to(dvpa))
-print(dvpa.is_equal_to(dvpa_compl))
-
-vpa=VPA(["a"], ["b"], ["c"], [0, 1, 2], ["A", "Z"], [0], [2], "Z", 
-        [(0, "a", 0, "A"), (0, "c", 1, ""), (1, "b", 1, "A"), (1, "b", 2, "Z"), (1, "c", 2, "")])
-second_vpa=VPA(["a"], ["b"], ["c"], [0, 1, 2], ["A", "Z"], [0], [2], "Z", 
-        [(0, "a", 0, "A"), (0, "c", 1, ""), (1, "b", 1, "A"), (1, "c", 2, "")])
-print(vpa.check_if_word_in_language("bacbc"))
-print(vpa.create_internal_transitions(((0, 1), (1, 0)), (1,)))
-print(vpa.create_calls_transitions(((0, 1), (1, 0)), (1,)))
-print(vpa.create_return_initial_stack_symbol_transitions(((0, 1), (1, 0)), (1,), "b"))
-print(vpa.create_update_pairs(((0, 1),), "b", "a"))
-print(vpa.create_return_transitions(((0, 1), (1, 0)), (1,), [(((1, 0), (2, 0)), (0,), "a")]))
-print(vpa.create_transitions([(((0, 1), (1, 0)), (1,))], [(((1, 0), (2, 0)), (0,), "a")]))
-dvpa=vpa.to_DVPA()
-print(dvpa.check_if_word_in_language("acbc"))
-print(dvpa.check_if_word_in_language("acb"))
-print(dvpa.check_if_word_in_language("bacbc"))
-
-vpa_compl=vpa.take_complement()
-print(vpa_compl.check_if_word_in_language("acbc"))
-print(vpa_compl.check_if_word_in_language("acb"))
-print("--------------------")
-print(vpa_compl.check_if_word_in_language("bacbc"))
-print(vpa_compl.have_empty_language())
-#third_vpa=.to_VPA()
-#print(dvpa.is_equal_to(second_vpa))
-print(vpa.check_if_word_in_language("acb"))
-print(vpa.check_if_word_in_language("bac"))
-print(vpa.give_states_and_stacks_when_starting_from_given_configuration(0, "aaacb",[]))
-print(vpa.have_empty_language())
-print(second_vpa.have_empty_language())
-vpa_inter=vpa.take_intersection(second_vpa)
-print(vpa_inter.check_if_word_in_language("acbc"))
-print(vpa_inter.check_if_word_in_language("aaacbbbc"))
-print(vpa_inter.check_if_word_in_language("acb"))
-print(vpa_inter.check_if_word_in_language("bac"))
-print(vpa_inter.give_states_and_stacks_when_starting_from_given_configuration((0, 0), "aaacb",[("Z", "Z")]))
-print(vpa_inter.have_empty_language())
-#print(vpa.check_if_word_in_language("acbc"))
-#print(vpa.check_if_word_in_language("acbabc"))'''

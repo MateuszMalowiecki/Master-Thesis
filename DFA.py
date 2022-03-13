@@ -6,7 +6,9 @@ class DFA:
         for state in final_states:
             assert state in states
         for (old_state, letter) in transitions:
-            assert old_state in states and transitions[(old_state, letter)] in states and letter in alphabet
+            assert old_state in states 
+            assert transitions[(old_state, letter)] in states 
+            assert letter in alphabet
         self.alphabet = alphabet
         self.states=states
         self.initial_state = initial_state
@@ -92,7 +94,6 @@ class NFA:
             self.transitions[old_state].append((letter, new_state))
     
     def get_transitions_from_state(self, state):
-        #print(f"st: {state}, keys:{ self.transitions.keys() }")
         return self.transitions[state] if state in self.transitions.keys() else []
 
     def create_transitions(self, states):
@@ -102,18 +103,15 @@ class NFA:
                 new_state=[]
                 for st in state:
                     transis=self.get_transitions_from_state(st)
-                    #print(f"transis, {transis}")
                     for trans in transis:
                         (new_letter, new_st)=trans
                         if new_st not in new_state and new_letter == letter:
                             new_state.append(new_st)
-                #print(new_state)
                 transitions[(state, letter)] = tuple(new_state)
         return transitions
 
     def to_DFA(self):
         states=list(chain.from_iterable(combinations(self.states, r) for r in range(len(self.states)+1)))
-        #print(states)
         initial=(self.initial_state,)
         final_states=[state for state in states if any(st in self.final_states for st in state)]
         transitions=self.create_transitions(states)
@@ -231,24 +229,3 @@ class NFA:
     #As above, but with duplicates removing
     def give_states_when_starting_from_given_configuration(self, state, input):
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input)))
-
-
-'''dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
-        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
-nfa=dfa.to_NFA()
-print(nfa.check_if_word_in_language("abb"))
-second_dfa=nfa.to_DFA()
-print(second_dfa.is_equal_to(dfa))
-print(nfa.have_empty_language())
-second_nfa=NFA(["a", "b"], [0, 1, 2, 3], 0, [3], [(0, "a", 1), (0, "b", 1), (1, "a", 2), (1, "b", 2), 
-        (2, "a", 3), (2, "b", 3), (3, "a", 3), (3, "b", 3)])
-second_nfa_compl=second_dfa.take_complement()
-print(second_nfa.transitions)
-print(second_nfa_compl.transitions)
-third_nfa=nfa.take_intersection(second_nfa)
-print(third_nfa.check_if_word_in_language("aa"))
-print(second_nfa.is_equal_to(nfa))'''
-#print(second_dfa.transitions)
-#print(dfa.take_intersection(second_dfa).states)
-#print(dfa.take_intersection(second_dfa).)
-#print(dfa.take_intersection(second_dfa).final_states)
