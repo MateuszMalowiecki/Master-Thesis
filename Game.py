@@ -10,8 +10,7 @@ from VPA import DVPA
 
 #TODO:
 #1. Create levels
-#2. Think what should be done after passing wrong automata
-# And of course make huge tests for everything
+# And of course make huge tests for everything (write UTs for automatas)
 
 class MainWindow(Screen):
     pass
@@ -269,7 +268,26 @@ class DFAGuessForm(Screen):
         (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
     finals_input = ObjectProperty(None)
     transitions_input = ObjectProperty(None)
-    last_game_name = StringProperty("")
+    guess_text=StringProperty("")
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.guess_text = "Write final states and transitions of automata here"
+
+    def clear_window(self):
+        self.finals_input.text = ""
+        self.transitions_input.text = ""
+
+    def check_automata(self):
+        if self.check_automata_correctness():
+            self.guess_text = "Write final states and transitions of automata here"
+            self.parent.current = "win_page"
+
+    def go_to_tips_form(self):
+        self.clear_window()
+        self.guess_text = "Write final states and transitions of automata here"
+        self.parent.current = self.last_game_name
+
     def check_automata_correctness(self):
         try:
             finals = [int(state) for state in self.finals_input.text.split(", ")]
@@ -279,12 +297,23 @@ class DFAGuessForm(Screen):
                 old_state, letter, new_state = s.split(", ")
                 transitions[(int(old_state), letter)] = int(new_state)
             guessed_automata=DFA(self.dfa.alphabet, self.dfa.states, 0, finals, transitions)
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
-            return self.dfa.is_equal_to(guessed_automata)
-        except:
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
+            self.clear_window()
+            is_equal, word = self.dfa.is_equal_to(guessed_automata)
+            if is_equal:
+                return True
+            self.guess_text = f"Your automata does not match on word: {word}"
+            return False
+        except AssertionError as e:
+            self.clear_window()
+            self.guess_text = f"Error: {str(e)}"
+            return False
+        except KeyError as e:
+            self.clear_window()
+            self.guess_text = f"Error: Not given transition for: {e}"
+            return False
+        except ValueError as e:
+            self.clear_window()
+            self.guess_text = f"ParseError: final states should be numbers between 0 and {len(self.dfa.states) - 1} separated by coma, and transitions should have form: old_state, letter, new_state"
             return False
 
 class DFAGuessFormv1(DFAGuessForm):
@@ -298,7 +327,26 @@ class NFAGuessForm(Screen):
         [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
     finals_input = ObjectProperty(None)
     transitions_input = ObjectProperty(None)
-    last_game_name = StringProperty("")
+    guess_text=StringProperty("")
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.guess_text = "Write final states and transitions of automata here"
+
+    def clear_window(self):
+        self.finals_input.text = ""
+        self.transitions_input.text = ""
+
+    def check_automata(self):
+        if self.check_automata_correctness():
+            self.guess_text = "Write final states and transitions of automata here"
+            self.parent.current = "win_page"
+
+    def go_to_tips_form(self):
+        self.clear_window()
+        self.guess_text = "Write final states and transitions of automata here"
+        self.parent.current = self.last_game_name
+
     def check_automata_correctness(self):
         try:
             finals = [int(state) for state in self.finals_input.text.split(", ")]
@@ -308,12 +356,19 @@ class NFAGuessForm(Screen):
                 old_state, letter, new_state = s.split(", ")
                 transitions.append((int(old_state), letter, int(new_state)))
             guessed_automata=NFA(self.nfa.alphabet, self.nfa.states, 0, finals, transitions)
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
-            return self.nfa.is_equal_to(guessed_automata)
-        except:
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
+            self.clear_window()
+            is_equal, word = self.nfa.is_equal_to(guessed_automata)
+            if is_equal:
+                return True
+            self.guess_text = f"Your automata does not match on word: {word}"
+            return False
+        except AssertionError as e:
+            self.clear_window()
+            self.guess_text = f"Error: {str(e)}"
+            return False
+        except ValueError as e:
+            self.clear_window()
+            self.guess_text = f"ParseError: final states should be numbers between 0 and {len(self.nfa.states) - 1} separated by coma, and transitions should have form: old_state, letter, new_state"
             return False
 
 class NFAGuessFormv1(NFAGuessForm):
@@ -328,6 +383,26 @@ class VPAGuessForm(Screen):
             (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
     finals_input = ObjectProperty(None)
     transitions_input = ObjectProperty(None)
+    guess_text=StringProperty("")
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.guess_text = "Write final states and transitions of automata here"
+
+    def clear_window(self):
+        self.finals_input.text = ""
+        self.transitions_input.text = ""
+
+    def check_automata(self):
+        if self.check_automata_correctness():
+            self.guess_text = "Write final states and transitions of automata here"
+            self.parent.current = "win_page"
+
+    def go_to_tips_form(self):
+        self.clear_window()
+        self.guess_text = "Write final states and transitions of automata here"
+        self.parent.current = self.last_game_name
+
     def check_automata_correctness(self):
         try:
             finals = [int(state) for state in self.finals_input.text.split(", ")]
@@ -342,13 +417,25 @@ class VPAGuessForm(Screen):
                 else:
                     transitions[(int(old_state), letter)] = int(new_state)
             guessed_automata=DVPA(self.dvpa.calls_alphabet, self.dvpa.return_alphabet, self.dvpa.internal_alpahbet, self.dvpa.states, self.dvpa.stack_alphabet, 0, finals, self.dvpa.initial_stack_symbol, transitions)
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
-            return self.dvpa.is_equal_to(guessed_automata)
-        except:
-            self.finals_input.text = ""
-            self.transitions_input.text = ""
+            self.clear_window()
+            is_equal, word = self.dvpa.is_equal_to(guessed_automata)
+            if is_equal:
+                return True
+            self.guess_text = f"Your automata does not match on word: {word}"
             return False
+        except AssertionError as e:
+            self.clear_window()
+            self.guess_text = f"Error: {str(e)}"
+            return False
+        except KeyError as e:
+            self.clear_window()
+            self.guess_text = f"Error: Not given transition for: {e}"
+            return False
+        except ValueError as e:
+            self.clear_window()
+            self.guess_text = f"ParseError: final states should be numbers between 0 and {len(self.dvpa.states) - 1} separated by coma, and transitions should have form: old_state, letter, new_state, stack_symbol"
+            return False
+
 
 class VPAGuessFormv1(VPAGuessForm):
     pass

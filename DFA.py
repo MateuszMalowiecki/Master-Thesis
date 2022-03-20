@@ -1,14 +1,16 @@
 from itertools import chain, combinations
+from turtle import st
 
 class DFA:
     def __init__(self, alphabet, states, initial_state, final_states, transitions):
-        assert initial_state in states
+        assert initial_state in states, f"invalid initial state number: {initial_state}"
         for state in final_states:
-            assert state in states
+            assert state in states, f"invalid final state number: {state}"
         for (old_state, letter) in transitions:
-            assert old_state in states 
-            assert transitions[(old_state, letter)] in states 
-            assert letter in alphabet
+            new_state=transitions[(old_state, letter)]
+            assert old_state in states, f"invalid old state number: {old_state} in transition"
+            assert new_state in states, f"invalid new state number: {new_state} in transition"
+            assert letter in alphabet, f"invalid letter: {letter} in transition"
         self.alphabet = alphabet
         self.states=states
         self.initial_state = initial_state
@@ -57,14 +59,32 @@ class DFA:
                         reachable.append(new_state)
         return reachable
 
+    def find_word_in_language(self, actual_state, reachable, visited_states):
+        if actual_state == self.initial_state:
+            return ""
+        for state in self.states:
+            if state not in visited_states and state in reachable:
+                for letter in self.alphabet:
+                    if self.transitions[(state, letter)] == actual_state:
+                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()
-        return len([state for state in self.final_states if state in reachable]) == 0
+        for state in reachable:
+            if state in self.final_states:
+                word = self.find_word_in_language(state, reachable, [])
+                return False, word
+        return True, ""
 
     #Checking if two automatas are equal
     def is_equal_to(self, other):
-        return self.take_intersection(other.take_complement()).have_empty_language() and \
-            other.take_intersection(self.take_complement()).have_empty_language()
+        is_empty, word = self.take_intersection(other.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        is_empty, word = other.take_intersection(self.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        return True, ""
 
     def to_NFA(self):
         transitions=[]
@@ -75,9 +95,9 @@ class DFA:
 
 class NFA:
     def __init__(self, alphabet, states, initial_state, final_states, transitions):
-        assert initial_state in states
+        assert initial_state in states,  f"invalid initial state number: {initial_state}"
         for state in final_states:
-            assert state in states
+            assert state in states, f"invalid final state number: {state}"
         self.states=states
         self.alphabet = alphabet
         self.initial_state = initial_state
@@ -88,11 +108,13 @@ class NFA:
             new_state = int(new_state) if isinstance(new_state, str) else new_state
             if letter == "eps":
                 letter = ""
-            assert old_state in states and new_state in states and letter in alphabet
+            assert old_state in states, f"invalid old state number: {old_state} in transition"
+            assert new_state in states, f"invalid new state number: {new_state} in transition"
+            assert letter in alphabet, f"invalid letter: {letter} in transition"
             if not old_state in self.transitions.keys():
                 self.transitions[old_state] = []
             self.transitions[old_state].append((letter, new_state))
-    
+
     def get_transitions_from_state(self, state):
         return self.transitions[state] if state in self.transitions.keys() else []
 
@@ -122,7 +144,7 @@ class NFA:
         return dfa_from_nfa.take_complement().to_NFA()
 
     def take_intersection(self, other):
-        assert self.alphabet == other.alphabet
+        assert self.alphabet == other.alphabet, "Alphabets of intersected automatas should be the same."
         states = []
         initial_state=(self.initial_state, other.initial_state)
         finals=[]
@@ -142,7 +164,7 @@ class NFA:
                             continue
                         transitions.append(((our_state, other_state), our_letter, (our_new_state, other_new_state)))
         return NFA(self.alphabet, states, initial_state, finals, transitions)
-    
+
     def get_all_reachable_states(self):
         reachable=[self.initial_state]
         for _ in range(len(self.states)):
@@ -154,14 +176,32 @@ class NFA:
                         reachable.append(new_state)
         return reachable
 
+    def find_word_in_language(self, actual_state, reachable, visited_states):
+        if actual_state == self.initial_state:
+            return ""
+        for state in self.states:
+            if state not in visited_states and state in reachable:
+                for letter in self.alphabet:
+                    if (letter, actual_state) in self.transitions[state]:
+                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()
-        return len([state for state in self.final_states if state in reachable]) == 0
+        for state in reachable:
+            if state in self.final_states:
+                word = self.find_word_in_language(state, reachable, [])
+                return False, word
+        return True, ""
     
     #Checking if two automatas are equal
     def is_equal_to(self, other):
-        return self.take_intersection(other.take_complement()).have_empty_language() and \
-            other.take_intersection(self.take_complement()).have_empty_language()
+        is_empty, word = self.take_intersection(other.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        is_empty, word = other.take_intersection(self.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        return True, ""
 
     #Check if given trial is accepting
     def is_accepting(self, state, input):
@@ -229,3 +269,22 @@ class NFA:
     #As above, but with duplicates removing
     def give_states_when_starting_from_given_configuration(self, state, input):
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input)))
+
+dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
+        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
+print("AAAAA", [] + [42])
+print(dfa.find_word_in_language(3, [0, 1, 2, 3], []))
+print(dfa.have_empty_language())
+print(dfa.is_equal_to(dfa))
+second_dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [2], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
+        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
+print(dfa.is_equal_to(second_dfa))
+nfa = NFA(["a", "b"], [0, 1], 0, [1], 
+        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
+print("AAAAA", [] + [42])
+print(nfa.find_word_in_language(1, [0, 1], []))
+print(nfa.have_empty_language())
+print(nfa.is_equal_to(nfa))
+second_nfa=NFA(["a", "b"], [0, 1], 0, [0], 
+        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
+print(nfa.is_equal_to(second_nfa))

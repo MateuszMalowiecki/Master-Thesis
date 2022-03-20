@@ -198,6 +198,8 @@ WindowManager:
     last_game_name: ""
     GridLayout:
         cols:1
+        Label:
+            text: root.guess_text
         GridLayout:
             cols:2
             Label:
@@ -208,11 +210,12 @@ WindowManager:
                 text: "Transitions:"
             TextInput:
                 id: transitions_input
-        Button:
-            text: "Check"
-            on_release:
-                app.root.current = "win_page" if root.check_automata_correctness() else root.last_game_name
-                root.manager.transition.direction = "left"
+            Button:
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
+            Button:
+                text: "Check"
+                on_release: root.check_automata()
 
 <DFAGuessFormv1>:
     name: "dfa_guess_form_v1"
@@ -229,6 +232,8 @@ WindowManager:
     transitions_input: transitions_input
     GridLayout:
         cols:1
+        Label:
+            text: root.guess_text
         GridLayout:
             cols:2
             Label:
@@ -239,11 +244,12 @@ WindowManager:
                 text: "Transitions:"
             TextInput:
                 id: transitions_input
-        Button:
-            text: "Check"
-            on_release:
-                app.root.current = "win_page" if root.check_automata_correctness() else root.last_game_name
-                root.manager.transition.direction = "left"
+            Button:
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
+            Button:
+                text: "Check"
+                on_release: root.check_automata()
 
 <NFAGuessFormv1>:
     name: "nfa_guess_form_v1"
@@ -260,6 +266,8 @@ WindowManager:
     transitions_input: transitions_input
     GridLayout:
         cols:1
+        Label:
+            text: root.guess_text
         GridLayout:
             cols:2
             Label:
@@ -270,11 +278,13 @@ WindowManager:
                 text: "Transitions:"
             TextInput:
                 id: transitions_input
-        Button:
-            text: "Check"
-            on_release:
-                app.root.current = "win_page" if root.check_automata_correctness() else root.last_game_name
-                root.manager.transition.direction = "left"
+            Button:
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
+            Button:
+                text: "Check"
+                on_release: root.check_automata()
+
 
 <VPAGuessFormv1>:
     name: "vpa_guess_form_v1"

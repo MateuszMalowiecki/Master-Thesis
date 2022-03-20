@@ -1,4 +1,5 @@
 #With help of: https://github.com/theodoregold/pushdown-automata/blob/3ce36cdfdd1f4e260121fb43dea988b96288fed0/main.py#L36
+from inspect import stack
 from typing_extensions import final
 from itertools import chain, combinations
 
@@ -6,10 +7,10 @@ from urllib3 import Retry
 
 class DVPA:
     def __init__(self, calls_alphabet, return_alphabet, internal_alpahbet, states, stack_alphabet, initial_state, final_states, initial_stack_symbol, transitions):
-        assert initial_state in states
+        assert initial_state in states, f"invalid initial state number: {initial_state}"
         for state in final_states:
-            assert state in states
-        assert initial_stack_symbol in stack_alphabet
+            assert state in states, f"invalid final state number: {state}"
+        assert initial_stack_symbol in stack_alphabet, f"invalid initial stack symbol: {initial_stack_symbol}"
         self.calls_alphabet = calls_alphabet
         self.return_alphabet = return_alphabet
         self.internal_alpahbet = internal_alpahbet
@@ -20,24 +21,29 @@ class DVPA:
         self.initial_stack_symbol= initial_stack_symbol
         self.transitions = transitions
         for key, value in transitions.items():
-            if len(key) == 2 and isinstance(value, tuple) and value[1] in stack_alphabet:
+            if len(key) == 2 and key[1] in calls_alphabet:
+                assert len(value) == 2, f"invalid transtion: {key} -> {value}"
                 (old_state, old_letter) = key
                 (new_state, new_stack_letter) = value
-                assert old_state in states and new_state in states
-                assert old_letter in calls_alphabet 
-                assert new_stack_letter in stack_alphabet
-                assert new_stack_letter != initial_stack_symbol
-            elif len(key) == 2:
+                assert old_state in states, f"invalid old state number: {old_state} in call transition"
+                assert new_state in states, f"invalid new state number: {new_state} in call transition"
+                assert new_stack_letter in stack_alphabet, f"invalid new stack letter: {new_stack_letter} in call transition"
+                assert new_stack_letter != initial_stack_symbol, f"initial stack symbol should not be pushed into stack"
+            elif len(key) == 2 and key[1] in internal_alpahbet:
                 (old_state, old_letter) = key
                 new_state=value
-                assert old_state in states and new_state in states
-                assert old_letter in internal_alpahbet   
-            elif len(key) == 3:
+                assert old_state in states, f"invalid old state number: {old_state} in internal transition" 
+                assert new_state in states, f"invalid new state number: {new_state} in internal transition"
+            elif len(key) == 3 and key[1] in return_alphabet:
                 (old_state, old_letter, old_stack_top) = key
                 new_state=value
-                assert old_state in states and new_state in states
-                assert old_letter in return_alphabet
-                assert old_stack_top in stack_alphabet    
+                assert old_state in states, f"invalid old state number: {old_state} in return transition" 
+                assert new_state in states, f"invalid new state number: {new_state} in return transition"
+                assert old_stack_top in stack_alphabet, f"invalid old stack top: {old_stack_top} in return transition"
+            else:
+                if key[1] not in calls_alphabet and key[1] not in return_alphabet and key[1] not in internal_alpahbet:
+                    assert False, f"letter {key[1]} does not belong to any alphabet"
+                assert False, f"invalid transtion: {key} -> {value}"
     #Changing dvpa to vpa
     def to_VPA(self):
         transitions=[]
@@ -64,9 +70,9 @@ class DVPA:
             self.initial_stack_symbol, self.transitions)
 
     def take_intersection(self, other):
-        assert self.calls_alphabet == other.calls_alphabet
-        assert self.return_alphabet == other.return_alphabet
-        assert self.internal_alpahbet == other.internal_alpahbet
+        assert self.calls_alphabet == other.calls_alphabet, "Calls alphabets of intersected automatas should be the same."
+        assert self.return_alphabet == other.return_alphabet, "Return alphabets of intersected automatas should be the same."
+        assert self.internal_alpahbet == other.internal_alpahbet, "Internal alphabets of intersected automatas should be the same."
         stack_alphabet=[]
         for our_stack_letter in self.stack_alphabet:
             for other_stack_letter in other.stack_alphabet:
@@ -119,14 +125,39 @@ class DVPA:
                 except:
                     pass
         return reachable
+    def find_word_in_language(self, actual_state, reachable, visited_states):
+        if actual_state == self.initial_state:
+            return ""
+        for state in self.states:
+            if state not in visited_states and state in reachable:
+                for letter in self.internal_alpahbet:
+                    if self.transitions[(state, letter)] == actual_state:
+                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                for letter in self.calls_alphabet:
+                    if self.transitions[(state, letter)][0] == actual_state:
+                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                for letter in self.return_alphabet:
+                    for stack_letter in self.stack_alphabet:
+                        if self.transitions[(state, letter, stack_letter)] == actual_state:
+                            return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()
-        return len([state for state in self.final_states if state in reachable]) == 0
+        for state in reachable:
+            if state in self.final_states:
+                word = self.find_word_in_language(state, reachable, [])
+                return False, word
+        return True, ""
 
     def is_equal_to(self, other):
-        return self.take_intersection(other.take_complement()).have_empty_language() and \
-            other.take_intersection(self.take_complement()).have_empty_language()
-    
+        is_empty, word = self.take_intersection(other.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        is_empty, word = other.take_intersection(self.take_complement()).have_empty_language()
+        if not is_empty:
+            return False, word
+        return True, ""
+
     def check_if_word_in_language(self, word):
         actual_state=self.initial_state
         actual_stack=[self.initial_stack_symbol]
@@ -224,7 +255,6 @@ class VPA:
             new_state=[]
             for q in state:
                 transis=self.get_transitions_from_state(q)
-                #print(f"transis, {transis}")
                 for trans in transis:
                     (new_letter, _, _, new_st)=trans
                     if new_st not in new_state and new_letter == letter:
@@ -474,3 +504,15 @@ class VPA:
             else:
                 states_and_string_stacks.append((state, "".join(stack)))
         return list(dict.fromkeys(states_and_string_stacks))
+
+dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [1], "Z", 
+        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
+            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
+print("AAAAA", [] + [42])
+print(dvpa.find_word_in_language(1, [0, 1], []))
+print(dvpa.have_empty_language())
+print(dvpa.is_equal_to(dvpa))
+second_dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
+        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
+            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
+print(dvpa.is_equal_to(second_dvpa))
