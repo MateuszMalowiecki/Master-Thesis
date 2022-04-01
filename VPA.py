@@ -125,6 +125,7 @@ class DVPA:
                 except:
                     pass
         return reachable
+
     def find_word_in_language(self, actual_state, reachable, visited_states):
         if actual_state == self.initial_state:
             return ""
