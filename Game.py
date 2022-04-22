@@ -6,11 +6,23 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty
 from DFA import DFA, NFA
 from VPA import DVPA
+from Weighted import DWeighted_Automata
+import copy
 
+game_screens_ids={"game_dfa1": 4, "game_dfa1_lvl2": 5, "game_dfa2": 6, "game_dfa2_lvl2": 7, 
+        "game_vpa1": 8, "game_vpa1_lvl2": 9, "game_vpa2": 10, "game_vpa2_lvl2": 11, 
+        "game_vpa3": 12, "game_vpa3_lvl2": 13, "game_vpa4": 14, "game_vpa4_lvl2": 15,
+        "game_wfa1": 16, "game_wfa1_lvl2": 17, "game_wfa2": 18, "game_wfa2_lvl2": 19}
 
+win_level_pages_ids= {"win_lvl1_v1_dfa_page": 22, "win_lvl1_v2_dfa_page": 23, "win_lvl1_v1_vpa_page": 24, "win_lvl1_v2_vpa_page": 25, 
+        "win_lvl1_v3_vpa_page": 26, "win_lvl1_v4_vpa_page": 27, "win_lvl1_v1_wfa_page": 28, "win_lvl1_v2_wfa_page": 29, "win_lvl2_page": 30}
+
+guess_form_screens_ids={"dfa_guess_form_v1": 33, "dfa_guess_form_v1_lvl2": 34, "dfa_guess_form_v2_lvl2": 35, "dfa_guess_form_v2_lvl2": 36, 
+        "vpa_guess_form_v1": 38, "vpa_guess_form_v1_lvl2": 39, "vpa_guess_form_v2": 40, "vpa_guess_form_v2_lvl2": 41, 
+        "vpa_guess_form_v3": 42, "vpa_guess_form_v3_lvl2": 43, "vpa_guess_form_v4": 44, "vpa_guess_form_v4": 45,
+        "wfa_guess_form_v1": 47, "wfa_guess_form_v1_lvl2": 48, "wfa_guess_form_v2": 49, "wfa_guess_form_v2_lvl2": 50}
 #TODO:
-#1. Add weighted automatas
-#2. Refactoring (for example define macros, get rid of unneccessary code etc.) + tests (write UTs for automatas)
+#1. Refactoring (for example define macros, get rid of unneccessary code etc.) + tests (write UTs for automatas)
 
 class MainWindow(Screen):
     pass
@@ -22,6 +34,9 @@ class DFAChooseVersionWindow(Screen):
     pass
 
 class VPAChooseVersionWindow(Screen):
+    pass
+
+class WFAChooseVersionWindow(Screen):
     pass
 
 class GameWindow(Screen):
@@ -38,6 +53,7 @@ class GameWindow(Screen):
         self.answer_text = ""
 
     def go_to_main_menu(self):
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].number_of_tries = 0
         self.clear_window()
         self.number_of_tips = 0
         self.parent.current = "second"
@@ -56,11 +72,7 @@ class GameDFAv1Window(GameWindow):
         self.button_text = "Check if this word is in language."
         self.tip_text= f"Tip: Alphabet is {self.dfa.alphabet} and automata has {len(self.dfa.states)} states"
 
-    def go_to_main_menu(self):
-        self.manager.screens[26].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             word = self.input.text
             for letter in word:
@@ -85,11 +97,7 @@ class GameDFAv1WindowLevel2(GameWindow):
         self.button_text = "Check if this word is in language."
         self.tip_text= f"Tip: Alphabet is {self.dfa.alphabet} and automata has {len(self.dfa.states)} states"
 
-    def go_to_main_menu(self):
-        self.manager.screens[27].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             word = self.input.text
             for letter in word:
@@ -114,11 +122,7 @@ class GameDFAv2Window(GameWindow):
         self.button_text = "Check in which state we will finish."
         self.tip_text= f"Tip: Alphabet is {self.dfa.alphabet} and automata has {len(self.dfa.states)} states"
 
-    def go_to_main_menu(self):
-        self.manager.screens[28].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
@@ -146,11 +150,7 @@ class GameDFAv2WindowLevel2(GameWindow):
         self.button_text = "Check in which state we will finish."
         self.tip_text= f"Tip: Alphabet is {self.dfa.alphabet} and automata has {len(self.dfa.states)} states"
 
-    def go_to_main_menu(self):
-        self.manager.screens[29].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
@@ -179,7 +179,7 @@ class GameNFAv1Window(GameWindow):
         self.button_text = "Check if this word is in language."
         self.tip_text= f"Tip: Alphabet is {self.nfa.alphabet} and automata has {len(self.nfa.states)} states"
 
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             word = self.input.text
             for letter in word:
@@ -203,7 +203,7 @@ class GameNFAv2Window(GameWindow):
         self.button_text = "Check in which states we will finish."
         self.tip_text= f"Tip: Alphabet is {self.nfa.alphabet} and automata has {len(self.nfa.states)} states"
 
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
@@ -233,11 +233,7 @@ class GameVPAv1Window(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
 
-    def go_to_main_menu(self):
-        self.manager.screens[31].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             word = self.input.text
             for letter in word:
@@ -267,11 +263,7 @@ class GameVPAv1WindowLevel2(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
     
-    def go_to_main_menu(self):
-        self.manager.screens[32].number_of_tries = 0
-        super().go_to_main_menu()
-    
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             word = self.input.text
             for letter in word:
@@ -299,11 +291,7 @@ class GameVPAv2Window(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
 
-    def go_to_main_menu(self):
-        self.manager.screens[33].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -337,12 +325,8 @@ class GameVPAv2WindowLevel2(GameWindow):
         self.button_text = "Check in which states and stacks we will finish."
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
-
-    def go_to_main_menu(self):
-        self.manager.screens[34].number_of_tries = 0
-        super().go_to_main_menu()
     
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -375,11 +359,7 @@ class GameVPAv3Window(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
 
-    def go_to_main_menu(self):
-        self.manager.screens[35].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -414,11 +394,7 @@ class GameVPAv3WindowLevel2(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
     
-    def go_to_main_menu(self):
-        self.manager.screens[36].number_of_tries = 0
-        super().go_to_main_menu()
-    
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -451,11 +427,7 @@ class GameVPAv4Window(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
 
-    def go_to_main_menu(self):
-        self.manager.screens[37].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -490,11 +462,7 @@ class GameVPAv4WindowLevel2(GameWindow):
         self.tip_text= f"Tip: Automata has {len(self.dvpa.states)} states, alphabets are: {self.dvpa.calls_alphabet}, " + (
             f"{self.dvpa.return_alphabet} and {self.dvpa.internal_alpahbet} and stack alphabet is: {self.dvpa.stack_alphabet}")
 
-    def go_to_main_menu(self):
-        self.manager.screens[38].number_of_tries = 0
-        super().go_to_main_menu()
-
-    def check_if_word_in_language(self):
+    def check_word(self):
         try:
             input_content = self.input.text.split()
             assert len(input_content) == 3, "Error: You should give exactly 3 values separated by space."
@@ -515,6 +483,110 @@ class GameVPAv4WindowLevel2(GameWindow):
         except AssertionError as e:
             self.answer_text = str(e)
 
+class GameWFAv1Window(GameWindow):
+    dweighted = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 4, 1 : 6, 2 : 1, 3: 2}, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
+        {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 
+            (2, "a") : (6, 3), (2, "b") : (11, 3), (3, "a") : (8, 0), (3, "b") : (5, 0)})
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.automata_text = "Please write a word in the input."
+        self.button_text = "Check weight of this word."
+        self.tip_text= f"Tip: Alphabet is {self.dweighted.alphabet} and automata has {len(self.dweighted.states)} states"
+
+    def check_word(self):
+        try:
+            word = self.input.text
+            for letter in word:
+                assert letter in self.dweighted.alphabet,  f"Error: Letter {letter} is not in the alpahbet."
+            weight = self.dweighted.weight_of_word(word)
+            self.answer_text = f"Weight of word {word} is {weight}"
+            self.input.text=""
+            self.number_of_tips += 1
+        except AssertionError as e:
+            self.answer_text = str(e)
+
+class GameWFAv1WindowLevel2(GameWindow):
+    dweighted = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+        {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
+            (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.automata_text = "Please write a word in the input."
+        self.button_text = "Check weight of this word."
+        self.tip_text= f"Tip: Alphabet is {self.dweighted.alphabet} and automata has {len(self.dweighted.states)} states"
+
+    def check_word(self):
+        try:
+            word = self.input.text
+            for letter in word:
+                assert letter in self.dweighted.alphabet,  f"Error: Letter {letter} is not in the alpahbet."
+            weight = self.dweighted.weight_of_word(word)
+            self.answer_text = f"Weight of word {word} is {weight}"
+            self.input.text=""
+            self.number_of_tips += 1
+        except AssertionError as e:
+            self.answer_text = str(e)
+
+class GameWFAv2Window(GameWindow):
+    dweighted = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 4, 1 : 6, 2 : 1, 3: 2}, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
+        {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 
+            (2, "a") : (6, 3), (2, "b") : (11, 3), (3, "a") : (8, 0), (3, "b") : (5, 0)})
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.automata_text = "Please write a word and a state in the input."
+        self.button_text = "Check in which state we will finish and with what weight."
+        self.tip_text= f"Tip: Alphabet is {self.dweighted.alphabet} and automata has {len(self.dweighted.states)} states"
+
+    def check_word(self):
+        try:
+            input_content = self.input.text.split()
+            assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
+            word, state = input_content[0], int(input_content[1])
+            for letter in word:
+                assert letter in self.dweighted.alphabet, f"Error: letter {letter} is not in the alphabet."
+            assert state in self.dweighted.states, f"Error: state should be a number between 0 and {len(self.dweighted.states) - 1}."
+            end_state, path_weight=self.dweighted.give_state_and_weight_when_starting_from_given_configuration(int(state), word)
+            self.answer_text = f"We finished in state: {end_state} and path weight is: {path_weight}"
+            self.input.text=""
+            self.number_of_tips += 1
+        except ValueError as e:
+            invalid_state = str(e).split()[-1]
+            self.answer_text = f"Error: States in automata are numbers, but you put {invalid_state} as state."
+        except AssertionError as e:
+            self.answer_text = str(e) 
+
+class GameWFAv2WindowLevel2(GameWindow):
+    dweighted = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+        {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
+            (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.automata_text = "Please write a word and a state in the input."
+        self.button_text = "Check in which state we will finish and with what weight."
+        self.tip_text= f"Tip: Alphabet is {self.dweighted.alphabet} and automata has {len(self.dweighted.states)} states"
+
+    def check_word(self):
+        try:
+            input_content = self.input.text.split()
+            assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
+            word, state = input_content[0], int(input_content[1])
+            for letter in word:
+                assert letter in self.dweighted.alphabet, f"Error: letter {letter} is not in the alphabet."
+            assert state in self.dweighted.states, f"Error: state should be a number between 0 and {len(self.dweighted.states) - 1}."
+            end_state, path_weight=self.dweighted.give_state_and_weight_when_starting_from_given_configuration(int(state), word)
+            self.answer_text = f"We finished in state: {end_state} and path weight is: {path_weight}"
+            self.input.text=""
+            self.number_of_tips += 1
+        except ValueError as e:
+            invalid_state = str(e).split()[-1]
+            self.answer_text = f"Error: States in automata are numbers, but you put {invalid_state} as state."
+        except AssertionError as e:
+            self.answer_text = str(e) 
+
 class DFAGuessForm(Screen):
     dfa = None
     finals_input = ObjectProperty(None)
@@ -529,7 +601,10 @@ class DFAGuessForm(Screen):
         self.finals_input.text = ""
         self.transitions_input.text = ""
 
-    def check_automata(self):
+    def check_automata(self, num_of_tries):
+        self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
+        #print("Screen: ", self.manager.screens[game_screens_ids[self.last_game_name]])
+        self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
         self.guess_text = "Write final states and transitions of automata here"
         self.parent.current = self.win_level_page_name
 
@@ -569,10 +644,9 @@ class DFAGuessForm(Screen):
 class DFAGuessFormv1(DFAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[17].label_text=f"Congratulations, you won level 1 with {self.manager.screens[3].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[3].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -582,10 +656,9 @@ class DFAGuessFormv1(DFAGuessForm):
 class DFAGuessFormv1Level2(DFAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[4].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[4].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
     dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 2, (1, "a") : 0, (1, "b") : 3, 
@@ -594,10 +667,9 @@ class DFAGuessFormv1Level2(DFAGuessForm):
 class DFAGuessFormv2(DFAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[18].label_text=f"Congratulations, you won level 1 with {self.manager.screens[5].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[5].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
     dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
@@ -606,10 +678,9 @@ class DFAGuessFormv2(DFAGuessForm):
 class DFAGuessFormv2Level2(DFAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[6].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[6].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
     dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 2, (1, "a") : 0, (1, "b") : 3, 
@@ -687,7 +758,9 @@ class VPAGuessForm(Screen):
         self.finals_input.text = ""
         self.transitions_input.text = ""
 
-    def check_automata(self):
+    def check_automata(self, num_of_tries):
+        self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
+        self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
         self.guess_text = "Write final states and transitions of automata here"
         self.parent.current = self.win_level_page_name
 
@@ -733,10 +806,9 @@ class VPAGuessForm(Screen):
 class VPAGuessFormv1(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[19].label_text=f"Congratulations, you won level 1 with {self.manager.screens[7].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[7].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -747,10 +819,9 @@ class VPAGuessFormv1(VPAGuessForm):
 class VPAGuessFormv1Level2(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[8].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[8].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -763,10 +834,9 @@ class VPAGuessFormv1Level2(VPAGuessForm):
 class VPAGuessFormv2(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[20].label_text=f"Congratulations, you won level 1 with {self.manager.screens[9].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[9].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -777,10 +847,9 @@ class VPAGuessFormv2(VPAGuessForm):
 class VPAGuessFormv2Level2(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[10].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[10].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -793,10 +862,9 @@ class VPAGuessFormv2Level2(VPAGuessForm):
 class VPAGuessFormv3(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[21].label_text=f"Congratulations, you won level 1 with {self.manager.screens[11].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[11].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -807,10 +875,9 @@ class VPAGuessFormv3(VPAGuessForm):
 class VPAGuessFormv3Level2(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[12].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[12].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -823,10 +890,9 @@ class VPAGuessFormv3Level2(VPAGuessForm):
 class VPAGuessFormv4(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[22].label_text=f"Congratulations, you won level 1 with {self.manager.screens[13].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[13].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -837,10 +903,9 @@ class VPAGuessFormv4(VPAGuessForm):
 class VPAGuessFormv4Level2(VPAGuessForm):
     def check_automata(self):
         if self.check_automata_correctness():
-            self.manager.screens[23].label_text=f"Congratulations, you won level 2 with {self.manager.screens[14].number_of_tips} tips and {self.number_of_tries} failed guesses."
-            self.manager.screens[14].number_of_tips = 0
+            num_of_tries=copy.deepcopy(self.number_of_tries)
             self.number_of_tries = 0
-            super().check_automata()
+            super().check_automata(num_of_tries)
         else:
             self.number_of_tries += 1
 
@@ -849,6 +914,123 @@ class VPAGuessFormv4Level2(VPAGuessForm):
             (1, "a"): (0, "A"), (1, "b", "A"): 3, (1, "b", "Z"): 3, (1, "c"): 1,
             (2, "a"): (3, "A"), (2, "b", "A"): 0, (2, "b", "Z"): 0, (2, "c"): 2, 
             (3, "a"): (2, "A"), (3, "b", "A"): 1, (3, "b", "Z"): 1, (3, "c"): 3})
+
+class WFAGuessForm(Screen):
+    wfa = None
+    initial_function_input = ObjectProperty(None)
+    final_function_input = ObjectProperty(None)
+    transitions_input = ObjectProperty(None)
+    guess_text=StringProperty("")
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.guess_text = "Write final states and transitions of automata here"
+
+    def clear_window(self):
+        self.initial_function_input.text = ""
+        self.final_function_input.text = ""
+        self.transitions_input.text = ""
+
+    def check_automata(self, num_of_tries):
+        self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
+        self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
+        self.guess_text = "Write final states and transitions of automata here"
+        self.parent.current = self.win_level_page_name
+
+    def go_to_tips_form(self):
+        self.clear_window()
+        self.guess_text = "Write final states and transitions of automata here"
+        self.parent.current = self.last_game_name
+
+    def check_automata_correctness(self):
+        try:
+            initial_function_strings = self.initial_function_input.text.split("\n")
+            final_function_strings = self.final_function_input.text.split("\n")
+            trans_strings=self.transitions_input.text.split("\n")
+            initial_function={}
+            #print("Debug1")
+            for s in initial_function_strings:
+                print(s)
+                state, weight = s.split(", ")
+                initial_function[int(state)] = int(weight)
+            final_function={}
+            #print("Debug2")
+            for s in final_function_strings:
+                state, weight = s.split(", ")
+                final_function[int(state)] = int(weight)
+            transitions={}
+            #print("Debug3")
+            for s in trans_strings:
+                old_state, letter, weight, new_state = s.split(", ")
+                transitions[(int(old_state), letter)] = (int(weight), int(new_state))
+            guessed_automata=DWeighted_Automata(self.wfa.alphabet, self.wfa.states, initial_function, final_function, transitions)
+            self.clear_window()
+            is_equal, word = self.wfa.is_equal_to(guessed_automata)
+            if is_equal:
+                return True
+            self.guess_text = f"Your automata does not match on word: {word}"
+            return False
+        except AssertionError as e:
+            self.clear_window()
+            self.guess_text = f"Error: {str(e)}"
+            return False
+        except KeyError as e:
+            self.clear_window()
+            self.guess_text = f"Error: Not given transition for: {e}"
+            return False
+        except ValueError as e:
+            self.clear_window()
+            self.guess_text = f"ParseError: states should be numbers between 0 and {len(self.wfa.states) - 1} separated by coma, and transitions should have form: old_state, letter, weight, new_state"
+            return False
+
+class WFAGuessFormv1(WFAGuessForm):
+    def check_automata(self):
+        if self.check_automata_correctness():
+            num_of_tries=copy.deepcopy(self.number_of_tries)
+            self.number_of_tries = 0
+            super().check_automata(num_of_tries)
+        else:
+            self.number_of_tries += 1
+
+    wfa = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 4, 1 : 6, 2 : 1, 3: 2}, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
+        {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 
+            (2, "a") : (6, 3), (2, "b") : (11, 3), (3, "a") : (8, 0), (3, "b") : (5, 0)})
+
+class WFAGuessFormv1Level2(WFAGuessForm):
+    def check_automata(self):
+        if self.check_automata_correctness():
+            num_of_tries=copy.deepcopy(self.number_of_tries)
+            self.number_of_tries = 0
+            super().check_automata(num_of_tries)
+        else:
+            self.number_of_tries += 1
+    wfa = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+        {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
+            (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
+
+class WFAGuessFormv2(WFAGuessForm):
+    def check_automata(self):
+        if self.check_automata_correctness():
+            num_of_tries=copy.deepcopy(self.number_of_tries)
+            self.number_of_tries = 0
+            super().check_automata(num_of_tries)
+        else:
+            self.number_of_tries += 1
+    wfa = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 4, 1 : 6, 2 : 1, 3: 2}, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
+        {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 
+            (2, "a") : (6, 3), (2, "b") : (11, 3), (3, "a") : (8, 0), (3, "b") : (5, 0)})
+
+class WFAGuessFormv2Level2(WFAGuessForm):
+    def check_automata(self):
+        if self.check_automata_correctness():
+            num_of_tries=copy.deepcopy(self.number_of_tries)
+            self.number_of_tries = 0
+            super().check_automata(num_of_tries)
+        else:
+            self.number_of_tries += 1
+    wfa = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+        {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
+            (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
 
 class WinLevelPage(Screen):
     next_page=StringProperty("")
@@ -874,6 +1056,12 @@ class WinLevel1v3VPAPage(WinLevel1Page):
     pass
 
 class WinLevel1v4VPAPage(WinLevel1Page):
+    pass
+
+class WinLevel1v1WFAPage(WinLevel1Page):
+    pass
+
+class WinLevel1v2WFAPage(WinLevel1Page):
     pass
 
 class WinLevel2Page(WinLevelPage):

@@ -2,6 +2,7 @@ WindowManager:
     SecondWindow:
     DFAChooseVersionWindow:
     VPAChooseVersionWindow:
+    WFAChooseVersionWindow
     GameDFAv1Window:
     GameDFAv1WindowLevel2
     GameDFAv2Window:
@@ -16,6 +17,10 @@ WindowManager:
     GameVPAv3WindowLevel2:
     GameVPAv4Window:
     GameVPAv4WindowLevel2:
+    GameWFAv1Window:
+    GameWFAv1WindowLevel2:
+    GameWFAv2Window:
+    GameWFAv2WindowLevel2:
     WinLevelPage:
     WinLevel1Page:
     WinLevel1v1DFAPage:
@@ -24,13 +29,15 @@ WindowManager:
     WinLevel1v2VPAPage:
     WinLevel1v3VPAPage:
     WinLevel1v4VPAPage:
+    WinLevel1v1WFAPage:
+    WinLevel1v2WFAPage:
     WinLevel2Page:
     MainWindow:
     DFAGuessForm:
     DFAGuessFormv1:
-    DFAGuessFormv1Level2
+    DFAGuessFormv1Level2:
     DFAGuessFormv2:
-    DFAGuessFormv2Level2
+    DFAGuessFormv2Level2:
     # NFAGuessForm:
     # NFAGuessFormv1:
     # NFAGuessFormv2:
@@ -43,6 +50,11 @@ WindowManager:
     VPAGuessFormv3Level2:
     VPAGuessFormv4:
     VPAGuessFormv4Level2:
+    WFAGuessForm:
+    WFAGuessFormv1:
+    WFAGuessFormv1Level2:
+    WFAGuessFormv2:
+    WFAGuessFormv2Level2:
 
 <MainWindow>:
     name: "main"
@@ -90,6 +102,13 @@ WindowManager:
             text: "Guess VPA"
             on_release:
                 app.root.current = "vpa_choose"
+                root.manager.transition.direction = "right"
+        
+        Button:
+            size_hint: .2, .2
+            text: "Guess WFA"
+            on_release:
+                app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
 
         # Button:
@@ -180,6 +199,36 @@ WindowManager:
                 app.root.current = "second"
                 root.manager.transition.direction = "right"
 
+<WFAChooseVersionWindow>:
+    name: "wfa_choose"
+    GridLayout:
+        cols: 1
+
+        GridLayout:
+            cols: 2
+
+            Button:
+                size_hint: .2, .2
+                text: "Start a WFA game v1"
+                on_release:
+                    app.root.current = "game_wfa1"
+                    root.manager.transition.direction = "right"
+
+            Button:
+                size_hint: .2, .2
+                text: "Start a WFA game v2"
+                on_release:
+                    app.root.current = "game_wfa2"
+                    root.manager.transition.direction = "right"
+
+        Button:
+            text: "Return to main menu"
+            size_hint: .4, .2
+            pos_hint: {'x': .6, 'y': .8}
+            on_release: 
+                app.root.current = "second"
+                root.manager.transition.direction = "right"
+
 <GameWindow>:
     input: my_input
     first_label_x: 0
@@ -207,7 +256,7 @@ WindowManager:
             text: root.button_text
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': 0}
-            on_press: root.check_if_word_in_language()
+            on_press: root.check_word()
         Button:
             text: "Return to main menu"
             size_hint: .4, .2
@@ -303,6 +352,30 @@ WindowManager:
     first_label_x: .03
     first_label_y: .35
     guess_form_name: "vpa_guess_form_v4_lvl2"
+
+<GameWFAv1Window>:
+    name: "game_wfa1"
+    first_label_x: .03
+    first_label_y: .35
+    guess_form_name: "wfa_guess_form_v1"
+
+<GameWFAv1WindowLevel2>:
+    name: "game_wfa1_lvl2"
+    first_label_x: .03
+    first_label_y: .35
+    guess_form_name: "wfa_guess_form_v1_lvl2"
+
+<GameWFAv2Window>:
+    name: "game_wfa2"
+    first_label_x: .03
+    first_label_y: .35
+    guess_form_name: "wfa_guess_form_v2"
+
+<GameWFAv2WindowLevel2>:
+    name: "game_wfa2_lvl2"
+    first_label_x: .03
+    first_label_y: .35
+    guess_form_name: "wfa_guess_form_v2_lvl2"
 
 <DFAGuessForm>:
     name: "dfa_guess_form"
@@ -456,6 +529,59 @@ WindowManager:
     last_game_name: "game_vpa4_lvl2"
     win_level_page_name: "win_lvl2_page"
 
+<WFAGuessForm>:
+    name: "wfa_guess_form"
+    initial_function_input: initial_function_input
+    final_function_input: final_function_input
+    transitions_input: transitions_input
+    last_game_name: ""
+    win_level_page_name: ""
+    number_of_tries: 0
+    GridLayout:
+        cols:1
+        Label:
+            text: root.guess_text
+        GridLayout:
+            cols:2
+            Label:
+                text: "Initial weight function:"
+            TextInput:
+                id: initial_function_input
+            Label:
+                text: "Final weight function: "
+            TextInput:
+                id: final_function_input
+            Label:
+                text: "Transitions:"
+            TextInput:
+                id: transitions_input
+            Button:
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
+            Button:
+                text: "Check"
+                on_release: root.check_automata()
+
+<WFAGuessFormv1>:
+    name: "wfa_guess_form_v1"
+    last_game_name: "game_wfa1"
+    win_level_page_name: "win_lvl1_v1_wfa_page"
+
+<WFAGuessFormv1Level2>:
+    name: "wfa_guess_form_v1_lvl2"
+    last_game_name: "game_wfa1_lvl2"
+    win_level_page_name: "win_lvl2_page"
+
+<WFAGuessFormv2>:
+    name: "wfa_guess_form_v2"
+    last_game_name: "game_wfa2"
+    win_level_page_name: "win_lvl1_v2_wfa_page"
+
+<WFAGuessFormv2Level2>:
+    name: "wfa_guess_form_v2_lvl2"
+    last_game_name: "game_wfa2_lvl2"
+    win_level_page_name: "win_lvl2_page"
+
 <WinLevelPage>:
     name: "win_page"
     next_page: ""
@@ -501,6 +627,14 @@ WindowManager:
 <WinLevel1v4VPAPage>:
     name: "win_lvl1_v4_vpa_page"
     next_page: "game_vpa4_lvl2"
+
+<WinLevel1v1WFAPage>:
+    name: "win_lvl1_v1_wfa_page"
+    next_page: "game_wfa1_lvl2"
+
+<WinLevel1v2WFAPage>:
+    name: "win_lvl1_v2_wfa_page"
+    next_page: "game_wfa2_lvl2"
 
 <WinLevel2Page>:
     name: "win_lvl2_page"
