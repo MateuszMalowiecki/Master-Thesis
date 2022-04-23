@@ -17,7 +17,7 @@ def product_modulo_n(list, n):
 
 #TODO: Ask JMi if there is any way to check equality of two WFAs
 # and maybe consider automata over tropical semiring.
-class DWeighted_Automata:
+class DWFA:
     def __init__(self, alphabet, states, initial_weight_function, final_weight_function, transitions):
         for key, value in initial_weight_function.items():
             print(f"KEY: {key}, VALUE: {value}")
@@ -36,7 +36,7 @@ class DWeighted_Automata:
         self.transitions = transitions
 
     #TODO: Porozmawiac z JMi na temat tej funkcji
-    def is_equal_to(self, other, limit=500):
+    def is_equal_to(self, other, limit=100):
         for i in range(5000):
             len=random.randint(0, limit)
             word=''.join(random.choices(self.alphabet, k=len))
@@ -175,41 +175,41 @@ class Weighted_Automata:
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input)))
 
 '''
-dweighted = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+dwfa = DWFA(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
         {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
             (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
-dweighted2 = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+dwfa2 = DWFA(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
         {(0, "a") : (7, 1), (0, "b") : (6, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
             (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
-dweighted3 = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 8, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+dwfa3 = DWFA(["a", "b"], [0, 1, 2, 3], {0 : 8, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
         {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
             (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
-dweighted4 = DWeighted_Automata(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 7, 3 : 1},
+dwfa4 = DWFA(["a", "b"], [0, 1, 2, 3], {0 : 3, 1 : 5, 2 : 7, 3: 11}, {0 : 2, 1 : 6, 2 : 7, 3 : 1},
         {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
             (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
 
-print(dweighted.is_equal_to(dweighted))
-print(dweighted.is_equal_to(dweighted2))
-print(dweighted.is_equal_to(dweighted3))
-print(dweighted.is_equal_to(dweighted4))
-print(dweighted2.is_equal_to(dweighted3))
-print(dweighted2.is_equal_to(dweighted4))
-print(dweighted3.is_equal_to(dweighted4))
+print(dwfa.is_equal_to(dwfa))
+print(dwfa.is_equal_to(dwfa2))
+print(dwfa.is_equal_to(dwfa3))
+print(dwfa.is_equal_to(dwfa4))
+print(dwfa2.is_equal_to(dwfa3))
+print(dwfa2.is_equal_to(dwfa4))
+print(dwfa3.is_equal_to(dwfa4))
 print("---------------------------")
 
-print(dweighted.get_path_weights_from_given_state(0, "abbbaaabbbaaabababab"))
-print(dweighted.get_path_weights_from_given_state(1, "abbbaaabbbaaabababab"))
-print(dweighted.get_path_weights_from_given_state(2, "abbbaaabbbaaabababab"))
-print(dweighted.get_path_weights_from_given_state(3, "abbbaaabbbaaabababab"))
-print(dweighted.weight_of_word_from_given_state(0, "abbbaaabbbaaabababab"))
-print(dweighted.weight_of_word_from_given_state(1, "abbbaaabbbaaabababab"))
-print(dweighted.weight_of_word_from_given_state(2, "abbbaaabbbaaabababab"))
-print(dweighted.weight_of_word_from_given_state(3, "abbbaaabbbaaabababab"))
-print(dweighted.weight_of_word("abbbaaabbbaaabababab"))
-print(dweighted.give_state_when_starting_from_given_configuration(0, "abbbaaabbbaaabababab"))
-print(dweighted.give_state_when_starting_from_given_configuration(1, "abbbaaabbbaaabababab"))
-print(dweighted.give_state_when_starting_from_given_configuration(2, "abbbaaabbbaaabababab"))
-print(dweighted.give_state_when_starting_from_given_configuration(3, "abbbaaabbbaaabababab"))
+print(dwfa.get_path_weights_from_given_state(0, "abbbaaabbbaaabababab"))
+print(dwfa.get_path_weights_from_given_state(1, "abbbaaabbbaaabababab"))
+print(dwfa.get_path_weights_from_given_state(2, "abbbaaabbbaaabababab"))
+print(dwfa.get_path_weights_from_given_state(3, "abbbaaabbbaaabababab"))
+print(dwfa.weight_of_word_from_given_state(0, "abbbaaabbbaaabababab"))
+print(dwfa.weight_of_word_from_given_state(1, "abbbaaabbbaaabababab"))
+print(dwfa.weight_of_word_from_given_state(2, "abbbaaabbbaaabababab"))
+print(dwfa.weight_of_word_from_given_state(3, "abbbaaabbbaaabababab"))
+print(dwfa.weight_of_word("abbbaaabbbaaabababab"))
+print(dwfa.give_state_when_starting_from_given_configuration(0, "abbbaaabbbaaabababab"))
+print(dwfa.give_state_when_starting_from_given_configuration(1, "abbbaaabbbaaabababab"))
+print(dwfa.give_state_when_starting_from_given_configuration(2, "abbbaaabbbaaabababab"))
+print(dwfa.give_state_when_starting_from_given_configuration(3, "abbbaaabbbaaabababab"))
 
 
 weighted = Weighted_Automata(["a", "b"], [0, 1], {0 : 3, 1 : 5}, {0 : 1, 1 : 4},

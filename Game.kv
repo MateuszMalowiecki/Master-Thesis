@@ -84,7 +84,6 @@ WindowManager:
                 app.root.current = "second" if user_name.text == "tim" and passw.text == "tim" else "main"
                 root.manager.transition.direction = "left"
 
-
 <SecondWindow>:
     name: "second"
     GridLayout:
@@ -231,23 +230,17 @@ WindowManager:
 
 <GameWindow>:
     input: my_input
-    first_label_x: 0
-    first_label_y: 0
     guess_form_name: ""
     number_of_tips: 0
     FloatLayout:
         Label:
             text: root.automata_text
             size_hint: .5, .2
-            pos_hint: {'x': root.first_label_x, 'y': root.first_label_y}
-        Label:
-            text: root.tip_text
-            size_hint: .5, .2
-            pos_hint: {'x': .03, 'y': .30}
+            pos_hint: {'x': .03, 'y': .35}
         Label:
             text: root.answer_text
             size_hint: .5, .2
-            pos_hint: {'x': .03, 'y': .25}
+            pos_hint: {'x': .03, 'y': .20}
         TextInput:
             id: my_input
             size_hint: .5, .2
@@ -270,111 +263,75 @@ WindowManager:
 
 <GameDFAv1Window>:
     name: "game_dfa1"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "dfa_guess_form_v1"
 
 <GameDFAv1WindowLevel2>:
     name: "game_dfa1_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "dfa_guess_form_v1_lvl2"
 
 <GameDFAv2Window>:
     name: "game_dfa2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "dfa_guess_form_v2"
 
 <GameDFAv2WindowLevel2>:
     name: "game_dfa2_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "dfa_guess_form_v2_lvl2"
 
 # <GameNFAv1Window>:
 #    name: "game_nfa1"
-#    first_label_x: .03
-#    first_label_y: .35
 #    guess_form_name: "nfa_guess_form_v1"
 
 # <GameNFAv2Window>:
 #    name: "game_nfa2"
-#    first_label_x: .03
-#    first_label_y: .35
 #    guess_form_name: "nfa_guess_form_v2"
 
 
 <GameVPAv1Window>:
     name: "game_vpa1"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v1"
 
 <GameVPAv1WindowLevel2>:
     name: "game_vpa1_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v1_lvl2"
 
 <GameVPAv2Window>:
     name: "game_vpa2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v2"
 
 <GameVPAv2WindowLevel2>:
     name: "game_vpa2_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v2_lvl2"
 
 <GameVPAv3Window>:
     name: "game_vpa3"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v3"
 
 <GameVPAv3WindowLevel2>:
     name: "game_vpa3_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v3_lvl2"
 
 <GameVPAv4Window>:
     name: "game_vpa4"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v4"
 
 <GameVPAv4WindowLevel2>:
     name: "game_vpa4_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "vpa_guess_form_v4_lvl2"
 
 <GameWFAv1Window>:
     name: "game_wfa1"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "wfa_guess_form_v1"
 
 <GameWFAv1WindowLevel2>:
     name: "game_wfa1_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "wfa_guess_form_v1_lvl2"
 
 <GameWFAv2Window>:
     name: "game_wfa2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "wfa_guess_form_v2"
 
 <GameWFAv2WindowLevel2>:
     name: "game_wfa2_lvl2"
-    first_label_x: .03
-    first_label_y: .35
     guess_form_name: "wfa_guess_form_v2_lvl2"
 
 <DFAGuessForm>:
@@ -386,6 +343,8 @@ WindowManager:
     number_of_tries: 0
     GridLayout:
         cols:1
+        Label:
+            text: root.automata_text
         Label:
             text: root.guess_text
         GridLayout:
@@ -470,6 +429,8 @@ WindowManager:
     GridLayout:
         cols:1
         Label:
+            text: root.automata_text
+        Label:
             text: root.guess_text
         GridLayout:
             cols:2
@@ -539,6 +500,8 @@ WindowManager:
     number_of_tries: 0
     GridLayout:
         cols:1
+        Label:
+            text: root.automata_text
         Label:
             text: root.guess_text
         GridLayout:
