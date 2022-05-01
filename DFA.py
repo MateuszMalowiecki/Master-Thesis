@@ -269,22 +269,3 @@ class NFA:
     #As above, but with duplicates removing
     def give_states_when_starting_from_given_configuration(self, state, input):
         return list(dict.fromkeys(self.generate_all_configs_from_given_configuration(state, input)))
-
-dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
-        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
-print("AAAAA", [] + [42])
-print(dfa.find_word_in_language(3, [0, 1, 2, 3], []))
-print(dfa.have_empty_language())
-print(dfa.is_equal_to(dfa))
-second_dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [2], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
-        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
-print(dfa.is_equal_to(second_dfa))
-nfa = NFA(["a", "b"], [0, 1], 0, [1], 
-        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
-print("AAAAA", [] + [42])
-print(nfa.find_word_in_language(1, [0, 1], []))
-print(nfa.have_empty_language())
-print(nfa.is_equal_to(nfa))
-second_nfa=NFA(["a", "b"], [0, 1], 0, [0], 
-        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
-print(nfa.is_equal_to(second_nfa))

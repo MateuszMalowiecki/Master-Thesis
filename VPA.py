@@ -44,7 +44,55 @@ class DVPA:
                 if key[1] not in calls_alphabet and key[1] not in return_alphabet and key[1] not in internal_alpahbet:
                     assert False, f"letter {key[1]} does not belong to any alphabet"
                 assert False, f"invalid transtion: {key} -> {value}"
-    #Changing dvpa to vpa
+    
+    def check_if_word_in_language(self, word):
+        actual_state=self.initial_state
+        actual_stack=[self.initial_stack_symbol]
+        for w in word:
+            try:
+                new_state=actual_state
+                new_stack=actual_stack
+                if w in self.internal_alpahbet:
+                    new_state=self.transitions[(actual_state, w)]
+                elif w in self.calls_alphabet:
+                    new_state, new_stack_top=self.transitions[(actual_state, w)]
+                    new_stack = [new_stack_top] + actual_stack
+                else:
+                    actual_stack_top = actual_stack[0]
+                    if actual_stack_top != self.initial_stack_symbol:
+                        new_stack = new_stack[1:]
+                    new_state=self.transitions[(actual_state, w, actual_stack_top)]
+                actual_state=new_state
+                actual_stack=new_stack
+            except:
+                return False
+        return actual_state in self.final_states
+
+    #As above, but with duplicates removing
+    def give_state_and_stack_when_starting_from_given_configuration(self, state, input, stack):
+        actual_state = state
+        actual_stack = stack
+        for w in input:
+            try:
+                new_state=actual_state
+                new_stack=actual_stack
+                if w in self.internal_alpahbet:
+                    new_state=self.transitions[(actual_state, w)]
+                elif w in self.calls_alphabet:
+                    new_state, new_stack_top=self.transitions[(actual_state, w)]
+                    new_stack = [new_stack_top] + actual_stack
+                else:
+                    actual_stack_top = actual_stack[0]
+                    if actual_stack_top != self.initial_stack_symbol:
+                        new_stack = new_stack[1:]
+                    new_state=self.transitions[(actual_state, w, actual_stack_top)]
+                actual_state=new_state
+                actual_stack=new_stack
+            except:
+                return None
+        return actual_state, actual_stack
+
+    # Changing dvpa to vpa
     def to_VPA(self):
         transitions=[]
         for key, value in self.transitions.items():
@@ -93,13 +141,13 @@ class DVPA:
 
                 for letter in self.calls_alphabet:
                     (our_new_state, our_new_letter) = self.transitions[(our_state, letter)]
-                    (other_new_state, other_new_letter) = self.transitions[(other_state, letter)]
+                    (other_new_state, other_new_letter) = other.transitions[(other_state, letter)]
                     transitions[((our_state, other_state), letter)] = ((our_new_state, other_new_state), (our_new_letter, other_new_letter))
                 
                 for letter in self.return_alphabet:
                     for our_stack_letter, other_stack_letter in stack_alphabet:
                         our_new_state = self.transitions[(our_state, letter, our_stack_letter)]
-                        other_new_state = self.transitions[(other_state, letter, other_stack_letter)]
+                        other_new_state = other.transitions[(other_state, letter, other_stack_letter)]
                         transitions[((our_state, other_state), letter, (our_stack_letter, other_stack_letter))] = (our_new_state, other_new_state)
         return DVPA(self.calls_alphabet, self.return_alphabet, self.internal_alpahbet, 
             states, stack_alphabet, initial_state, finals, initial_stack_symbol, transitions)
@@ -158,54 +206,6 @@ class DVPA:
         if not is_empty:
             return False, word
         return True, ""
-
-    def check_if_word_in_language(self, word):
-        actual_state=self.initial_state
-        actual_stack=[self.initial_stack_symbol]
-        for w in word:
-            try:
-                new_state=actual_state
-                new_stack=actual_stack
-                if w in self.internal_alpahbet:
-                    new_state=self.transitions[(actual_state, w)]
-                elif w in self.calls_alphabet:
-                    new_state, new_stack_top=self.transitions[(actual_state, w)]
-                    new_stack = [new_stack_top] + actual_stack
-                else:
-                    actual_stack_top = actual_stack[0]
-                    if actual_stack_top != self.initial_stack_symbol:
-                        new_stack = new_stack[1:]
-                    new_state=self.transitions[(actual_state, w, actual_stack_top)]
-                actual_state=new_state
-                actual_stack=new_stack
-            except:
-                return False
-        return actual_state in self.final_states
-
-    #As above, but with duplicates removing
-    def give_state_and_stack_when_starting_from_given_configuration(self, state, input, stack):
-        actual_state = state
-        actual_stack = stack
-        for w in input:
-            try:
-                new_state=actual_state
-                new_stack=actual_stack
-                if w in self.internal_alpahbet:
-                    new_state=self.transitions[(actual_state, w)]
-                    #new_stack=actual_stack
-                elif w in self.calls_alphabet:
-                    new_state, new_stack_top=self.transitions[(actual_state, w)]
-                    new_stack = [new_stack_top] + actual_stack
-                else:
-                    actual_stack_top = actual_stack[0]
-                    if actual_stack_top != self.initial_stack_symbol:
-                        new_stack = new_stack[1:]
-                    new_state=self.transitions[(actual_state, w, actual_stack_top)]
-                actual_state=new_state
-                actual_stack=new_stack
-            except:
-                return None
-        return actual_state, actual_stack
 
 class VPA:
     def __init__(self, calls_alphabet, return_alphabet, internal_alpahbet, states, stack_alphabet, initial_states, final_states, initial_stack_symbol, transitions):
@@ -505,15 +505,3 @@ class VPA:
             else:
                 states_and_string_stacks.append((state, "".join(stack)))
         return list(dict.fromkeys(states_and_string_stacks))
-
-dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [1], "Z", 
-        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
-            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
-print("AAAAA", [] + [42])
-print(dvpa.find_word_in_language(1, [0, 1], []))
-print(dvpa.have_empty_language())
-print(dvpa.is_equal_to(dvpa))
-second_dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
-        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
-            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
-print(dvpa.is_equal_to(second_dvpa))
