@@ -23,19 +23,19 @@ class DVPA:
         for key, value in transitions.items():
             if len(key) == 2 and key[1] in calls_alphabet:
                 assert len(value) == 2, f"invalid transtion: {key} -> {value}"
-                (old_state, old_letter) = key
+                (old_state, _) = key
                 (new_state, new_stack_letter) = value
                 assert old_state in states, f"invalid old state number: {old_state} in call transition"
                 assert new_state in states, f"invalid new state number: {new_state} in call transition"
                 assert new_stack_letter in stack_alphabet, f"invalid new stack letter: {new_stack_letter} in call transition"
                 assert new_stack_letter != initial_stack_symbol, f"initial stack symbol should not be pushed into stack"
             elif len(key) == 2 and key[1] in internal_alpahbet:
-                (old_state, old_letter) = key
+                (old_state, _) = key
                 new_state=value
                 assert old_state in states, f"invalid old state number: {old_state} in internal transition" 
                 assert new_state in states, f"invalid new state number: {new_state} in internal transition"
             elif len(key) == 3 and key[1] in return_alphabet:
-                (old_state, old_letter, old_stack_top) = key
+                (old_state, _, old_stack_top) = key
                 new_state=value
                 assert old_state in states, f"invalid old state number: {old_state} in return transition" 
                 assert new_state in states, f"invalid new state number: {new_state} in return transition"
@@ -181,14 +181,20 @@ class DVPA:
             if state not in visited_states and state in reachable:
                 for letter in self.internal_alpahbet:
                     if self.transitions[(state, letter)] == actual_state:
-                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state]) 
+                        if subword is not None:
+                            return subword + letter
                 for letter in self.calls_alphabet:
                     if self.transitions[(state, letter)][0] == actual_state:
-                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state]) 
+                        if subword is not None:
+                            return subword + letter
                 for letter in self.return_alphabet:
                     for stack_letter in self.stack_alphabet:
                         if self.transitions[(state, letter, stack_letter)] == actual_state:
-                            return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                            subword = self.find_word_in_language(state, reachable, visited_states + [actual_state]) 
+                            if subword is not None:
+                                return subword + letter
 
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()

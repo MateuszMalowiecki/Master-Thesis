@@ -183,7 +183,9 @@ class NFA:
             if state not in visited_states and state in reachable:
                 for letter in self.alphabet:
                     if (letter, actual_state) in self.transitions[state]:
-                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state])
+                        if subword is not None:
+                            return subword + letter
 
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()
@@ -261,7 +263,7 @@ class NFA:
         moves=self.get_possible_moves(state, input)
         if len(moves) == 0:
             return [state] if len(input) == 0 else []
-        
+
         for move in moves:
             all_configs += self.generate_all_configs_from_given_configuration(move[0], move[1])  
         return all_configs

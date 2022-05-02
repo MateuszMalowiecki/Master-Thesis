@@ -22,7 +22,7 @@ class DWFA:
         for key, value in final_weight_function.items():
             assert key in states and isinstance(value, int) and value >= 0, f"Final weight function should contain pairs: state, weight"
         for (old_state, letter) in transitions:
-            weight, new_state=transitions[(old_state, letter)]
+            _, new_state=transitions[(old_state, letter)]
             assert old_state in states, f"invalid old state number: {old_state} in transition"
             assert new_state in states, f"invalid new state number: {new_state} in transition"
             assert letter in alphabet, f"invalid letter: {letter} in transition"
@@ -61,8 +61,8 @@ class DWFA:
 
     def is_equal_to(self, other, limit=100):
         for i in range(5000):
-            len=random.randint(0, limit)
-            word=''.join(random.choices(self.alphabet, k=len))
+            len = random.randint(0, limit)
+            word = ''.join(random.choices(self.alphabet, k=len))
             if self.weight_of_word(word) != other.weight_of_word(word):
                 return False, word
         return True, ""
@@ -95,7 +95,7 @@ class Weighted_Automata:
         return self.transitions[state] if state in self.transitions.keys() else []
 
     def is_equal_to(self, other, limit=500):
-        for i in range(5000):
+        for _ in range(5000):
             len=random.randint(0, limit)
             word=''.join(random.choices(self.alphabet, k=len))
             if self.weight_of_word(word) != other.weight_of_word(word):

@@ -614,7 +614,6 @@ class DFAGuessForm(Screen):
 
     def check_automata(self, num_of_tries):
         self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
-        #print("Screen: ", self.manager.screens[game_screens_ids[self.last_game_name]])
         self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
         self.guess_text = ("Write final states and transitions of automata here.\n"
                 "Note: Final states should be numbers separated by a comma on one line,\n and transitions should should have form: old_state, letter, new_state; each on a separate line."
@@ -1051,18 +1050,14 @@ class WFAGuessForm(Screen):
             final_function_strings = self.final_function_input.text.split("\n")
             trans_strings=self.transitions_input.text.split("\n")
             initial_function={}
-            #print("Debug1")
             for s in initial_function_strings:
-                print(s)
                 state, weight = s.split(", ")
                 initial_function[int(state)] = int(weight)
             final_function={}
-            #print("Debug2")
             for s in final_function_strings:
                 state, weight = s.split(", ")
                 final_function[int(state)] = int(weight)
             transitions={}
-            #print("Debug3")
             for s in trans_strings:
                 old_state, letter, weight, new_state = s.split(", ")
                 transitions[(int(old_state), letter)] = (int(weight), int(new_state))
