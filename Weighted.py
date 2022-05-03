@@ -67,7 +67,7 @@ class DWFA:
                 return False, word
         return True, ""
 
-class Weighted_Automata:
+class Weighted_Automaton:
     def __init__(self, alphabet, states, initial_weight_function, final_weight_function, transitions):
         for key, value in initial_weight_function.items():
             assert key in states and isinstance(value, int) and value >= 0
@@ -146,7 +146,7 @@ class Weighted_Automata:
             possible_moves.append((state_after_transition, input_after_transition))
         return possible_moves
 
-    #Generate all states in which automata can finish from given state and input
+    #Generate all states in which automaton can finish from given state and input
     def generate_all_configs_from_given_configuration(self, state, input):
 
         if input == "":

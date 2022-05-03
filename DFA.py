@@ -17,14 +17,14 @@ class DFA:
         self.final_states = final_states
         self.transitions = transitions
 
-    #Check if automata accepts given word
+    #Check if automaton accepts given word
     def check_if_word_in_language(self, word):
         actual=self.initial_state
         for w in word:
             actual=self.transitions[(actual, w)]
         return actual in self.final_states
 
-    #Give state in which automata will finish from given state and input
+    #Give state in which automaton will finish from given state and input
     def give_state_when_starting_from_given_configuration(self, state, word):
         actual = state
         for w in word:
@@ -36,7 +36,7 @@ class DFA:
             [state for state in self.states if state not in self.final_states], self.transitions)
     
     def take_intersection(self, other):
-        assert self.alphabet == other.alphabet, "Alphabets of intersected automatas should be the same."
+        assert self.alphabet == other.alphabet, "Alphabets of intersected automata should be the same."
         states=[]
         final_states=[]
         transitions={}
@@ -66,7 +66,9 @@ class DFA:
             if state not in visited_states and state in reachable:
                 for letter in self.alphabet:
                     if self.transitions[(state, letter)] == actual_state:
-                        return self.find_word_in_language(state, reachable, visited_states + [actual_state]) + letter
+                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state])
+                        if subword is not None:
+                            return subword + letter
 
     def have_empty_language(self):
         reachable=self.get_all_reachable_states()
@@ -76,7 +78,7 @@ class DFA:
                 return False, word
         return True, ""
 
-    #Checking if two automatas are equal
+    #Checking if two automata are equal
     def is_equal_to(self, other):
         is_empty, word = self.take_intersection(other.take_complement()).have_empty_language()
         if not is_empty:
@@ -144,7 +146,7 @@ class NFA:
         return dfa_from_nfa.take_complement().to_NFA()
 
     def take_intersection(self, other):
-        assert self.alphabet == other.alphabet, "Alphabets of intersected automatas should be the same."
+        assert self.alphabet == other.alphabet, "Alphabets of intersected automata should be the same."
         states = []
         initial_state=(self.initial_state, other.initial_state)
         finals=[]
@@ -195,7 +197,7 @@ class NFA:
                 return False, word
         return True, ""
     
-    #Checking if two automatas are equal
+    #Checking if two automata are equal
     def is_equal_to(self, other):
         is_empty, word = self.take_intersection(other.take_complement()).have_empty_language()
         if not is_empty:
@@ -241,13 +243,13 @@ class NFA:
             total_num_of_accepting_configs += self.generate_all_accepting_configs(move[0], move[1])
         return total_num_of_accepting_configs
     
-    #Check if automata accepts given word
+    #Check if automaton accepts given word
     def check_if_word_in_language(self, word):
         self.found_accepting_configs_in_subtrees=False
         total=self.generate_all_accepting_configs(self.initial_state, word)
         return total > 0
 
-    #Generate all states in which automata can finish from given state and input
+    #Generate all states in which automaton can finish from given state and input
     def generate_all_configs_from_given_configuration(self, state, input):
         all_configs=[]
 

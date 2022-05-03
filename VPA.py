@@ -118,9 +118,9 @@ class DVPA:
             self.initial_stack_symbol, self.transitions)
 
     def take_intersection(self, other):
-        assert self.calls_alphabet == other.calls_alphabet, "Calls alphabets of intersected automatas should be the same."
-        assert self.return_alphabet == other.return_alphabet, "Return alphabets of intersected automatas should be the same."
-        assert self.internal_alpahbet == other.internal_alpahbet, "Internal alphabets of intersected automatas should be the same."
+        assert self.calls_alphabet == other.calls_alphabet, "Calls alphabets of intersected automata should be the same."
+        assert self.return_alphabet == other.return_alphabet, "Return alphabets of intersected automata should be the same."
+        assert self.internal_alpahbet == other.internal_alpahbet, "Internal alphabets of intersected automata should be the same."
         stack_alphabet=[]
         for our_stack_letter in self.stack_alphabet:
             for other_stack_letter in other.stack_alphabet:
@@ -472,7 +472,7 @@ class VPA:
             total_num_of_accepting_configs += self.generate_all_accepting_configs(move[0], move[1], move[2])
         return total_num_of_accepting_configs
 
-    #Check if automata accepts given word
+    #Check if automaton accepts given word
     def check_if_word_in_language(self, word):
         self.found_accepting_configs_in_subtrees=False
         total=0
@@ -480,7 +480,7 @@ class VPA:
             total+=self.generate_all_accepting_configs(state, word, [self.initial_stack_symbol])
         return total > 0
 
-    #generate all states in which automata can finish from given state and input
+    #generate all states in which automaton can finish from given state and input
     def generate_all_configs_from_given_configuration(self, state, input, stack):
         all_configs=[]
 
