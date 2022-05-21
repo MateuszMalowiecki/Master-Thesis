@@ -343,12 +343,17 @@ WindowManager:
     number_of_tries: 0
     GridLayout:
         cols:1
+        BoxLayout:
+
         Label:
             text: root.automaton_text
+
         Label:
             text: root.guess_text
+
         Label:
             text: root.answer_text
+
         GridLayout:
             cols:2
             Label:
@@ -363,8 +368,11 @@ WindowManager:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
-                text: "Check"
-                on_release: root.check_automaton()
+                text: "Draw automata"
+                on_release: root.draw_graph()
+        Button:
+            text: "Check"
+            on_release: root.check_automaton()
 
 <DFAGuessFormv1>:
     name: "dfa_guess_form_v1"
@@ -428,14 +436,20 @@ WindowManager:
     finals_input: finals_input
     transitions_input: transitions_input
     number_of_tries: 0
+
     GridLayout:
         cols:1
+        BoxLayout:
+
         Label:
             text: root.automaton_text
+
         Label:
             text: root.guess_text
+
         Label:
             text: root.answer_text
+
         GridLayout:
             cols:2
             Label:
@@ -450,8 +464,11 @@ WindowManager:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
-                text: "Check"
-                on_release: root.check_automaton()
+                text: "Draw automata"
+                on_release: root.draw_graph()
+        Button:
+            text: "Check"
+            on_release: root.check_automaton()
 
 
 <VPAGuessFormv1>:
@@ -504,12 +521,17 @@ WindowManager:
     number_of_tries: 0
     GridLayout:
         cols:1
+        BoxLayout:
+
         Label:
             text: root.automaton_text
+
         Label:
             text: root.guess_text
+
         Label:
             text: root.answer_text
+
         GridLayout:
             cols:2
             Label:
@@ -528,8 +550,11 @@ WindowManager:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
-                text: "Check"
-                on_release: root.check_automaton()
+                text: "Draw automata"
+                on_release: root.draw_graph()
+        Button:
+            text: "Check"
+            on_release: root.check_automaton()
 
 <WFAGuessFormv1>:
     name: "wfa_guess_form_v1"

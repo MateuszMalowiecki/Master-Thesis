@@ -4,10 +4,25 @@ from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.uix.textinput import TextInput
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty
+from requests import ReadTimeout
 from DFA import DFA, NFA
 from VPA import DVPA
 from Weighted import DWFA
+from kivy.uix.gridlayout import GridLayout
 import copy
+# importing pyplot for graph plotting
+from matplotlib import pyplot as plt
+  
+# importing numpy
+import numpy as np
+from kivy.garden.matplotlib import FigureCanvasKivyAgg
+
+import networkx as nx
+# importing kivyapp
+from kivy.app import App
+  
+# importing kivy builder
+from kivy.lang import Builder
 
 game_screens_ids={"game_dfa1": 4, "game_dfa1_lvl2": 5, "game_dfa2": 6, "game_dfa2_lvl2": 7, 
         "game_vpa1": 8, "game_vpa1_lvl2": 9, "game_vpa2": 10, "game_vpa2_lvl2": 11, 
@@ -22,7 +37,8 @@ guess_form_screens_ids={"dfa_guess_form_v1": 33, "dfa_guess_form_v1_lvl2": 34, "
         "vpa_guess_form_v3": 42, "vpa_guess_form_v3_lvl2": 43, "vpa_guess_form_v4": 44, "vpa_guess_form_v4": 45,
         "wfa_guess_form_v1": 47, "wfa_guess_form_v1_lvl2": 48, "wfa_guess_form_v2": 49, "wfa_guess_form_v2_lvl2": 50}
 #TODO:
-#1. Refactoring (for example define macros, get rid of unneccessary code etc.)
+#1. Think about labels for WFAs
+#2. Refactoring (for example define macros, get rid of unneccessary code etc.)
 
 class MainWindow(Screen):
     pass
@@ -606,9 +622,10 @@ class DFAGuessForm(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.guess_text = ("Write final states and transitions of automaton here.\n"
-                "Note: Final states should be numbers separated by a comma on one line,\n and transitions should should have form: old_state, letter, new_state; each on a separate line."
+                "Note: Final states should be numbers separated by a comma on one line,\n and transitions should have form: old_state, letter, new_state; each on a separate line."
                 )
         self.answer_text = ""
+        self.G = nx.DiGraph()
 
     def clear_window(self):
         self.finals_input.text = ""
@@ -625,39 +642,95 @@ class DFAGuessForm(Screen):
         self.answer_text = ""
         self.parent.current = self.last_game_name
 
-    def check_automaton_correctness(self):
+    def remove_graph_from_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        if len(box_layout.children) > 0:
+            for elem in box_layout.children:
+                box_layout.remove_widget(elem)
+
+    def add_graph_to_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+
+    def read_inputs(self):
+        finals = [int(state) for state in self.finals_input.text.split(", ")]
+        trans_strings=self.transitions_input.text.split("\n")
+        transitions={}
+        for s in trans_strings:
+            old_state, letter, new_state = s.split(", ")
+            transitions[(int(old_state), letter)] = int(new_state)
+        return finals, transitions
+    
+    def get_edges_and_final_states_from_input(self):
         try:
             finals = [int(state) for state in self.finals_input.text.split(", ")]
             trans_strings=self.transitions_input.text.split("\n")
-            transitions={}
+            edges_with_labels={}
             for s in trans_strings:
                 old_state, letter, new_state = s.split(", ")
-                transitions[(int(old_state), letter)] = int(new_state)
+                if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                    edges_with_labels[(int(old_state), int(new_state))] = []
+                edges_with_labels[(int(old_state), int(new_state))].append(letter)
+            return edges_with_labels, finals, False
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n Note: Transitions should have form: old_state, letter, new_state; each on a separate line."
+            return {}, [], True
+
+    def draw_graph(self):
+        self.answer_text = ""
+        self.remove_graph_from_box_layout()
+        edges_with_labels, finals, is_exception = self.get_edges_and_final_states_from_input()
+        if is_exception:
+            return
+
+        for edge in edges_with_labels:
+            letters = edges_with_labels[edge]
+            edges_with_labels[edge] = ', '.join(letters)
+
+        plt.clf()
+        self.G.remove_edges_from(list(self.G.edges))
+        for u, v in edges_with_labels.keys():
+            self.G.add_edge(u, v)
+        pos = nx.spring_layout(self.G)
+        colours_map={}
+        for final in finals:
+            colours_map[final]='blue'
+        values = [colours_map.get(node, 'pink') for node in self.G.nodes()]
+        nx.draw(
+            self.G, pos, edge_color='black', width=1, linewidths=1,
+            node_size=500, node_color=values, alpha=0.9,
+            labels={node: node for node in self.G.nodes()}
+        )
+        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
+        self.add_graph_to_box_layout()
+
+    def check_automaton_correctness(self):
+        try:
+            finals, transitions = self.read_inputs()
             guessed_automaton=DFA(self.dfa.alphabet, self.dfa.states, 0, finals, transitions)
-            self.clear_window()
             is_equal, word = self.dfa.is_equal_to(guessed_automaton)
             if is_equal:
+                self.clear_window()
                 return True
             word = word if len(word) > 0 else "eps"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:
-            self.clear_window()
             self.answer_text = f"Error: {str(e)}"
             return False
         except KeyError as e:
-            self.clear_window()
             self.answer_text = f"Error: Not given transition for: {e}"
             return False
         except ValueError as e:
-            self.clear_window()
-            self.answer_text = "ParseError!!!\n Note: Final states should be numbers separated by a comma on one line,\n and transitions should should have form: old_state, letter, new_state; each on a separate line."
+            self.answer_text = "ParseError!!!\n Note: Final states should be numbers separated by a comma on one line,\n and transitions should have form: old_state, letter, new_state; each on a separate line."
             return False
 
 class DFAGuessFormv1(DFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.dfa.alphabet}\n States of automaton: {self.dfa.states},\n Initial state of automaton: {self.dfa.initial_state}"
+        for state in self.dfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -674,6 +747,8 @@ class DFAGuessFormv1Level2(DFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.dfa.alphabet}\n States of automaton: {self.dfa.states},\n Initial state of automaton: {self.dfa.initial_state}"
+        for state in self.dfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -690,6 +765,8 @@ class DFAGuessFormv2(DFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.dfa.alphabet}\n States of automaton: {self.dfa.states},\n Initial state of automaton: {self.dfa.initial_state}"
+        for state in self.dfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -706,6 +783,8 @@ class DFAGuessFormv2Level2(DFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.dfa.alphabet}\n States of automaton: {self.dfa.states},\n Initial state of automaton: {self.dfa.initial_state}"
+        for state in self.dfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -790,9 +869,10 @@ class VPAGuessForm(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.guess_text = ("Write final states and transitions of automaton here.\n"
-                "Note: Final states should be numbers separated by a comma on one line,\n and transitions should should have form: old_state, letter, new_state, stack_symbol; each on a separate line."
+                "Note: Final states should be numbers separated by a comma on one line,\n and transitions should have form: old_state, letter, new_state, stack_symbol; each on a separate line."
                 )
         self.answer_text = ""
+        self.G = nx.DiGraph()
 
     def clear_window(self):
         self.finals_input.text = ""
@@ -808,39 +888,92 @@ class VPAGuessForm(Screen):
         self.clear_window()
         self.answer_text = ""
         self.parent.current = self.last_game_name
+    
+    def remove_graph_from_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        if len(box_layout.children) > 0:
+            for elem in box_layout.children:
+                box_layout.remove_widget(elem)
+    
+    def add_graph_to_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+    
+    def read_inputs(self):
+        finals = [int(state) for state in self.finals_input.text.split(", ")]
+        trans_strings=self.transitions_input.text.split("\n")
+        transitions={}
+        for s in trans_strings:
+            old_state, letter, new_state, stack_symbol = s.split(", ")
+            if letter in self.dvpa.calls_alphabet:
+                transitions[(int(old_state), letter)] = (int(new_state), stack_symbol)
+            elif letter in self.dvpa.return_alphabet:
+                transitions[(int(old_state), letter, stack_symbol)] = int(new_state)
+            else:
+                transitions[(int(old_state), letter)] = int(new_state)
+        return finals, transitions
 
-    def check_automaton_correctness(self):
+    def get_edges_and_final_states_from_input(self):
         try:
             finals = [int(state) for state in self.finals_input.text.split(", ")]
             trans_strings=self.transitions_input.text.split("\n")
-            transitions={}
+            edges_with_labels={}
             for s in trans_strings:
                 old_state, letter, new_state, stack_symbol = s.split(", ")
-                if letter in self.dvpa.calls_alphabet:
-                    transitions[(int(old_state), letter)] = (int(new_state), stack_symbol)
-                elif letter in self.dvpa.return_alphabet:
-                    transitions[(int(old_state), letter, stack_symbol)] = int(new_state)
-                else:
-                    transitions[(int(old_state), letter)] = int(new_state)
+                if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                    edges_with_labels[(int(old_state), int(new_state))] = []
+                edges_with_labels[(int(old_state), int(new_state))].append((letter, stack_symbol))
+            return edges_with_labels, finals, False
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n Note: Transitions should have form: old_state, letter, new_state; each on a separate line."
+            return {}, [], True
+
+    def draw_graph(self):
+        self.answer_text = ""
+        self.remove_graph_from_box_layout()
+        edges_with_labels, finals, is_exception = self.get_edges_and_final_states_from_input()
+        if is_exception:
+            return
+        for edge in edges_with_labels:
+            letters = edges_with_labels[edge]
+            edges_with_labels[edge] = ', '.join([str(letter) for letter in letters])
+
+        plt.clf()
+        self.G.remove_edges_from(list(self.G.edges))
+        for u, v in edges_with_labels.keys():
+            self.G.add_edge(u, v)
+        pos = nx.spring_layout(self.G)
+        colours_map={}
+        for final in finals:
+            colours_map[final]='blue'
+        values = [colours_map.get(node, 'pink') for node in self.G.nodes()]
+        nx.draw(
+            self.G, pos, edge_color='black', width=1, linewidths=1,
+            node_size=500, node_color=values, alpha=0.9,
+            labels={node: node for node in self.G.nodes()}
+        )
+        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
+        self.add_graph_to_box_layout()
+
+    def check_automaton_correctness(self):
+        try:
+            finals, transitions = self.read_inputs()
             guessed_automaton=DVPA(self.dvpa.calls_alphabet, self.dvpa.return_alphabet, self.dvpa.internal_alpahbet, self.dvpa.states, self.dvpa.stack_alphabet, 0, finals, self.dvpa.initial_stack_symbol, transitions)
-            self.clear_window()
             is_equal, word = self.dvpa.is_equal_to(guessed_automaton)
             if is_equal:
+                self.clear_window()
                 return True
             word = word if len(word) > 0 else "eps"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:
-            self.clear_window()
             self.answer_text = f"Error: {str(e)}"
             return False
         except KeyError as e:
-            self.clear_window()
             self.answer_text = f"Error: Not given transition for: {e}"
             return False
         except ValueError as e:
-            self.clear_window()
-            self.answer_text = "ParseError!!!\n Note: Final states should be numbers separated by a comma on one line,\n and transitions should should have form: old_state, letter, new_state, stack_symbol; each on a separate line."
+            self.answer_text = "ParseError!!!\n Note: Final states should be numbers separated by a comma on one line,\n and transitions should have form: old_state, letter, new_state, stack_symbol; each on a separate line."
             return False
 
 
@@ -851,6 +984,9 @@ class VPAGuessFormv1(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
+
     def check_automaton(self):
         if self.check_automaton_correctness():
             num_of_tries=copy.deepcopy(self.number_of_tries)
@@ -870,6 +1006,8 @@ class VPAGuessFormv1Level2(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -892,6 +1030,8 @@ class VPAGuessFormv2(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -912,6 +1052,8 @@ class VPAGuessFormv2Level2(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -934,6 +1076,8 @@ class VPAGuessFormv3(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -954,6 +1098,8 @@ class VPAGuessFormv3Level2(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -976,6 +1122,8 @@ class VPAGuessFormv4(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -996,6 +1144,8 @@ class VPAGuessFormv4Level2(VPAGuessForm):
             f" States of automaton: {self.dvpa.states}\n Initial state of automaton: {self.dvpa.initial_state}\n Stack alphabet: {self.dvpa.stack_alphabet}\n"
             f" Initial stack symbol: {self.dvpa.initial_stack_symbol}"
             )
+        for state in self.dvpa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -1026,6 +1176,7 @@ class WFAGuessForm(Screen):
                 "Note: Weight functions should be in form: state, weight; each pair on a separate line\n and transitions should have form: old_state, letter, weight, new_state; each on a separate line."
                 )
         self.answer_text = ""
+        self.G = nx.DiGraph()
 
     def clear_window(self):
         self.initial_function_input.text = ""
@@ -1042,42 +1193,90 @@ class WFAGuessForm(Screen):
         self.clear_window()
         self.answer_text = ""
         self.parent.current = self.last_game_name
+    
+    def remove_graph_from_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        if len(box_layout.children) > 0:
+            for elem in box_layout.children:
+                box_layout.remove_widget(elem)
+
+    def add_graph_to_box_layout(self):
+        box_layout=self.children[0].children[-1]
+        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+    
+    def read_inputs(self):
+        initial_function_strings = self.initial_function_input.text.split("\n")
+        final_function_strings = self.final_function_input.text.split("\n")
+        trans_strings=self.transitions_input.text.split("\n")
+        initial_function={}
+        for s in initial_function_strings:
+            state, weight = s.split(", ")
+            initial_function[int(state)] = int(weight)
+        final_function={}
+        for s in final_function_strings:
+            state, weight = s.split(", ")
+            final_function[int(state)] = int(weight)
+        transitions={}
+        for s in trans_strings:
+            old_state, letter, weight, new_state = s.split(", ")
+            transitions[(int(old_state), letter)] = (int(weight), int(new_state))
+        return initial_function, final_function, transitions
+
+    def get_edges_from_input(self):
+        try:
+            trans_strings=self.transitions_input.text.split("\n")
+            edges_with_labels={}
+            for s in trans_strings:
+                old_state, letter, weight, new_state = s.split(", ")
+                if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                    edges_with_labels[(int(old_state), int(new_state))] = []
+                edges_with_labels[(int(old_state), int(new_state))].append((letter, weight))
+            return edges_with_labels, False
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n Note: Transitions should have form: old_state, letter, new_state; each on a separate line."
+            return {}, True
+
+    def draw_graph(self):
+        self.answer_text = ""
+        self.remove_graph_from_box_layout()
+        edges_with_labels, is_exception = self.get_edges_from_input()
+        if is_exception:
+            return
+        for edge in edges_with_labels:
+            letters = edges_with_labels[edge]
+            edges_with_labels[edge] = ', '.join([str(letter) for letter in letters])
+
+        plt.clf()
+        self.G.remove_edges_from(list(self.G.edges))
+        for u, v in edges_with_labels.keys():
+            self.G.add_edge(u, v)
+        pos = nx.spring_layout(self.G)
+        nx.draw(
+            self.G, pos, edge_color='black', width=1, linewidths=1,
+            node_size=500, node_color='pink', alpha=0.9,
+            labels={node: node for node in self.G.nodes()}
+        )
+        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
+        self.add_graph_to_box_layout()
 
     def check_automaton_correctness(self):
         try:
-            initial_function_strings = self.initial_function_input.text.split("\n")
-            final_function_strings = self.final_function_input.text.split("\n")
-            trans_strings=self.transitions_input.text.split("\n")
-            initial_function={}
-            for s in initial_function_strings:
-                state, weight = s.split(", ")
-                initial_function[int(state)] = int(weight)
-            final_function={}
-            for s in final_function_strings:
-                state, weight = s.split(", ")
-                final_function[int(state)] = int(weight)
-            transitions={}
-            for s in trans_strings:
-                old_state, letter, weight, new_state = s.split(", ")
-                transitions[(int(old_state), letter)] = (int(weight), int(new_state))
+            initial_function, final_function, transitions = self.read_inputs()
             guessed_automaton=DWFA(self.wfa.alphabet, self.wfa.states, initial_function, final_function, transitions)
-            self.clear_window()
             is_equal, word = self.wfa.is_equal_to(guessed_automaton)
             if is_equal:
+                self.clear_window()
                 return True
             word = word if len(word) > 0 else "eps"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:
-            self.clear_window()
             self.answer_text = f"Error: {str(e)}"
             return False
         except KeyError as e:
-            self.clear_window()
             self.answer_text = f"Error: Not given transition for: {e}"
             return False
         except ValueError as e:
-            self.clear_window()
             self.answer_text = f"ParseError!!!\n Note: Weight functions should be in form: state, weight; each pair on a separate line\n and transitions should have form: old_state, letter, weight, new_state; each on a separate line."
             return False
 
@@ -1085,6 +1284,8 @@ class WFAGuessFormv1(WFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.wfa.alphabet}\n States of automaton: {self.wfa.states}"
+        for state in self.wfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -1102,6 +1303,8 @@ class WFAGuessFormv1Level2(WFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.wfa.alphabet}\n States of automaton: {self.wfa.states}"
+        for state in self.wfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -1119,6 +1322,8 @@ class WFAGuessFormv2(WFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.wfa.alphabet}\n States of automaton: {self.wfa.states}"
+        for state in self.wfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
@@ -1136,6 +1341,8 @@ class WFAGuessFormv2Level2(WFAGuessForm):
     def __init__(self, **kw):
         super().__init__(**kw)
         self.automaton_text = f"Tip:\n Alphabet of automaton: {self.wfa.alphabet}\n States of automaton: {self.wfa.states}"
+        for state in self.wfa.states:
+            self.G.add_node(state)
 
     def check_automaton(self):
         if self.check_automaton_correctness():
