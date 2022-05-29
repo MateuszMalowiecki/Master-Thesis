@@ -1,7 +1,5 @@
-import pytest
 from VPA import DVPA
 
-#TODO: check find_word_in_language if it returns always string.
 def test_check_if_word_in_language():
     dvpa1=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
         {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 

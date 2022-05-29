@@ -1,5 +1,4 @@
 from itertools import chain, combinations
-from turtle import st
 
 class DFA:
     def __init__(self, alphabet, states, initial_state, final_states, transitions):

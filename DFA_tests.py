@@ -1,5 +1,4 @@
-import pytest
-from DFA import DFA, NFA
+from DFA import DFA
 
 def test_check_if_word_in_language():
     dfa1=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 

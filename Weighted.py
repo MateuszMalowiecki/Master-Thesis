@@ -1,7 +1,5 @@
 from lib2to3.pytree import LeafPattern
 import random
-import numpy
-import time
 
 def sum_modulo_n(list, n):
     res=0

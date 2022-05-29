@@ -1,4 +1,3 @@
-import pytest
 from Weighted import DWFA
 
 def test_weight_of_word_from_given_state():

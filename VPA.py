@@ -1,9 +1,6 @@
 #With help of: https://github.com/theodoregold/pushdown-automata/blob/3ce36cdfdd1f4e260121fb43dea988b96288fed0/main.py#L36
-from inspect import stack
-from typing_extensions import final
 from itertools import chain, combinations
 
-from urllib3 import Retry
 
 class DVPA:
     def __init__(self, calls_alphabet, return_alphabet, internal_alpahbet, states, stack_alphabet, initial_state, final_states, initial_stack_symbol, transitions):

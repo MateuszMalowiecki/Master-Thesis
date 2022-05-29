@@ -1,24 +1,16 @@
-from tokenize import String
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.uix.textinput import TextInput
 from kivy.properties import StringProperty, ObjectProperty, NumericProperty
-from requests import ReadTimeout
-from DFA import DFA, NFA
+from DFA import DFA
 from VPA import DVPA
 from Weighted import DWFA
-from kivy.uix.gridlayout import GridLayout
 import copy
-# importing pyplot for graph plotting
 from matplotlib import pyplot as plt
-  
-# importing numpy
-import numpy as np
+
 from kivy.garden.matplotlib import FigureCanvasKivyAgg
 
 import networkx as nx
-# importing kivyapp
 from kivy.app import App
   
 # importing kivy builder
@@ -36,9 +28,6 @@ guess_form_screens_ids={"dfa_guess_form_v1": 33, "dfa_guess_form_v1_lvl2": 34, "
         "vpa_guess_form_v1": 38, "vpa_guess_form_v1_lvl2": 39, "vpa_guess_form_v2": 40, "vpa_guess_form_v2_lvl2": 41, 
         "vpa_guess_form_v3": 42, "vpa_guess_form_v3_lvl2": 43, "vpa_guess_form_v4": 44, "vpa_guess_form_v4": 45,
         "wfa_guess_form_v1": 47, "wfa_guess_form_v1_lvl2": 48, "wfa_guess_form_v2": 49, "wfa_guess_form_v2_lvl2": 50}
-#TODO:
-#1. Think about labels for WFAs
-#2. Refactoring (for example define macros, get rid of unneccessary code etc.)
 
 class MainWindow(Screen):
     pass
@@ -179,59 +168,6 @@ class GameDFAv2WindowLevel2(GameWindow):
             self.answer_text = f"Error: States in automaton are numbers, but you put {invalid_state} as state."
         except AssertionError as e:
             self.answer_text = str(e) 
-
-'''
-class GameNFAv1Window(GameWindow):
-    nfa = NFA(["a", "b"], [0, 1], 0, [1], 
-        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.automaton_text = "Please write a word in the input."
-        self.button_text = "Check if this word is in language."
-        self.tip_text= f"Tip: Alphabet is {self.nfa.alphabet} and automaton has {len(self.nfa.states)} states"
-
-    def check_word(self):
-        try:
-            word = self.input.text
-            for letter in word:
-                assert letter >= 'a' and letter <= 'z', "Error: Only letters are allowed."
-                assert letter in self.nfa.alphabet,  f"Error: Letter {letter} is not in the alpahbet."
-            if self.nfa.check_if_word_in_language(word):
-                self.answer_text = f"word {word} is in language"
-            else:
-                self.answer_text = f"word {word} is not in language"
-            self.input.text=""
-        except AssertionError as e:
-            self.answer_text = str(e)
-
-class GameNFAv2Window(GameWindow):
-    nfa = NFA(["a", "b"], [0, 1], 0, [1], 
-        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
-    
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.automaton_text = "Please write a word and a state in the input."
-        self.button_text = "Check in which states we will finish."
-        self.tip_text= f"Tip: Alphabet is {self.nfa.alphabet} and automaton has {len(self.nfa.states)} states"
-
-    def check_word(self):
-        try:
-            input_content = self.input.text.split()
-            assert len(input_content) == 2, "Error: You should give exactly 2 values separated by space."
-            word, state = input_content[0], int(input_content[1])
-            for letter in word:
-                assert letter in self.nfa.alphabet, f"Error: letter {letter} is not in the alphabet."
-            assert state in self.nfa.states, f"Error: state should be a number between 0 and {len(self.nfa.states) - 1}."
-            end_states=self.nfa.give_states_when_starting_from_given_configuration(state, word)
-            self.answer_text = f"We finished in states: {end_states}"
-            self.input.text=""
-        except ValueError as e:
-            invalid_state = str(e).split()[-1]
-            self.answer_text = f"Error: States in automaton are numbers, but you put {invalid_state} as state."
-        except AssertionError as e:
-            self.answer_text = str(e) 
-'''
 
 class GameVPAv1Window(GameWindow):
     dvpa=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
@@ -796,67 +732,6 @@ class DFAGuessFormv2Level2(DFAGuessForm):
 
     dfa=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 2, (1, "a") : 0, (1, "b") : 3, 
         (2, "a") : 3, (2, "b") : 0, (3, "a") : 2, (3, "b") : 1})
-
-
-'''
-class NFAGuessForm(Screen):
-    nfa = NFA(["a", "b"], [0, 1], 0, [1], 
-        [(0, "a", 0), (0, "b", 0), (0, "b", 1)])
-    finals_input = ObjectProperty(None)
-    transitions_input = ObjectProperty(None)
-    answer_text = StringProperty("")
-    guess_text=StringProperty("")
-
-    def __init__(self, **kw):
-        super().__init__(**kw)
-        self.guess_text = "Write final states and transitions of automaton here"
-        self.answer_text = ""
-
-    def clear_window(self):
-        self.finals_input.text = ""
-        self.transitions_input.text = ""
-
-    def check_automaton(self):
-        if self.check_automaton_correctness():
-            self.answer_text = ""
-            self.parent.current = "win_page"
-
-    def go_to_tips_form(self):
-        self.clear_window()
-        self.answer_text = "answer_text"
-        self.parent.current = self.last_game_name
-
-    def check_automaton_correctness(self):
-        try:
-            finals = [int(state) for state in self.finals_input.text.split(", ")]
-            trans_strings=self.transitions_input.text.split("\n")
-            transitions=[]
-            for s in trans_strings:
-                old_state, letter, new_state = s.split(", ")
-                transitions.append((int(old_state), letter, int(new_state)))
-            guessed_automaton=NFA(self.nfa.alphabet, self.nfa.states, 0, finals, transitions)
-            self.clear_window()
-            is_equal, word = self.nfa.is_equal_to(guessed_automaton)
-            if is_equal:
-                return True
-            word = word if len(word) > 0 else "eps"
-            self.answer_text = f"Your automaton does not match on word:\n {word}"
-            return False
-        except AssertionError as e:
-            self.clear_window()
-            self.answer_text = f"Error: {str(e)}"
-            return False
-        except ValueError as e:
-            self.clear_window()
-            self.answer_text = f"ParseError: final states should be numbers between 0 and {len(self.nfa.states) - 1} separated by coma, and transitions should have form: old_state, letter, new_state"
-            return False
-
-class NFAGuessFormv1(NFAGuessForm):
-    pass
-
-class NFAGuessFormv2(NFAGuessForm):
-    pass
-'''
 
 class VPAGuessForm(Screen):
     dvpa=None
