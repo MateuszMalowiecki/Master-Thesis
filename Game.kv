@@ -2,54 +2,101 @@ WindowManager:
     SecondWindow:
     DFAChooseVersionWindow:
     VPAChooseVersionWindow:
-    WFAChooseVersionWindow
-    GameDFAv1Window:
-    GameDFAv1WindowLevel2
-    GameDFAv2Window:
-    GameDFAv2WindowLevel2
-    GameVPAv1Window:
+    WFAChooseVersionWindow:
+    GameDFAv1WindowLevel1:
+    GameDFAv1WindowLevel2:
+    GameDFAv1WindowLevel3:
+    GameDFAv1WindowLevel4:
+    GameDFAv1WindowLevel5:
+    GameDFAv2WindowLevel1:
+    GameDFAv2WindowLevel2:
+    GameDFAv2WindowLevel3:
+    GameDFAv2WindowLevel4:
+    GameDFAv2WindowLevel5:
+    GameVPAv1WindowLevel1:
     GameVPAv1WindowLevel2:
-    GameVPAv2Window:
+    GameVPAv1WindowLevel3:
+    GameVPAv1WindowLevel4:
+    GameVPAv1WindowLevel5:
+    GameVPAv2WindowLevel1:
     GameVPAv2WindowLevel2:
-    GameVPAv3Window:
-    GameVPAv3WindowLevel2:
-    GameVPAv4Window:
-    GameVPAv4WindowLevel2:
-    GameWFAv1Window:
+    GameVPAv2WindowLevel3:
+    GameVPAv2WindowLevel4:
+    GameVPAv2WindowLevel5:
+    GameWFAv1WindowLevel1:
     GameWFAv1WindowLevel2:
-    GameWFAv2Window:
+    GameWFAv1WindowLevel3:
+    GameWFAv1WindowLevel4:
+    GameWFAv1WindowLevel5:
+    GameWFAv2WindowLevel1:
     GameWFAv2WindowLevel2:
+    GameWFAv2WindowLevel3:
+    GameWFAv2WindowLevel4:
+    GameWFAv2WindowLevel5:
     WinLevelPage:
     WinLevel1Page:
-    WinLevel1v1DFAPage:
-    WinLevel1v2DFAPage:
-    WinLevel1v1VPAPage:
-    WinLevel1v2VPAPage:
-    WinLevel1v3VPAPage:
-    WinLevel1v4VPAPage:
-    WinLevel1v1WFAPage:
-    WinLevel1v2WFAPage:
     WinLevel2Page:
+    WinLevel3Page:
+    WinLevel4Page:
+    WinLevel5Page:
+    WinLevel1v1DFAPage:
+    WinLevel2v1DFAPage:
+    WinLevel3v1DFAPage:
+    WinLevel4v1DFAPage:
+    WinLevel1v2DFAPage:
+    WinLevel2v2DFAPage:
+    WinLevel3v2DFAPage:
+    WinLevel4v2DFAPage:
+    WinLevel1v1VPAPage:
+    WinLevel2v1VPAPage:
+    WinLevel3v1VPAPage:
+    WinLevel4v1VPAPage:
+    WinLevel1v2VPAPage:
+    WinLevel2v2VPAPage:
+    WinLevel3v2VPAPage:
+    WinLevel4v2VPAPage:
+    WinLevel1v1WFAPage:
+    WinLevel2v1WFAPage:
+    WinLevel3v1WFAPage:
+    WinLevel4v1WFAPage:
+    WinLevel1v2WFAPage:
+    WinLevel2v2WFAPage:
+    WinLevel3v2WFAPage:
+    WinLevel4v2WFAPage:
     MainWindow:
     DFAGuessForm:
     DFAGuessFormv1:
     DFAGuessFormv1Level2:
+    DFAGuessFormv1Level3:
+    DFAGuessFormv1Level4:
+    DFAGuessFormv1Level5:
     DFAGuessFormv2:
     DFAGuessFormv2Level2:
+    DFAGuessFormv2Level3:
+    DFAGuessFormv2Level4:
+    DFAGuessFormv2Level5:
     VPAGuessForm:
     VPAGuessFormv1:
     VPAGuessFormv1Level2:
+    VPAGuessFormv1Level3:
+    VPAGuessFormv1Level4:
+    VPAGuessFormv1Level5:
     VPAGuessFormv2:
     VPAGuessFormv2Level2:
-    VPAGuessFormv3:
-    VPAGuessFormv3Level2:
-    VPAGuessFormv4:
-    VPAGuessFormv4Level2:
+    VPAGuessFormv2Level3:
+    VPAGuessFormv2Level4:
+    VPAGuessFormv2Level5:
     WFAGuessForm:
     WFAGuessFormv1:
     WFAGuessFormv1Level2:
+    WFAGuessFormv1Level3:
+    WFAGuessFormv1Level4:
+    WFAGuessFormv1Level5:
     WFAGuessFormv2:
     WFAGuessFormv2Level2:
+    WFAGuessFormv2Level3:
+    WFAGuessFormv2Level4:
+    WFAGuessFormv2Level5:
 
 <MainWindow>:
     name: "main"
@@ -90,7 +137,6 @@ WindowManager:
             on_release:
                 app.root.current = "dfa_choose"
                 root.manager.transition.direction = "right"
-
         Button:
             size_hint: .2, .2
             text: "Guess VPA"
@@ -104,7 +150,8 @@ WindowManager:
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
-        
+
+
 
 <DFAChooseVersionWindow>:
     name: "dfa_choose"
@@ -118,16 +165,13 @@ WindowManager:
                 size_hint: .2, .2
                 text: "Start a DFA game v1"
                 on_release:
-                    app.root.current = "game_dfa1"
-                    root.manager.transition.direction = "right"
+                    root.go_to_new_game("game_dfa1_lvl1")
 
             Button:
                 size_hint: .2, .2
                 text: "Start a DFA game v2"
                 on_release:
-                    app.root.current = "game_dfa2"
-                    root.manager.transition.direction = "right"
-
+                    root.go_to_new_game("game_dfa2_lvl1")
         Button:
             text: "Return to main menu"
             size_hint: .4, .2
@@ -148,29 +192,13 @@ WindowManager:
                 size_hint: .2, .2
                 text: "Start a VPA game v1"
                 on_release:
-                    app.root.current = "game_vpa1"
-                    root.manager.transition.direction = "right"
+                    root.go_to_new_game("game_vpa1_lvl1")
 
             Button:
                 size_hint: .2, .2
                 text: "Start a VPA game v2"
                 on_release:
-                    app.root.current = "game_vpa2"
-                    root.manager.transition.direction = "right"
-
-            Button:
-                size_hint: .2, .2
-                text: "Start a VPA game v3"
-                on_release:
-                    app.root.current = "game_vpa3"
-                    root.manager.transition.direction = "right"
-
-            Button:
-                size_hint: .2, .2
-                text: "Start a VPA game v4"
-                on_release:
-                    app.root.current = "game_vpa4"
-                    root.manager.transition.direction = "right"
+                    root.go_to_new_game("game_vpa2_lvl1")
 
         Button:
             text: "Return to main menu"
@@ -192,15 +220,13 @@ WindowManager:
                 size_hint: .2, .2
                 text: "Start a WFA game v1"
                 on_release:
-                    app.root.current = "game_wfa1"
-                    root.manager.transition.direction = "right"
+                    root.go_to_new_game("game_wfa1_lvl1")
 
             Button:
                 size_hint: .2, .2
                 text: "Start a WFA game v2"
                 on_release:
-                    app.root.current = "game_wfa2"
-                    root.manager.transition.direction = "right"
+                    root.go_to_new_game("game_wfa2_lvl1")
 
         Button:
             text: "Return to main menu"
@@ -218,11 +244,11 @@ WindowManager:
         Label:
             text: root.automaton_text
             size_hint: .5, .2
-            pos_hint: {'x': .03, 'y': .35}
+            pos_hint: {'x': .1, 'y': .55}
         Label:
             text: root.answer_text
             size_hint: .5, .2
-            pos_hint: {'x': .03, 'y': .20}
+            pos_hint: {'x': .1, 'y': .30}
         TextInput:
             id: my_input
             size_hint: .5, .2
@@ -243,69 +269,125 @@ WindowManager:
             pos_hint: {'x': 0, 'y': .8}
             on_release: root.go_to_guess_form() 
 
-<GameDFAv1Window>:
-    name: "game_dfa1"
+<GameDFAv1WindowLevel1>:
+    name: "game_dfa1_lvl1"
     guess_form_name: "dfa_guess_form_v1"
 
 <GameDFAv1WindowLevel2>:
     name: "game_dfa1_lvl2"
     guess_form_name: "dfa_guess_form_v1_lvl2"
 
-<GameDFAv2Window>:
-    name: "game_dfa2"
+<GameDFAv1WindowLevel3>:
+    name: "game_dfa1_lvl3"
+    guess_form_name: "dfa_guess_form_v1_lvl3"
+
+<GameDFAv1WindowLevel4>:
+    name: "game_dfa1_lvl4"
+    guess_form_name: "dfa_guess_form_v1_lvl4"
+
+<GameDFAv1WindowLevel5>:
+    name: "game_dfa1_lvl5"
+    guess_form_name: "dfa_guess_form_v1_lvl5"
+
+<GameDFAv2WindowLevel1>:
+    name: "game_dfa2_lvl1"
     guess_form_name: "dfa_guess_form_v2"
 
 <GameDFAv2WindowLevel2>:
     name: "game_dfa2_lvl2"
     guess_form_name: "dfa_guess_form_v2_lvl2"
 
-<GameVPAv1Window>:
-    name: "game_vpa1"
+<GameDFAv2WindowLevel3>:
+    name: "game_dfa2_lvl3"
+    guess_form_name: "dfa_guess_form_v2_lvl3"
+
+<GameDFAv2WindowLevel4>:
+    name: "game_dfa2_lvl4"
+    guess_form_name: "dfa_guess_form_v2_lvl4"
+
+<GameDFAv2WindowLevel5>:
+    name: "game_dfa2_lvl5"
+    guess_form_name: "dfa_guess_form_v2_lvl5"
+
+<GameVPAv1WindowLevel1>:
+    name: "game_vpa1_lvl1"
     guess_form_name: "vpa_guess_form_v1"
 
 <GameVPAv1WindowLevel2>:
     name: "game_vpa1_lvl2"
     guess_form_name: "vpa_guess_form_v1_lvl2"
 
-<GameVPAv2Window>:
-    name: "game_vpa2"
+<GameVPAv1WindowLevel3>:
+    name: "game_vpa1_lvl3"
+    guess_form_name: "vpa_guess_form_v1_lvl3"
+
+<GameVPAv1WindowLevel4>:
+    name: "game_vpa1_lvl4"
+    guess_form_name: "vpa_guess_form_v1_lvl4"
+
+<GameVPAv1WindowLevel5>:
+    name: "game_vpa1_lvl5"
+    guess_form_name: "vpa_guess_form_v1_lvl5"
+
+<GameVPAv2WindowLevel1>:
+    name: "game_vpa2_lvl1"
     guess_form_name: "vpa_guess_form_v2"
 
 <GameVPAv2WindowLevel2>:
     name: "game_vpa2_lvl2"
     guess_form_name: "vpa_guess_form_v2_lvl2"
 
-<GameVPAv3Window>:
-    name: "game_vpa3"
-    guess_form_name: "vpa_guess_form_v3"
+<GameVPAv2WindowLevel3>:
+    name: "game_vpa2_lvl3"
+    guess_form_name: "vpa_guess_form_v2_lvl3"
 
-<GameVPAv3WindowLevel2>:
-    name: "game_vpa3_lvl2"
-    guess_form_name: "vpa_guess_form_v3_lvl2"
+<GameVPAv2WindowLevel4>:
+    name: "game_vpa2_lvl4"
+    guess_form_name: "vpa_guess_form_v2_lvl4"
 
-<GameVPAv4Window>:
-    name: "game_vpa4"
-    guess_form_name: "vpa_guess_form_v4"
+<GameVPAv2WindowLevel5>:
+    name: "game_vpa2_lvl5"
+    guess_form_name: "vpa_guess_form_v2_lvl5"
 
-<GameVPAv4WindowLevel2>:
-    name: "game_vpa4_lvl2"
-    guess_form_name: "vpa_guess_form_v4_lvl2"
-
-<GameWFAv1Window>:
-    name: "game_wfa1"
+<GameWFAv1WindowLevel1>:
+    name: "game_wfa1_lvl1"
     guess_form_name: "wfa_guess_form_v1"
 
 <GameWFAv1WindowLevel2>:
     name: "game_wfa1_lvl2"
     guess_form_name: "wfa_guess_form_v1_lvl2"
 
-<GameWFAv2Window>:
-    name: "game_wfa2"
+<GameWFAv1WindowLevel3>:
+    name: "game_wfa1_lvl3"
+    guess_form_name: "wfa_guess_form_v1_lvl3"
+
+<GameWFAv1WindowLevel4>:
+    name: "game_wfa1_lvl4"
+    guess_form_name: "wfa_guess_form_v1_lvl4"
+
+<GameWFAv1WindowLevel5>:
+    name: "game_wfa1_lvl5"
+    guess_form_name: "wfa_guess_form_v1_lvl5"
+
+<GameWFAv2WindowLevel1>:
+    name: "game_wfa2_lvl1"
     guess_form_name: "wfa_guess_form_v2"
 
 <GameWFAv2WindowLevel2>:
     name: "game_wfa2_lvl2"
     guess_form_name: "wfa_guess_form_v2_lvl2"
+
+<GameWFAv2WindowLevel3>:
+    name: "game_wfa2_lvl3"
+    guess_form_name: "wfa_guess_form_v2_lvl3"
+
+<GameWFAv2WindowLevel4>:
+    name: "game_wfa2_lvl4"
+    guess_form_name: "wfa_guess_form_v2_lvl4"
+
+<GameWFAv2WindowLevel5>:
+    name: "game_wfa2_lvl5"
+    guess_form_name: "wfa_guess_form_v2_lvl5"
 
 <DFAGuessForm>:
     name: "dfa_guess_form"
@@ -349,23 +431,54 @@ WindowManager:
 
 <DFAGuessFormv1>:
     name: "dfa_guess_form_v1"
-    last_game_name: "game_dfa1"
+    last_game_name: "game_dfa1_lvl1"
     win_level_page_name: "win_lvl1_v1_dfa_page"
 
 <DFAGuessFormv1Level2>:
     name: "dfa_guess_form_v1_lvl2"
     last_game_name: "game_dfa1_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v1_dfa_page"
+
+<DFAGuessFormv1Level3>:
+    name: "dfa_guess_form_v1_lvl3"
+    last_game_name: "game_dfa1_lvl3"
+    win_level_page_name: "win_lvl3_v1_dfa_page"
+
+<DFAGuessFormv1Level4>:
+    name: "dfa_guess_form_v1_lvl4"
+    last_game_name: "game_dfa1_lvl4"
+    win_level_page_name: "win_lvl4_v1_dfa_page"
+
+<DFAGuessFormv1Level5>:
+    name: "dfa_guess_form_v1_lvl5"
+    last_game_name: "game_dfa1_lvl5"
+    win_level_page_name: "win_lvl5_page"
 
 <DFAGuessFormv2>:
     name: "dfa_guess_form_v2"
-    last_game_name: "game_dfa2"
+    last_game_name: "game_dfa2_lvl1"
     win_level_page_name: "win_lvl1_v2_dfa_page"
 
 <DFAGuessFormv2Level2>:
     name: "dfa_guess_form_v2_lvl2"
     last_game_name: "game_dfa2_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v2_dfa_page"
+
+<DFAGuessFormv2Level3>:
+    name: "dfa_guess_form_v2_lvl3"
+    last_game_name: "game_dfa2_lvl3"
+    win_level_page_name: "win_lvl3_v2_dfa_page"
+
+<DFAGuessFormv2Level4>:
+    name: "dfa_guess_form_v2_lvl4"
+    last_game_name: "game_dfa2_lvl4"
+    win_level_page_name: "win_lvl4_v2_dfa_page"
+
+<DFAGuessFormv2Level5>:
+    name: "dfa_guess_form_v2_lvl5"
+    last_game_name: "game_dfa2_lvl5"
+    win_level_page_name: "win_lvl5_page"
+
 
 <VPAGuessForm>:
     name: "vpa_guess_form"
@@ -411,43 +524,54 @@ WindowManager:
 
 <VPAGuessFormv1>:
     name: "vpa_guess_form_v1"
-    last_game_name: "game_vpa1"
+    last_game_name: "game_vpa1_lvl1"
     win_level_page_name: "win_lvl1_v1_vpa_page"
 
 <VPAGuessFormv1Level2>:
     name: "vpa_guess_form_v1_lvl2"
     last_game_name: "game_vpa1_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v1_vpa_page"
+
+<VPAGuessFormv1Level3>:
+    name: "vpa_guess_form_v1_lvl3"
+    last_game_name: "game_vpa1_lvl3"
+    win_level_page_name: "win_lvl3_v1_vpa_page"
+
+<VPAGuessFormv1Level4>:
+    name: "vpa_guess_form_v1_lvl4"
+    last_game_name: "game_vpa1_lvl4"
+    win_level_page_name: "win_lvl4_v1_vpa_page"
+
+<VPAGuessFormv1Level5>:
+    name: "vpa_guess_form_v1_lvl5"
+    last_game_name: "game_vpa1_lvl5"
+    win_level_page_name: "win_lvl5_page"
+
 
 <VPAGuessFormv2>:
     name: "vpa_guess_form_v2"
-    last_game_name: "game_vpa2"
+    last_game_name: "game_vpa2_lvl1"
     win_level_page_name: "win_lvl1_v2_vpa_page"
 
 <VPAGuessFormv2Level2>:
     name: "vpa_guess_form_v2_lvl2"
     last_game_name: "game_vpa2_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v2_vpa_page"
 
-<VPAGuessFormv3>:
-    name: "vpa_guess_form_v3"
-    last_game_name: "game_vpa3"
-    win_level_page_name: "win_lvl1_v3_vpa_page"
+<VPAGuessFormv2Level3>:
+    name: "vpa_guess_form_v2_lvl3"
+    last_game_name: "game_vpa2_lvl3"
+    win_level_page_name: "win_lvl3_v2_vpa_page"
 
-<VPAGuessFormv3Level2>:
-    name: "vpa_guess_form_v3_lvl2"
-    last_game_name: "game_vpa3_lvl2"
-    win_level_page_name: "win_lvl2_page"
+<VPAGuessFormv2Level4>:
+    name: "vpa_guess_form_v2_lvl4"
+    last_game_name: "game_vpa2_lvl4"
+    win_level_page_name: "win_lvl4_v2_vpa_page"
 
-<VPAGuessFormv4>:
-    name: "vpa_guess_form_v4"
-    last_game_name: "game_vpa4"
-    win_level_page_name: "win_lvl1_v4_vpa_page"
-
-<VPAGuessFormv4Level2>:
-    name: "vpa_guess_form_v4_lvl2"
-    last_game_name: "game_vpa4_lvl2"
-    win_level_page_name: "win_lvl2_page"
+<VPAGuessFormv2Level5>:
+    name: "vpa_guess_form_v2_lvl5"
+    last_game_name: "game_vpa2_lvl5"
+    win_level_page_name: "win_lvl5_page"
 
 <WFAGuessForm>:
     name: "wfa_guess_form"
@@ -496,23 +620,53 @@ WindowManager:
 
 <WFAGuessFormv1>:
     name: "wfa_guess_form_v1"
-    last_game_name: "game_wfa1"
+    last_game_name: "game_wfa1_lvl1"
     win_level_page_name: "win_lvl1_v1_wfa_page"
 
 <WFAGuessFormv1Level2>:
     name: "wfa_guess_form_v1_lvl2"
     last_game_name: "game_wfa1_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v1_wfa_page"
+
+<WFAGuessFormv1Level3>:
+    name: "wfa_guess_form_v1_lvl3"
+    last_game_name: "game_wfa1_lvl3"
+    win_level_page_name: "win_lvl3_v1_wfa_page"
+
+<WFAGuessFormv1Level4>:
+    name: "wfa_guess_form_v1_lvl4"
+    last_game_name: "game_wfa1_lvl4"
+    win_level_page_name: "win_lvl4_v1_wfa_page"
+
+<WFAGuessFormv1Level5>:
+    name: "wfa_guess_form_v1_lvl5"
+    last_game_name: "game_wfa1_lvl5"
+    win_level_page_name: "win_lvl5_page"
 
 <WFAGuessFormv2>:
     name: "wfa_guess_form_v2"
-    last_game_name: "game_wfa2"
+    last_game_name: "game_wfa2_lvl1"
     win_level_page_name: "win_lvl1_v2_wfa_page"
 
 <WFAGuessFormv2Level2>:
     name: "wfa_guess_form_v2_lvl2"
     last_game_name: "game_wfa2_lvl2"
-    win_level_page_name: "win_lvl2_page"
+    win_level_page_name: "win_lvl2_v2_wfa_page"
+
+<WFAGuessFormv2Level3>:
+    name: "wfa_guess_form_v2_lvl3"
+    last_game_name: "game_wfa2_lvl3"
+    win_level_page_name: "win_lvl3_v2_wfa_page"
+
+<WFAGuessFormv2Level4>:
+    name: "wfa_guess_form_v2_lvl4"
+    last_game_name: "game_wfa2_lvl4"
+    win_level_page_name: "win_lvl4_v2_wfa_page"
+
+<WFAGuessFormv2Level5>:
+    name: "wfa_guess_form_v2_lvl5"
+    last_game_name: "game_wfa2_lvl5"
+    win_level_page_name: "win_lvl5_page"
 
 <WinLevelPage>:
     name: "win_page"
@@ -529,46 +683,121 @@ WindowManager:
             pos_hint: {'x': .25, 'y': .25}
             text: root.button_text
             on_release:
-                app.root.current = root.next_page
-                root.manager.transition.direction = "left"
+                root.go_to_next_level()
 
 <WinLevel1Page>:
     name: "win_lvl1_page"
     button_text: "Go to level 2"
 
+<WinLevel2Page>:
+    name: "win_lvl2_page"
+    button_text: "Go to level 3"
+
+<WinLevel3Page>:
+    name: "win_lvl3_page"
+    button_text: "Go to level 4"
+
+<WinLevel4Page>:
+    name: "win_lvl4_page"
+    button_text: "Go to level 5"
+
+<WinLevel5Page>:
+    name: "win_lvl5_page"
+    next_page: "second"
+    button_text: "Go back to main menu"
+
 <WinLevel1v1DFAPage>:
     name: "win_lvl1_v1_dfa_page"
     next_page: "game_dfa1_lvl2"
+
+<WinLevel2v1DFAPage>:
+    name: "win_lvl2_v1_dfa_page"
+    next_page: "game_dfa1_lvl3"
+
+<WinLevel3v1DFAPage>:
+    name: "win_lvl3_v1_dfa_page"
+    next_page: "game_dfa1_lvl4"
+
+<WinLevel4v1DFAPage>:
+    name: "win_lvl4_v1_dfa_page"
+    next_page: "game_dfa1_lvl5"
 
 <WinLevel1v2DFAPage>:
     name: "win_lvl1_v2_dfa_page"
     next_page: "game_dfa2_lvl2"
 
+<WinLevel2v2DFAPage>:
+    name: "win_lvl2_v2_dfa_page"
+    next_page: "game_dfa2_lvl3"
+
+<WinLevel3v2DFAPage>:
+    name: "win_lvl3_v2_dfa_page"
+    next_page: "game_dfa2_lvl4"
+
+<WinLevel4v2DFAPage>:
+    name: "win_lvl4_v2_dfa_page"
+    next_page: "game_dfa2_lvl5"
+
 <WinLevel1v1VPAPage>:
     name: "win_lvl1_v1_vpa_page"
     next_page: "game_vpa1_lvl2"
+
+<WinLevel2v1VPAPage>:
+    name: "win_lvl2_v1_vpa_page"
+    next_page: "game_vpa1_lvl3"
+
+<WinLevel3v1VPAPage>:
+    name: "win_lvl3_v1_vpa_page"
+    next_page: "game_vpa1_lvl4"
+
+<WinLevel4v1VPAPage>:
+    name: "win_lvl4_v1_vpa_page"
+    next_page: "game_vpa1_lvl5"
 
 <WinLevel1v2VPAPage>:
     name: "win_lvl1_v2_vpa_page"
     next_page: "game_vpa2_lvl2"
 
-<WinLevel1v3VPAPage>:
-    name: "win_lvl1_v3_vpa_page"
-    next_page: "game_vpa3_lvl2"
+<WinLevel2v2VPAPage>:
+    name: "win_lvl2_v2_vpa_page"
+    next_page: "game_vpa2_lvl3"
 
-<WinLevel1v4VPAPage>:
-    name: "win_lvl1_v4_vpa_page"
-    next_page: "game_vpa4_lvl2"
+<WinLevel3v2VPAPage>:
+    name: "win_lvl3_v2_vpa_page"
+    next_page: "game_vpa2_lvl4"
+
+<WinLevel4v2VPAPage>:
+    name: "win_lvl4_v2_vpa_page"
+    next_page: "game_vpa2_lvl5"
 
 <WinLevel1v1WFAPage>:
     name: "win_lvl1_v1_wfa_page"
     next_page: "game_wfa1_lvl2"
 
+<WinLevel2v1WFAPage>:
+    name: "win_lvl2_v1_wfa_page"
+    next_page: "game_wfa1_lvl3"
+
+<WinLevel3v1WFAPage>:
+    name: "win_lvl3_v1_wfa_page"
+    next_page: "game_wfa1_lvl4"
+
+<WinLevel4v1WFAPage>:
+    name: "win_lvl4_v1_wfa_page"
+    next_page: "game_wfa1_lvl5"
+
 <WinLevel1v2WFAPage>:
     name: "win_lvl1_v2_wfa_page"
     next_page: "game_wfa2_lvl2"
 
-<WinLevel2Page>:
-    name: "win_lvl2_page"
-    next_page: "second"
-    button_text: "Go back to main menu"
+<WinLevel2v2WFAPage>:
+    name: "win_lvl2_v2_wfa_page"
+    next_page: "game_wfa2_lvl3"
+
+<WinLevel3v2WFAPage>:
+    name: "win_lvl3_v2_wfa_page"
+    next_page: "game_wfa2_lvl4"
+
+<WinLevel4v2WFAPage>:
+    name: "win_lvl4_v2_wfa_page"
+    next_page: "game_wfa2_lvl5"
