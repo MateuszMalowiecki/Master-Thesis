@@ -42,7 +42,7 @@ class DWFA:
 
     def weight_of_word_from_given_state(self, state, word):
         path=self.get_path_weights_from_given_state(state, word)
-        return product_modulo_n(path, 1000000000000)
+        return sum_modulo_n(path, 1000000000000)
 
     def weight_of_word(self, word):
         res=0
