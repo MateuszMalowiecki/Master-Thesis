@@ -150,7 +150,10 @@ WindowManager:
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
-
+        Button:
+            size_hint: .2, .2
+            text: "Exit game"
+            on_release: app.stop() 
 
 
 <DFAChooseVersionWindow>:
@@ -245,6 +248,9 @@ WindowManager:
             text: root.automaton_text
             size_hint: .5, .2
             pos_hint: {'x': .1, 'y': .55}
+        # ScrollView:
+        #    do_scroll_x: False
+        #    GridLayout:
         Label:
             text: root.answer_text
             size_hint: .5, .2
@@ -411,15 +417,13 @@ WindowManager:
         BoxLayout:
 
         Label:
-            size_hint: 1, 0.7
             text: root.automaton_text
 
         Label:
-            size_hint: 1, 0.7
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.7
+            size_hint: 1, 0.5
             text: root.answer_text
 
         GridLayout:
@@ -439,6 +443,7 @@ WindowManager:
                 text: "Draw automata"
                 on_release: root.draw_graph()
         Button:
+            size_hint: 1, 0.5
             text: "Check"
             on_release: root.check_automaton()
 
@@ -506,15 +511,13 @@ WindowManager:
         BoxLayout:
 
         Label:
-            size_hint: 1, 0.7
             text: root.automaton_text
 
         Label:
-            size_hint: 1, 0.7
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.7
+            size_hint: 1, 0.5
             text: root.answer_text
 
         GridLayout:
@@ -534,6 +537,7 @@ WindowManager:
                 text: "Draw automata"
                 on_release: root.draw_graph()
         Button:
+            size_hint: 1, 0.5
             text: "Check"
             on_release: root.check_automaton()
 
@@ -602,15 +606,13 @@ WindowManager:
         BoxLayout:
 
         Label:
-            size_hint: 1, 0.7
             text: root.automaton_text
 
         Label:
-            size_hint: 1, 0.7
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.7
+            size_hint: 1, 0.5
             text: root.answer_text
 
         GridLayout:
@@ -634,6 +636,7 @@ WindowManager:
                 text: "Draw automata"
                 on_release: root.draw_graph()
         Button:
+            size_hint: 1, 0.5
             text: "Check"
             on_release: root.check_automaton()
 
