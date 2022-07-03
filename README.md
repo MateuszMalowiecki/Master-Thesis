@@ -10,7 +10,10 @@ pip install kivy
 pip install matplotlib
 pip install networkx
 garden install matplotlib --kivy
+sudo apt-get install xclip
+sudo apt-get install xsel
 ``` 
+
 After installing packages you can start the application by running the command:
 ```
 python Game.py
