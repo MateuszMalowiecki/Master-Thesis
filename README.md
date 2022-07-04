@@ -4,16 +4,34 @@ This repository contains files for my master thesis at University of Wroclaw. Ti
 Aim of this project is to create a game in which player will have to guess an automata (https://en.wikipedia.org/wiki/Finite-state_machine) using some hints for this automaton. The game will be a mobile app written in the Python language (https://www.python.org/) using Kivy framework (https://kivy.org/#home).
 
 # Launching the project:
-Project is already launchable. First you need to install Python. Then you need to install all required packages:
+First you need to install Python. Then you need to install all required packages:
 ```
 pip install kivy
 pip install matplotlib
 pip install networkx
+```
+
+You will also need to install library kivy.garden.matplotlib. The method of installation depends on the operating system you are working on.
+#### For Windows users:
+Just type
+```
+pip install Kivy-Garden
 garden install matplotlib --kivy
+```
+in the command line.
+#### For Linux users:
+Download the repo https://github.com/kivy-garden/garden. Go to directory garden/bin and execute command:
+```
+python3 garden install matplotlib --kivy
+```
+
+Also for linux users it is recommended to install two additional packages:
+```
 sudo apt-get install xclip
 sudo apt-get install xsel
 ``` 
 
+#### Starting the program
 After installing packages you can start the application by running the command:
 ```
 python Game.py
