@@ -1,4 +1,5 @@
 from gettext import translation
+from unittest import expectedFailure
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
@@ -106,18 +107,24 @@ class GameWindow(Screen):
     first_label_y = NumericProperty(0)
     guess_form_name = StringProperty("")
 
-    def go_to_main_menu(self):
-        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].number_of_tries = 0
-        self.input.text = ""
-        self.answer_text = ""
-        self.number_of_tips = 0
-        self.parent.current = "second"
-
     def go_to_guess_form(self):
         self.input.text = ""
         self.parent.current = self.guess_form_name
 
 class GameDFAWindow(GameWindow):
+    def go_to_main_menu(self):
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].number_of_tries = 0
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].button_text = "Add final states"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_input = "Finals"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_transitions = {}
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_finals = []
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].transitions_text = "Please write final states"
+        self.input.text = ""
+        self.answer_text = ""
+        self.number_of_tips = 0
+        self.parent.current = "second"
+
     def go_to_guess_form(self):
         self.manager.screens[guess_form_screens_ids[self.guess_form_name]].automaton_text = f" Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
         for state in self.manager.dfa.states:
@@ -133,7 +140,8 @@ class GameDFAv1Window(GameDFAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                print(word)
+                if self.answer_text.count("\n") >= 11:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -176,6 +184,8 @@ class GameDFAv2Window(GameDFAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
+                if self.answer_text.count("\n") >= 11:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
                 word, state = input_content[0], int(input_content[1])
@@ -214,6 +224,19 @@ class GameDFAv2WindowLevel5(GameDFAv2Window):
     pass
 
 class GameVPAWindow(GameWindow):
+    def go_to_main_menu(self):
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].number_of_tries = 0
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].button_text = "Add final states"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_input = "Finals"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_transitions = {}
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_finals = []
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].transitions_text = "Please write final states"
+        self.input.text = ""
+        self.answer_text = ""
+        self.number_of_tips = 0
+        self.parent.current = "second"
+
     def go_to_guess_form(self):
         self.manager.screens[guess_form_screens_ids[self.guess_form_name]].automaton_text = (f" Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
             f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
@@ -232,6 +255,8 @@ class GameVPAv1Window(GameVPAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
+                if self.answer_text.count("\n") >= 9:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -275,6 +300,8 @@ class GameVPAv2Window(GameVPAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
+                if self.answer_text.count("\n") >= 9:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 3, "\nError: You should give exactly 3 values separated by space."
                 word, state, stack_string = input_content[0], int(input_content[1]), input_content[2]
@@ -317,6 +344,19 @@ class GameVPAv2WindowLevel5(GameVPAv2Window):
 
 class GameWFAWindow(GameWindow):
     max_automaton_weight=NumericProperty(0)
+    def go_to_main_menu(self):
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].number_of_tries = 0
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].guess_text = "Note: You should give single number (weight) for given state"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].button_text = "Add weight for state"
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_input = ("Initials", 0)
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_transitions = {}
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_initials = {}
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].actual_finals = {}        
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].transitions_text = "Give initial function value for 0"
+        self.input.text = ""
+        self.answer_text = ""
+        self.number_of_tips = 0
+        self.parent.current = "second"
     def go_to_guess_form(self):
         self.manager.screens[guess_form_screens_ids[self.guess_form_name]].automaton_text = f" Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Maximal weight of automaton: {self.max_automaton_weight}"
         for state in self.manager.wfa.states:
@@ -332,6 +372,8 @@ class GameWFAv1Window(GameWFAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
+                if self.answer_text.count("\n") >= 11:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -371,6 +413,8 @@ class GameWFAv2Window(GameWFAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
+                if self.answer_text.count("\n") >= 11:
+                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
                 word, state = input_content[0], int(input_content[1])
@@ -410,23 +454,54 @@ class GameWFAv2WindowLevel5(GameWFAv2Window):
 
 class DFAGuessForm(Screen):
     dfa = None
-    finals_input = ObjectProperty(None)
-    transitions_input = ObjectProperty(None)
+    automaton_input = ObjectProperty(None)
     answer_text=StringProperty("")
     automaton_text = StringProperty("")
     guess_text=StringProperty("")
+    transitions_text = StringProperty("")
+    button_text = StringProperty("")
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.guess_text = ("Write final states and transitions of automaton here.\n"
-                "Note: Final states should be numbers separated by a comma on one line,\n and transitions should have form: old_state, letter, new_state; each on a separate line."
-                )
+        self.transitions_text = "Please write final states"
+        self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.button_text = "Add final states"
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.actual_transitions = {}
+        self.actual_finals = []
+        self.actual_input = "Finals"
+
+    def add_new_transition(self):
+        try:
+            if self.actual_input == "Finals":
+                finals_text = self.automaton_input.text.replace(" ", "")
+                if finals_text == "":
+                    self.actual_finals=[]
+                else:
+                    self.actual_finals = [int(state) for state in finals_text.split(",")]
+                self.button_text = "Add Transition"
+                self.guess_text = "Note: You should give single state in the input"
+                self.actual_input = (0, "a")
+            else:
+                state = int(self.automaton_input.text.replace(" ", ""))
+                self.actual_transitions[self.actual_input] = state
+                actual_state, letter = self.actual_input
+                if letter == "a":
+                    self.actual_input = (actual_state, "b")
+                else:
+                    new_state = actual_state + 1
+                    if new_state >= len(self.manager.dfa.states):
+                        self.transitions_text = "All transitions defined. Please click \"Check\""
+                        return
+                    self.actual_input = (new_state, "a")
+            self.transitions_text = f"Give transition for {self.actual_input}"
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n States should be numbers"
+
 
     def clear_window(self):
-        self.finals_input.text = ""
-        self.transitions_input.text = ""
+        self.automaton_input.text = ""
 
     def check_automaton(self):
         is_correct=self.check_automaton_correctness()
@@ -435,6 +510,12 @@ class DFAGuessForm(Screen):
             self.number_of_tries = 0
             self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
             self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
+            self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+            self.button_text = "Add final states"
+            self.actual_input = "Finals"
+            self.actual_transitions = {}
+            self.actual_finals = []
+            self.transitions_text = "Please write final states"
             self.remove_graph_from_box_layout()
             self.answer_text = ""
             self.parent.current = self.win_level_page_name
@@ -442,7 +523,6 @@ class DFAGuessForm(Screen):
             self.number_of_tries += 1
 
     def go_to_tips_form(self):
-        # self.clear_window()
         self.remove_graph_from_box_layout()
         self.answer_text = ""
         self.parent.current = self.last_game_name
@@ -457,30 +537,13 @@ class DFAGuessForm(Screen):
         box_layout=self.children[0].children[-1]
         box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
 
-    def read_inputs(self):
-        finals_text = self.finals_input.text.replace(" ", "")
-        if finals_text == "":
-            finals=[]
-        else:
-            finals = [int(state) for state in finals_text.split(",")]
-        trans_strings = self.transitions_input.text.replace(" ", "").split("\n")
-        transitions={}
-        for s in trans_strings:
-            old_state, letter, new_state = s.split(",")
-            transitions[(int(old_state), letter)] = int(new_state)
-        return finals, transitions
-    
     def get_edges_and_final_states_from_input(self):
         try:
-            finals_text = self.finals_input.text.replace(" ", "")
-            if finals_text == "":
-                finals=[]
-            else:
-                finals = [int(state) for state in finals_text.split(",")]
-            trans_strings=self.transitions_input.text.replace(" ", "").split("\n")
+            finals=self.actual_finals
+            transitions=self.actual_transitions
             edges_with_labels={}
-            for s in trans_strings:
-                old_state, letter, new_state = s.split(",")
+            for input, new_state in transitions.items():
+                old_state, letter = input
                 if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
                     edges_with_labels[(int(old_state), int(new_state))] = []
                 edges_with_labels[(int(old_state), int(new_state))].append(letter)
@@ -519,13 +582,21 @@ class DFAGuessForm(Screen):
 
     def check_automaton_correctness(self):
         try:
-            finals, transitions = self.read_inputs()
+            finals = self.actual_finals
+            transitions = self.actual_transitions
+            assert len(transitions) == len(self.manager.dfa.transitions), "You didn't give all the transitions"
             guessed_automaton=DFA(self.manager.dfa.alphabet, self.manager.dfa.states, 0, finals, transitions)
             is_equal, word = self.manager.dfa.is_equal_to(guessed_automaton)
             if is_equal:
                 self.clear_window()
                 return True
             word = word if len(word) > 0 else "empty word"
+            self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+            self.button_text = "Add final states"
+            self.actual_input = "Finals"
+            self.actual_transitions = {}
+            self.actual_finals = []
+            self.transitions_text = "Please write final states"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:
@@ -567,27 +638,72 @@ class DFAGuessFormv2Level5(DFAGuessForm):
 
 class VPAGuessForm(Screen):
     dvpa=None
-    finals_input = ObjectProperty(None)
-    transitions_input = ObjectProperty(None)
+    automaton_input = ObjectProperty(None)
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text=StringProperty("")
+    transitions_text = StringProperty("")
+    button_text = StringProperty("")
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.guess_text = ("Write final states and transitions of automaton here.\n"
-                "Note: Final states should be numbers separated by a comma on one line\n"
-                "    and transitions should have one of following forms (each transition on a separate line):\n"
-                "    old_state, call_letter, new_state, stack_symbol - for each old_state and call_letter\n"
-                "    old_state, return_letter, new_state, stack_symbol - for each old_state, return_letter and stack_symbol\n"
-                "    old_state, internal_letter, new_state - for each old_state and internal_letter\n"
-                )
+        self.transitions_text = "Please write final states"
+        self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.button_text = "Add final states"
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.actual_transitions = {}
+        self.actual_finals = []
+        self.actual_input = "Finals"
+
+    def add_new_transition(self):
+        try:
+            if self.actual_input == "Finals":
+                finals_text = self.automaton_input.text.replace(" ", "")
+                if finals_text == "":
+                    self.actual_finals=[]
+                else:
+                    self.actual_finals = [int(state) for state in finals_text.split(",")]
+                self.button_text = "Add Transition"
+                self.guess_text = "Note: You should give state and stack letter in the input"
+                self.actual_input = (0, "a")
+            elif len(self.actual_input) == 2 and self.actual_input[1] in self.manager.dvpa.calls_alphabet:
+                actual_state, _ = self.actual_input
+                state, stack_letter = self.automaton_input.text.replace(" ", "").split(",")
+                self.actual_transitions[self.actual_input] = (int(state), stack_letter)
+                new_state = actual_state + 1
+                if new_state >= len(self.manager.dvpa.states):
+                    self.actual_input=(0, "b", "Z")
+                    self.guess_text = "Note: You should give single state in the input"
+                else:
+                    self.actual_input = (new_state, "a")
+            elif len(self.actual_input) == 3 and self.actual_input[1] in self.manager.dvpa.return_alphabet:
+                actual_state, _, actual_stack_top = self.actual_input
+                state = int(self.automaton_input.text.replace(" ", ""))
+                self.actual_transitions[self.actual_input] = state
+                new_state = actual_state + 1
+                if actual_stack_top == "Z":
+                    self.actual_input = (actual_state, "b", "A")
+                elif new_state >= len(self.manager.dvpa.states):
+                    self.actual_input = (0, "c")
+                else:
+                    self.actual_input = (new_state, "b", "Z")
+            else:
+                actual_state, _ = self.actual_input
+                state = int(self.automaton_input.text.replace(" ", ""))
+                self.actual_transitions[self.actual_input] = state
+                new_state = actual_state + 1
+                if new_state >= len(self.manager.dvpa.states):
+                    self.transitions_text = "All transitions defined. Please click \"Check\""
+                    return
+                else:
+                    self.actual_input = (new_state, "c")
+            self.transitions_text = f"Give transition for {self.actual_input}"
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n States should be numbers"
 
     def clear_window(self):
-        self.finals_input.text = ""
-        self.transitions_input.text = ""
+        self.automaton_input.text = ""
 
     def check_automaton(self):
         is_correct=self.check_automaton_correctness()
@@ -596,6 +712,12 @@ class VPAGuessForm(Screen):
             self.number_of_tries = 0
             self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
             self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
+            self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+            self.button_text = "Add final states"
+            self.actual_input = "Finals"
+            self.actual_transitions = {}
+            self.actual_finals = []
+            self.transitions_text = "Please write final states"
             self.remove_graph_from_box_layout()
             self.answer_text = ""
             self.parent.current = self.win_level_page_name
@@ -603,7 +725,6 @@ class VPAGuessForm(Screen):
             self.number_of_tries += 1
 
     def go_to_tips_form(self):
-        # self.clear_window()
         self.remove_graph_from_box_layout()
         self.answer_text = ""
         self.parent.current = self.last_game_name
@@ -617,48 +738,38 @@ class VPAGuessForm(Screen):
     def add_graph_to_box_layout(self):
         box_layout=self.children[0].children[-1]
         box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
-    
-    def read_inputs(self):
-        finals_text = self.finals_input.text.replace(" ", "")
-        if finals_text == "":
-            finals=[]
-        else:
-            finals = [int(state) for state in finals_text.split(",")]
-        trans_strings=self.transitions_input.text.replace(" ", "").split("\n")
-        transitions={}
-        for s in trans_strings:
-            transition = s.split(",")
-            if transition[1] in self.manager.dvpa.calls_alphabet:
-                old_state, letter, new_state, stack_symbol = s.split(",")
-                transitions[(int(old_state), letter)] = (int(new_state), stack_symbol)
-            elif transition[1] in self.manager.dvpa.return_alphabet:
-                old_state, letter, new_state, stack_symbol = s.split(",")
-                transitions[(int(old_state), letter, stack_symbol)] = int(new_state)
-            else:
-                old_state, letter, new_state = s.split(",")
-                transitions[(int(old_state), letter)] = int(new_state)
-        return finals, transitions
 
     def get_edges_and_final_states_from_input(self):
         try:
-            finals_text = self.finals_input.text.replace(" ", "")
-            if finals_text == "":
-                finals=[]
-            else:
-                finals = [int(state) for state in finals_text.split(",")]
-            trans_strings=self.transitions_input.text.replace(" ", "").split("\n")
-            edges_with_labels={}
-            for s in trans_strings:
-                transition = s.split(",")
-                old_state, letter, new_state = transition[0], transition[1], transition[2]
-                if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
-                    edges_with_labels[(int(old_state), int(new_state))] = []
+            finals=self.actual_finals
+            transitions=self.actual_transitions
 
-                if len(transition) == 4:
-                    stack_symbol = transition[3]
-                    edges_with_labels[(int(old_state), int(new_state))].append((letter, stack_symbol))
+            edges_with_labels={}
+            for key, value in transitions.items():
+                if len(key) == 2 and key[1] in self.manager.dvpa.calls_alphabet:
+                    (old_state, letter) = key
+                    (new_state, new_stack_letter) = value
+                    if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                        edges_with_labels[(int(old_state), int(new_state))] = []
+                    edges_with_labels[(int(old_state), int(new_state))].append((letter, new_stack_letter))
+                    if int(old_state) != int(new_state):
+                        print("Calls: ", edges_with_labels[(int(old_state), int(new_state))])
+                elif len(key) == 3 and key[1] in self.manager.dvpa.return_alphabet:
+                    (old_state, letter, old_stack_top) = key
+                    new_state=value
+                    if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                        edges_with_labels[(int(old_state), int(new_state))] = []
+                    edges_with_labels[(int(old_state), int(new_state))].append((letter, old_stack_top))
+                    if int(old_state) != int(new_state):
+                        print("Return: ", edges_with_labels[(int(old_state), int(new_state))])
                 else:
+                    (old_state, letter) = key
+                    new_state=value
+                    if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
+                        edges_with_labels[(int(old_state), int(new_state))] = []
                     edges_with_labels[(int(old_state), int(new_state))].append(letter)
+                    if int(old_state) != int(new_state):
+                        print("Internal: ", edges_with_labels[(int(old_state), int(new_state))])
             return edges_with_labels, finals, False
         except IndexError as e:
             self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
@@ -696,13 +807,21 @@ class VPAGuessForm(Screen):
 
     def check_automaton_correctness(self):
         try:
-            finals, transitions = self.read_inputs()
+            finals = self.actual_finals
+            transitions = self.actual_transitions
+            assert len(transitions) == len(self.manager.dvpa.transitions), "You didn't give all the transitions"
             guessed_automaton=DVPA(self.manager.dvpa.calls_alphabet, self.manager.dvpa.return_alphabet, self.manager.dvpa.internal_alpahbet, self.manager.dvpa.states, self.manager.dvpa.stack_alphabet, 0, finals, self.manager.dvpa.initial_stack_symbol, transitions)
             is_equal, word = self.manager.dvpa.is_equal_to(guessed_automaton)
             if is_equal:
                 self.clear_window()
                 return True
             word = word if len(word) > 0 else "empty word"
+            self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+            self.button_text = "Add final states"
+            self.actual_input = "Finals"
+            self.actual_transitions = {}
+            self.actual_finals = []
+            self.transitions_text = "Please write final states"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:
@@ -748,23 +867,69 @@ class WFAGuessForm(Screen):
     wfa = None
     initial_function_input = ObjectProperty(None)
     final_function_input = ObjectProperty(None)
-    transitions_input = ObjectProperty(None)
+    automaton_input = ObjectProperty(None)
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text = StringProperty("")
+    transitions_text = StringProperty("")
+    button_text = StringProperty("")
 
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.guess_text = ("Write weight functions and transitions of automaton here.\n"
-                "Note: Weight functions should be in form: state, weight; each pair on a separate line\n and transitions should have form: old_state, letter, weight, new_state; each on a separate line."
-                )
+        self.transitions_text = "Give initial function value for 0"
+        self.guess_text = "Note: You should give single number (weight) for given state"
+        self.button_text = "Add weight for state"
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.actual_transitions = {}
+        self.actual_finals = {}
+        self.actual_initials = {}
+        self.actual_input = ("Initials", 0)
+
+    def add_new_transition(self):
+        try:
+            if self.actual_input[0] == "Initials":
+                actual_state = self.actual_input[1]
+                weight = int(self.automaton_input.text.replace(" ", ""))
+                self.actual_initials[actual_state] = weight
+                new_state = actual_state + 1
+                if new_state >= len(self.manager.wfa.states):
+                    self.actual_input = ("Finals", 0)
+                    self.transitions_text = "Give final function value for 0"
+                else:
+                    self.actual_input = ("Initials", new_state)
+                    self.transitions_text = f"Give initial function value for {new_state}"
+            elif self.actual_input[0] == "Finals":
+                actual_state = self.actual_input[1]
+                weight = int(self.automaton_input.text.replace(" ", ""))
+                self.actual_finals[actual_state] = weight
+                new_state = actual_state + 1
+                if new_state >= len(self.manager.wfa.states):
+                    self.actual_input = (0, "a")
+                    self.guess_text = "Note: You should give transition weight and state in the input"
+                    self.button_text = "Add Transition"
+                    self.transitions_text = f"Give transition for {self.actual_input}"
+                else:
+                    self.actual_input = ("Finals", new_state)
+                    self.transitions_text = f"Give final function value for {new_state}"
+            else:
+                state, weight = self.automaton_input.text.replace(" ", "").split(",")
+                self.actual_transitions[self.actual_input] = (int(state), int(weight))
+                actual_state, letter = self.actual_input
+                if letter == "a":
+                    self.actual_input = (actual_state, "b")
+                else:
+                    new_state = actual_state + 1
+                    if new_state >= len(self.manager.wfa.states):
+                        self.transitions_text = "All transitions defined. Please click \"Check\""
+                        return
+                    self.actual_input = (new_state, "a")
+                self.transitions_text = f"Give transition for {self.actual_input}"
+        except ValueError as e:
+            self.answer_text = "ParseError!!!\n States and weights should be numbers"
 
     def clear_window(self):
-        self.initial_function_input.text = ""
-        self.final_function_input.text = ""
-        self.transitions_input.text = ""
+        self.automaton_input.text = ""
 
     def check_automaton(self):
         is_correct = self.check_automaton_correctness()
@@ -773,6 +938,13 @@ class WFAGuessForm(Screen):
             self.number_of_tries = 0
             self.manager.screens[win_level_pages_ids[self.win_level_page_name]].label_text=f"Congratulations, you won with {self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips} tips and {num_of_tries} failed guesses."
             self.manager.screens[game_screens_ids[self.last_game_name]].number_of_tips = 0
+            self.guess_text = "Note: You should give single number (weight) for given state"
+            self.button_text = "Add weight for state"
+            self.actual_input = ("Initials", 0)
+            self.actual_transitions = {}
+            self.actual_finals = {}
+            self.actual_initials = {}
+            self.transitions_text = "Give initial function value for 0"
             self.remove_graph_from_box_layout()
             self.answer_text = ""
             self.parent.current = self.win_level_page_name
@@ -780,7 +952,6 @@ class WFAGuessForm(Screen):
             self.number_of_tries += 1
 
     def go_to_tips_form(self):
-        # self.clear_window()
         self.remove_graph_from_box_layout()
         self.answer_text = ""
         self.parent.current = self.last_game_name
@@ -794,31 +965,14 @@ class WFAGuessForm(Screen):
     def add_graph_to_box_layout(self):
         box_layout=self.children[0].children[-1]
         box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
-    
-    def read_inputs(self):
-        initial_function_strings = self.initial_function_input.text.replace(" ", "").split("\n")
-        final_function_strings = self.final_function_input.text.replace(" ", "").split("\n")
-        trans_strings=self.transitions_input.text.replace(" ", "").split("\n")
-        initial_function={}
-        for s in initial_function_strings:
-            state, weight = s.split(",")
-            initial_function[int(state)] = int(weight)
-        final_function={}
-        for s in final_function_strings:
-            state, weight = s.split(",")
-            final_function[int(state)] = int(weight)
-        transitions={}
-        for s in trans_strings:
-            old_state, letter, weight, new_state = s.split(",")
-            transitions[(int(old_state), letter)] = (int(weight), int(new_state))
-        return initial_function, final_function, transitions
 
     def get_edges_from_input(self):
         try:
-            trans_strings=self.transitions_input.text.replace(" ", "").split("\n")
+            transitions=self.actual_transitions
             edges_with_labels={}
-            for s in trans_strings:
-                old_state, letter, weight, new_state = s.split(",")
+            for input, output in transitions.items():
+                old_state, letter = input
+                weight, new_state = output
                 if ((int(old_state), int(new_state)) not in edges_with_labels.keys()):
                     edges_with_labels[(int(old_state), int(new_state))] = []
                 edges_with_labels[(int(old_state), int(new_state))].append((letter, weight))
@@ -852,13 +1006,23 @@ class WFAGuessForm(Screen):
 
     def check_automaton_correctness(self):
         try:
-            initial_function, final_function, transitions = self.read_inputs()
+            initial_function = self.actual_initials
+            final_function = self.actual_finals
+            transitions = self.actual_transitions
+            assert len(transitions) == len(self.manager.wfa.transitions), "You didn't give all the transitions"
             guessed_automaton=DWFA(self.manager.wfa.alphabet, self.manager.wfa.states, initial_function, final_function, transitions)
             is_equal, word = self.manager.wfa.is_equal_to(guessed_automaton)
             if is_equal:
                 self.clear_window()
                 return True
             word = word if len(word) > 0 else "empty word"
+            self.guess_text = "Note: You should give single number (weight) for given state"
+            self.button_text = "Add weight for state"
+            self.actual_input = ("Initials", 0)
+            self.actual_transitions = {}
+            self.actual_finals = {}
+            self.actual_initials = {}
+            self.transitions_text = "Give initial function value for 0"
             self.answer_text = f"Your automaton does not match on word:\n {word}"
             return False
         except AssertionError as e:

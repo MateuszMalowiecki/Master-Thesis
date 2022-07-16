@@ -248,9 +248,6 @@ WindowManager:
             text: root.automaton_text
             size_hint: .5, .2
             pos_hint: {'x': .1, 'y': .55}
-        # ScrollView:
-        #    do_scroll_x: False
-        #    GridLayout:
         Label:
             text: root.answer_text
             size_hint: .5, .2
@@ -407,8 +404,7 @@ WindowManager:
 
 <DFAGuessForm>:
     name: "dfa_guess_form"
-    finals_input: finals_input
-    transitions_input: transitions_input
+    automaton_input: automaton_input
     last_game_name: ""
     win_level_page_name: ""
     number_of_tries: 0
@@ -429,23 +425,21 @@ WindowManager:
         GridLayout:
             cols:2
             Label:
-                text: "Final states: "
+                text: root.transitions_text
             TextInput:
-                id: finals_input
-            Label:
-                text: "Transitions:"
-            TextInput:
-                id: transitions_input
+                id: automaton_input
             Button:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
                 text: "Draw automata"
                 on_release: root.draw_graph()
-        Button:
-            size_hint: 1, 0.5
-            text: "Check"
-            on_release: root.check_automaton()
+            Button:
+                text: root.button_text
+                on_release: root.add_new_transition()
+            Button:
+                text: "Check"
+                on_release: root.check_automaton()
 
 <DFAGuessFormv1>:
     name: "dfa_guess_form_v1"
@@ -502,8 +496,7 @@ WindowManager:
     name: "vpa_guess_form"
     last_game_name: ""
     win_level_page_name: ""
-    finals_input: finals_input
-    transitions_input: transitions_input
+    automaton_input: automaton_input
     number_of_tries: 0
 
     GridLayout:
@@ -523,23 +516,21 @@ WindowManager:
         GridLayout:
             cols:2
             Label:
-                text: "Final states: "
+                text: root.transitions_text
             TextInput:
-                id: finals_input
-            Label:
-                text: "Transitions:"
-            TextInput:
-                id: transitions_input
+                id: automaton_input
             Button:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
                 text: "Draw automata"
                 on_release: root.draw_graph()
-        Button:
-            size_hint: 1, 0.5
-            text: "Check"
-            on_release: root.check_automaton()
+            Button:
+                text: root.button_text
+                on_release: root.add_new_transition()
+            Button:
+                text: "Check"
+                on_release: root.check_automaton()
 
 
 <VPAGuessFormv1>:
@@ -595,9 +586,7 @@ WindowManager:
 
 <WFAGuessForm>:
     name: "wfa_guess_form"
-    initial_function_input: initial_function_input
-    final_function_input: final_function_input
-    transitions_input: transitions_input
+    automaton_input: automaton_input
     last_game_name: ""
     win_level_page_name: ""
     number_of_tries: 0
@@ -618,27 +607,21 @@ WindowManager:
         GridLayout:
             cols:2
             Label:
-                text: "Initial weight function:"
+                text: root.transitions_text
             TextInput:
-                id: initial_function_input
-            Label:
-                text: "Final weight function: "
-            TextInput:
-                id: final_function_input
-            Label:
-                text: "Transitions:"
-            TextInput:
-                id: transitions_input
+                id: automaton_input
             Button:
                 text: "Go back to tips form"
                 on_release: root.go_to_tips_form()
             Button:
                 text: "Draw automata"
                 on_release: root.draw_graph()
-        Button:
-            size_hint: 1, 0.5
-            text: "Check"
-            on_release: root.check_automaton()
+            Button:
+                text: root.button_text
+                on_release: root.add_new_transition()
+            Button:
+                text: "Check"
+                on_release: root.check_automaton()
 
 <WFAGuessFormv1>:
     name: "wfa_guess_form_v1"
