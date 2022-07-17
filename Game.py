@@ -1,4 +1,5 @@
 from gettext import translation
+from inspect import stack
 from unittest import expectedFailure
 from kivy.app import App
 from kivy.lang import Builder
@@ -476,15 +477,18 @@ class DFAGuessForm(Screen):
         try:
             if self.actual_input == "Finals":
                 finals_text = self.automaton_input.text.replace(" ", "")
-                if finals_text == "":
-                    self.actual_finals=[]
-                else:
-                    self.actual_finals = [int(state) for state in finals_text.split(",")]
+                finals=[]
+                if finals_text != "":
+                    finals = [int(state) for state in finals_text.split(",")]
+                for i in finals:
+                    assert i in self.manager.dfa.states, f"invalid state number {i}" 
+                self.actual_finals=finals
                 self.button_text = "Add Transition"
-                self.guess_text = "Note: You should give single state in the input"
+                self.guess_text = "Note: You should give single number (state) in the input"
                 self.actual_input = (0, "a")
             else:
                 state = int(self.automaton_input.text.replace(" ", ""))
+                assert state in self.manager.dfa.states, f"invalid state number {state}" 
                 self.actual_transitions[self.actual_input] = state
                 actual_state, letter = self.actual_input
                 if letter == "a":
@@ -496,8 +500,11 @@ class DFAGuessForm(Screen):
                         return
                     self.actual_input = (new_state, "a")
             self.transitions_text = f"Give transition for {self.actual_input}"
+            self.answer_text = ""
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n States should be numbers"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
+        except AssertionError as e:
+            self.answer_text = f"Error: {str(e)}"
 
 
     def clear_window(self):
@@ -549,7 +556,7 @@ class DFAGuessForm(Screen):
                 edges_with_labels[(int(old_state), int(new_state))].append(letter)
             return edges_with_labels, finals, False
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
             return {}, [], True
 
     def draw_graph(self):
@@ -604,7 +611,7 @@ class DFAGuessForm(Screen):
         except KeyError as e:
             self.answer_text = f"Error: Not given transition for: {e}"
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
 
 class DFAGuessFormv1(DFAGuessForm):
     pass
@@ -660,26 +667,33 @@ class VPAGuessForm(Screen):
         try:
             if self.actual_input == "Finals":
                 finals_text = self.automaton_input.text.replace(" ", "")
-                if finals_text == "":
-                    self.actual_finals=[]
-                else:
-                    self.actual_finals = [int(state) for state in finals_text.split(",")]
+                finals = []
+                if finals_text != "":
+                    finals = [int(state) for state in finals_text.split(",")]
+                for i in finals:
+                    assert i in self.manager.dvpa.states, f"invalid state number {i}" 
+                self.actual_finals = finals
                 self.button_text = "Add Transition"
-                self.guess_text = "Note: You should give state and stack letter in the input"
+                self.guess_text = "Note: You should give state and stack letter separated by a comma in the input"
                 self.actual_input = (0, "a")
             elif len(self.actual_input) == 2 and self.actual_input[1] in self.manager.dvpa.calls_alphabet:
                 actual_state, _ = self.actual_input
-                state, stack_letter = self.automaton_input.text.replace(" ", "").split(",")
-                self.actual_transitions[self.actual_input] = (int(state), stack_letter)
+                state_string, stack_letter = self.automaton_input.text.replace(" ", "").split(",")
+                state = int(state_string)
+                assert state in self.manager.dvpa.states, f"invalid state number {state}" 
+                assert stack_letter in self.manager.dvpa.stack_alphabet, f"invalid stack letter {stack_letter}" 
+                assert stack_letter != self.manager.dvpa.initial_stack_symbol, f"initial stack symbol should not be pushed into stack"
+                self.actual_transitions[self.actual_input] = (state, stack_letter)
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.dvpa.states):
                     self.actual_input=(0, "b", "Z")
-                    self.guess_text = "Note: You should give single state in the input"
+                    self.guess_text = "Note: You should give single number (state) in the input"
                 else:
                     self.actual_input = (new_state, "a")
             elif len(self.actual_input) == 3 and self.actual_input[1] in self.manager.dvpa.return_alphabet:
                 actual_state, _, actual_stack_top = self.actual_input
                 state = int(self.automaton_input.text.replace(" ", ""))
+                assert state in self.manager.dvpa.states, f"invalid state number {state}"
                 self.actual_transitions[self.actual_input] = state
                 new_state = actual_state + 1
                 if actual_stack_top == "Z":
@@ -691,6 +705,7 @@ class VPAGuessForm(Screen):
             else:
                 actual_state, _ = self.actual_input
                 state = int(self.automaton_input.text.replace(" ", ""))
+                assert state in self.manager.dvpa.states, f"invalid state number {state}"
                 self.actual_transitions[self.actual_input] = state
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.dvpa.states):
@@ -699,8 +714,11 @@ class VPAGuessForm(Screen):
                 else:
                     self.actual_input = (new_state, "c")
             self.transitions_text = f"Give transition for {self.actual_input}"
+            self.answer_text = ""
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n States should be numbers"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
+        except AssertionError as e:
+            self.answer_text = f"Error: {str(e)}"
 
     def clear_window(self):
         self.automaton_input.text = ""
@@ -772,10 +790,10 @@ class VPAGuessForm(Screen):
                         print("Internal: ", edges_with_labels[(int(old_state), int(new_state))])
             return edges_with_labels, finals, False
         except IndexError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
             return {}, [], True
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
             return {}, [], True
 
     def draw_graph(self):
@@ -827,11 +845,11 @@ class VPAGuessForm(Screen):
         except AssertionError as e:
             self.answer_text = f"Error: {str(e)}"
         except IndexError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
         except KeyError as e:
             self.answer_text = f"Error: Not given transition for: {e}"
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n Final states and transitions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
 
 class VPAGuessFormv1(VPAGuessForm):
     pass
@@ -891,6 +909,8 @@ class WFAGuessForm(Screen):
             if self.actual_input[0] == "Initials":
                 actual_state = self.actual_input[1]
                 weight = int(self.automaton_input.text.replace(" ", ""))
+                assert weight <= self.manager.screens[game_screens_ids[self.last_game_name]].max_automaton_weight, f"Weight {weight} is bigger than maximal weight"
+                assert weight >= 0, f"Weight {weight} is lower than zero"
                 self.actual_initials[actual_state] = weight
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.wfa.states):
@@ -902,6 +922,8 @@ class WFAGuessForm(Screen):
             elif self.actual_input[0] == "Finals":
                 actual_state = self.actual_input[1]
                 weight = int(self.automaton_input.text.replace(" ", ""))
+                assert weight <= self.manager.screens[game_screens_ids[self.last_game_name]].max_automaton_weight, f"Weight {weight} is bigger than maximal weight"
+                assert weight >= 0, f"Weight {weight} is lower than zero"
                 self.actual_finals[actual_state] = weight
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.wfa.states):
@@ -913,8 +935,13 @@ class WFAGuessForm(Screen):
                     self.actual_input = ("Finals", new_state)
                     self.transitions_text = f"Give final function value for {new_state}"
             else:
-                state, weight = self.automaton_input.text.replace(" ", "").split(",")
-                self.actual_transitions[self.actual_input] = (int(state), int(weight))
+                weight_string, state_string = self.automaton_input.text.replace(" ", "").split(",")
+                state = int(state_string)
+                weight = int(weight_string)
+                assert weight <= self.manager.screens[game_screens_ids[self.last_game_name]].max_automaton_weight, f"Weight {weight} is bigger than maximal weight"
+                assert weight >= 0, f"Weight {weight} is lower than zero"
+                assert state in self.manager.wfa.states, f"invalid state number {state}" 
+                self.actual_transitions[self.actual_input] = (weight, state)
                 actual_state, letter = self.actual_input
                 if letter == "a":
                     self.actual_input = (actual_state, "b")
@@ -925,8 +952,11 @@ class WFAGuessForm(Screen):
                         return
                     self.actual_input = (new_state, "a")
                 self.transitions_text = f"Give transition for {self.actual_input}"
+            self.answer_text = ""
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n States and weights should be numbers"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
+        except AssertionError as e:
+            self.answer_text = f"Error: {str(e)}"
 
     def clear_window(self):
         self.automaton_input.text = ""
@@ -978,7 +1008,7 @@ class WFAGuessForm(Screen):
                 edges_with_labels[(int(old_state), int(new_state))].append((letter, weight))
             return edges_with_labels, False
         except ValueError as e:
-            self.answer_text = f"ParseError!!!\n Transitions and weight functions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
             return {}, True
 
     def draw_graph(self):
@@ -1030,7 +1060,7 @@ class WFAGuessForm(Screen):
         except KeyError as e:
             self.answer_text = f"Error: Not given transition for: {e}"
         except ValueError as e:
-            self.answer_text = "ParseError!!!\n Transitions and weight functions are not written according to the above rules"
+            self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
 
 class WFAGuessFormv1(WFAGuessForm):
     pass
