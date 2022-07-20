@@ -129,30 +129,42 @@ WindowManager:
 <SecondWindow>:
     name: "second"
     GridLayout:
-        cols: 1
+        cols: 2
 
         Button:
             size_hint: .2, .2
             text: "Guess DFA"
+            color: 1, 0, 0, 1
+            background_normal: "dfa.jpg"
+            background_down: "dfa.jpg"
             on_release:
                 app.root.current = "dfa_choose"
                 root.manager.transition.direction = "right"
         Button:
             size_hint: .2, .2
             text: "Guess VPA"
+            color: 1, 0, 0, 1
+            background_normal: "vpa.jpg"
+            background_down: "vpa.jpg"
             on_release:
                 app.root.current = "vpa_choose"
                 root.manager.transition.direction = "right"
-        
+
         Button:
             size_hint: .2, .2
             text: "Guess WFA"
+            color: 1, 0, 0, 1
+            background_normal: "wfa.png"
+            background_down: "wfa.png"
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
         Button:
             size_hint: .2, .2
             text: "Exit game"
+            color: 1, 0, 0, 1
+            background_normal: "exit.jpg"
+            background_down: "exit.jpg"
             on_release: app.stop() 
 
 
