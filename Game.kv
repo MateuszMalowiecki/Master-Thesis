@@ -1,5 +1,5 @@
 WindowManager:
-    SecondWindow:
+    MainWindow:
     DFAChooseVersionWindow:
     VPAChooseVersionWindow:
     WFAChooseVersionWindow:
@@ -63,7 +63,6 @@ WindowManager:
     WinLevel2v2WFAPage:
     WinLevel3v2WFAPage:
     WinLevel4v2WFAPage:
-    MainWindow:
     DFAGuessForm:
     DFAGuessFormv1:
     DFAGuessFormv1Level2:
@@ -100,34 +99,6 @@ WindowManager:
 
 <MainWindow>:
     name: "main"
-
-    GridLayout:
-        cols:1
-
-        GridLayout:
-            cols: 2
-            Label:
-                text: "User name: "
-
-            TextInput:
-                id: user_name
-                multiline: False
-
-            Label:
-                text: "Password: "
-
-            TextInput:
-                id: passw
-                multiline: False
-
-        Button:
-            text: "Submit"
-            on_release:
-                app.root.current = "second" if user_name.text == "tim" and passw.text == "tim" else "main"
-                root.manager.transition.direction = "left"
-
-<SecondWindow>:
-    name: "second"
     GridLayout:
         cols: 2
 
@@ -167,7 +138,6 @@ WindowManager:
             background_down: "exit.jpg"
             on_release: app.stop() 
 
-
 <DFAChooseVersionWindow>:
     name: "dfa_choose"
     GridLayout:
@@ -192,7 +162,7 @@ WindowManager:
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
-                app.root.current = "second"
+                app.root.current = "main"
                 root.manager.transition.direction = "right"
 
 <VPAChooseVersionWindow>:
@@ -220,7 +190,7 @@ WindowManager:
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
-                app.root.current = "second"
+                app.root.current = "main"
                 root.manager.transition.direction = "right"
 
 <WFAChooseVersionWindow>:
@@ -248,7 +218,7 @@ WindowManager:
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
-                app.root.current = "second"
+                app.root.current = "main"
                 root.manager.transition.direction = "right"
 
 <GameWindow>:
@@ -720,7 +690,7 @@ WindowManager:
 
 <WinLevel5Page>:
     name: "win_lvl5_page"
-    next_page: "second"
+    next_page: "main"
     button_text: "Go back to main menu"
 
 <WinLevel1v1DFAPage>:

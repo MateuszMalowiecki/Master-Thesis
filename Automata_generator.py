@@ -1,4 +1,3 @@
-from scipy import rand
 from DFA import DFA
 from VPA import DVPA
 from Weighted import DWFA
@@ -44,4 +43,3 @@ class Automata_generator:
             for letter in alphabet:
                 transitions[(state, letter)] = random.randint(0, max_weight), random.randint(0, number_of_states - 1)
         return DWFA(alphabet, states, initial_weight_function, final_weight_function, transitions)
-
