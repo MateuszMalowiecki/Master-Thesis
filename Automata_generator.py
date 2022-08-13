@@ -34,12 +34,10 @@ class Automata_generator:
     def generate_random_dwfa(self, alphabet, max_weight, min_limit, max_limit):
         number_of_states = random.randint(min_limit, max_limit)
         states = list(range(number_of_states))
-        initial_weight_function = {}
         final_weight_function = {}
         transitions = {}
         for state in states:
-            initial_weight_function[state] = random.randint(0, max_weight)
             final_weight_function[state] = random.randint(0, max_weight)
             for letter in alphabet:
                 transitions[(state, letter)] = random.randint(0, max_weight), random.randint(0, number_of_states - 1)
-        return DWFA(alphabet, states, initial_weight_function, final_weight_function, transitions)
+        return DWFA(alphabet, states, 0, final_weight_function, transitions)

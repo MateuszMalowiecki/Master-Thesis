@@ -8,9 +8,7 @@ def sum_modulo_n(list, n):
     return res 
 
 class DWFA:
-    def __init__(self, alphabet, states, initial_weight_function, final_weight_function, transitions):
-        for key, value in initial_weight_function.items():
-            assert key in states and isinstance(value, int) and value >= 0, f"Initial weight function should contain pairs: state, weight"
+    def __init__(self, alphabet, states, initial_state, final_weight_function, transitions):
         for key, value in final_weight_function.items():
             assert key in states and isinstance(value, int) and value >= 0, f"Final weight function should contain pairs: state, weight"
         for (old_state, letter) in transitions:
@@ -21,12 +19,12 @@ class DWFA:
             assert letter in alphabet, f"invalid letter: {letter} in transition"
         self.states=states
         self.alphabet = alphabet
-        self.initial_weight_function = initial_weight_function
+        self.initial_state = initial_state
         self.final_weight_function = final_weight_function
         self.transitions = transitions
 
     def get_path_edges_weights_from_given_state(self, state, word):
-        res=[self.initial_weight_function[state]]
+        res=[]
         actual_state=state
         for w in word:
             weight, new_state=self.transitions[(actual_state, w)]
@@ -40,10 +38,7 @@ class DWFA:
         return sum_modulo_n(path, 1000000000000)
 
     def weight_of_word(self, word):
-        res=0
-        for state in self.states:
-            res = (res + self.weight_of_word_from_given_state(state, word)) % 1000000000000
-        return res
+        return self.weight_of_word_from_given_state(self.initial_state, word)
 
     def give_state_and_weight_when_starting_from_given_configuration(self, state, word):
         actual = state
