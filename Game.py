@@ -14,7 +14,10 @@ import copy
 from matplotlib import pyplot as plt
 from kivy.core.window import Window
 
+from kivy.uix.button import Button
+from kivy.animation import Animation
 from kivy.garden.matplotlib import FigureCanvasKivyAgg
+from kivymd.uix.behaviors import HoverBehavior
 
 import networkx as nx
 import random
@@ -51,6 +54,14 @@ guess_form_screens_ids={"dfa_guess_form_v1": 65, "dfa_guess_form_v1_lvl2": 66, "
         "wfa_guess_form_v1_lvl5": 91, "wfa_guess_form_v2": 92, "wfa_guess_form_v2_lvl2": 93, "wfa_guess_form_v2_lvl3": 94,
         "wfa_guess_form_v2_lvl4": 95, "wfa_guess_form_v2_lvl5": 96}
 
+class HoverButton(Button, HoverBehavior):
+    default_size_values = ObjectProperty(None)
+    def on_enter(self):
+        Animation(size_hint=tuple(sum(x) for x in zip(self.default_size_values, (0.05, 0.05)))).start(self)
+
+    def on_leave(self):
+        Animation(size_hint=self.default_size_values).start(self)
+
 class MainWindow(Screen):
     pass
 
@@ -58,10 +69,10 @@ class DFAChooseVersionWindow(Screen):
     def go_to_new_game(self, game_name):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 1, 2)
         if game_name == "game_dfa1_lvl1":
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         elif game_name == "game_dfa2_lvl1":
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         self.manager.transition.direction = "right"
         self.parent.current = game_name
@@ -70,16 +81,16 @@ class VPAChooseVersionWindow(Screen):
     def go_to_new_game(self, game_name):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 1, 2)
         if game_name == "game_vpa1_lvl1":
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = ("Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-                f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-                f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-                f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+                f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+                " You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+            )
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         else:
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = ("Please write a word, a state and a stack separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-                f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-                f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-                f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+                f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+                " You can write a word, a state and a stack below and check in which state and stack automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+            )
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         self.manager.transition.direction = "right"
         self.parent.current = game_name
@@ -88,10 +99,10 @@ class WFAChooseVersionWindow(Screen):
     def go_to_new_game(self, game_name):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 2, 1, 2)
         if game_name == "game_wfa1_lvl1":
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 2"
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word below and check weight of this word.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         elif game_name == "game_wfa2_lvl1":
-            self.manager.screens[game_screens_ids[game_name]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 2"
+            self.manager.screens[game_screens_ids[game_name]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish and weight of visited path\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
             self.manager.screens[game_screens_ids[game_name]].answer_text = ""
         self.manager.transition.direction = "right"
         self.parent.current = game_name
@@ -126,7 +137,7 @@ class GameDFAWindow(GameWindow):
 class GameDFAv1Window(GameDFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check if word is in language."
+        self.button_text = "Check Membership."
 
     def check_word(self):
         try:
@@ -170,7 +181,7 @@ class GameDFAv1WindowLevel5(GameDFAv1Window):
 class GameDFAv2Window(GameDFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check in which state we finish."
+        self.button_text = "Check State."
 
     def check_word(self):
         try:
@@ -236,7 +247,7 @@ class GameVPAWindow(GameWindow):
 class GameVPAv1Window(GameVPAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check if word is in language."
+        self.button_text = "Check Membership."
 
     def check_word(self):
         try:
@@ -281,7 +292,7 @@ class GameVPAv1WindowLevel5(GameVPAv1Window):
 class GameVPAv2Window(GameVPAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check in which states and stacks we finish."
+        self.button_text = "Check State and Stack."
 
     def check_word(self):
         try:
@@ -347,7 +358,7 @@ class GameWFAWindow(GameWindow):
 class GameWFAv1Window(GameWFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check weight of this word."
+        self.button_text = "Check Weight."
 
     def check_word(self):
         try:
@@ -388,7 +399,7 @@ class GameWFAv1WindowLevel5(GameWFAv1Window):
 class GameWFAv2Window(GameWFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check in which state and weight we finish."
+        self.button_text = "Check State and Weight."
 
     def check_word(self):
         try:
@@ -438,7 +449,6 @@ class DFAGuessForm(Screen):
     automaton_text = StringProperty("")
     answer_text=StringProperty("")
     guess_text=StringProperty("")
-    transitions_text = StringProperty("")
     button_text = StringProperty("")
 
     def __init__(self, **kw):
@@ -458,7 +468,6 @@ class DFAGuessForm(Screen):
                     assert i in self.manager.dfa.states, f"invalid state number {i}" 
                 self.actual_finals=finals
                 self.button_text = "Add Transition"
-                self.guess_text = "Note: You should give single number (state) in the input"
                 self.actual_input = (0, "a")
             else:
                 state = int(self.automaton_input.text.replace(" ", ""))
@@ -470,10 +479,10 @@ class DFAGuessForm(Screen):
                 else:
                     new_state = actual_state + 1
                     if new_state >= len(self.manager.dfa.states):
-                        self.transitions_text = "All transitions defined. Please click \"Check\""
+                        self.guess_text = "All transitions defined. Please click \"Check\""
                         return
                     self.actual_input = (new_state, "a")
-            self.transitions_text = f"Give transition for {self.actual_input}"
+            self.guess_text = f" Please give transition for {self.actual_input} in the input.\n Note: You should give single number (state) in the input."
             self.answer_text = ""
         except ValueError as e:
             self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
@@ -481,12 +490,11 @@ class DFAGuessForm(Screen):
             self.answer_text = f"Error: {str(e)}"
     
     def reset(self):
-        self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.guess_text = " Please write final states in the input.\n Note: Final states should be numbers separated by a comma on one line."
         self.button_text = "Add final states"
         self.actual_input = "Finals"
         self.actual_transitions = {}
         self.actual_finals = []
-        self.transitions_text = "Please write final states"
 
     def clear_window(self):
         self.automaton_input.text = ""
@@ -618,7 +626,6 @@ class VPAGuessForm(Screen):
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text=StringProperty("")
-    transitions_text = StringProperty("")
     button_text = StringProperty("")
 
     def __init__(self, **kw):
@@ -638,8 +645,8 @@ class VPAGuessForm(Screen):
                     assert i in self.manager.dvpa.states, f"invalid state number {i}" 
                 self.actual_finals = finals
                 self.button_text = "Add Transition"
-                self.guess_text = "Note: You should give state and stack letter separated by a comma in the input"
                 self.actual_input = (0, "a")
+                self.guess_text = f" Please give transition for {self.actual_input} in the input.\n Note: You should give state and stack letter separated by a comma in the input."
             elif len(self.actual_input) == 2 and self.actual_input[1] in self.manager.dvpa.calls_alphabet:
                 actual_state, _ = self.actual_input
                 state_string, stack_letter = self.automaton_input.text.replace(" ", "").split(",")
@@ -651,9 +658,9 @@ class VPAGuessForm(Screen):
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.dvpa.states):
                     self.actual_input=(0, "b", "Z")
-                    self.guess_text = "Note: You should give single number (state) in the input"
                 else:
                     self.actual_input = (new_state, "a")
+                self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give single number (state) in the input."
             elif len(self.actual_input) == 3 and self.actual_input[1] in self.manager.dvpa.return_alphabet:
                 actual_state, _, actual_stack_top = self.actual_input
                 state = int(self.automaton_input.text.replace(" ", ""))
@@ -666,6 +673,7 @@ class VPAGuessForm(Screen):
                     self.actual_input = (0, "c")
                 else:
                     self.actual_input = (new_state, "b", "Z")
+                self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give single number (state) in the input."
             else:
                 actual_state, _ = self.actual_input
                 state = int(self.automaton_input.text.replace(" ", ""))
@@ -673,11 +681,11 @@ class VPAGuessForm(Screen):
                 self.actual_transitions[self.actual_input] = state
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.dvpa.states):
-                    self.transitions_text = "All transitions defined. Please click \"Check\""
+                    self.guess_text = "All transitions defined. Please click \"Check\""
                     return
                 else:
                     self.actual_input = (new_state, "c")
-            self.transitions_text = f"Give transition for {self.actual_input}"
+                self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give single number (state) in the input."
             self.answer_text = ""
         except ValueError as e:
             self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
@@ -685,12 +693,11 @@ class VPAGuessForm(Screen):
             self.answer_text = f"Error: {str(e)}"
 
     def reset(self):
-        self.guess_text = "Note: Final states should be numbers separated by a comma on one line"
+        self.guess_text = " Please write final states in the input.\n Note: Final states should be numbers separated by a comma on one line."
         self.button_text = "Add final states"
         self.actual_input = "Finals"
         self.actual_transitions = {}
         self.actual_finals = []
-        self.transitions_text = "Please write final states"
 
     def clear_window(self):
         self.automaton_input.text = ""
@@ -841,7 +848,6 @@ class WFAGuessForm(Screen):
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text = StringProperty("")
-    transitions_text = StringProperty("")
     button_text = StringProperty("")
 
     def __init__(self, **kw):
@@ -861,12 +867,11 @@ class WFAGuessForm(Screen):
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.wfa.states):
                     self.actual_input = (0, "a")
-                    self.guess_text = "Note: You should give transition weight and state separated by a comma in the input"
+                    self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give transition weight and state separated by a comma in the input."
                     self.button_text = "Add Transition"
-                    self.transitions_text = f"Give transition for {self.actual_input}"
                 else:
                     self.actual_input = ("Finals", new_state)
-                    self.transitions_text = f"Give final function value for {new_state}"
+                    self.guess_text = f" Please give final function value for {new_state}.\n Note: You should give single number (weight) for given state"
             else:
                 weight_string, state_string = self.automaton_input.text.replace(" ", "").split(",")
                 state = int(state_string)
@@ -881,10 +886,10 @@ class WFAGuessForm(Screen):
                 else:
                     new_state = actual_state + 1
                     if new_state >= len(self.manager.wfa.states):
-                        self.transitions_text = "All transitions defined. Please click \"Check\""
+                        self.guess_text = "All transitions defined. Please click \"Check\""
                         return
                     self.actual_input = (new_state, "a")
-                self.transitions_text = f"Give transition for {self.actual_input}"
+                self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give transition weight and state separated by a comma in the input."
             self.answer_text = ""
         except ValueError as e:
             self.answer_text = "ParseError!!!\n The above rules must be followed when entering input data"
@@ -892,12 +897,11 @@ class WFAGuessForm(Screen):
             self.answer_text = f"Error: {str(e)}"
 
     def reset(self):
-        self.guess_text = "Note: You should give single number (weight) for given state"
+        self.guess_text = " Please give final function value for 0.\n Note: You should give single number (weight) for given state"
         self.button_text = "Add weight for state"
         self.actual_input = ("Finals", 0)
         self.actual_transitions = {}
         self.actual_finals = {}
-        self.transitions_text = "Give final function value for 0"
 
     def clear_window(self):
         self.automaton_input.text = ""
@@ -1045,192 +1049,192 @@ class WinLevel5Page(WinLevelPage):
 class WinLevel1v1DFAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v1DFAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v1DFAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v1DFAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel1v2DFAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v2DFAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v2DFAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v2DFAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.dfa = self.manager.generator.generate_random_dfa(["a", "b"], 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.dfa.alphabet}.\n It has states: {self.manager.dfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel1v1VPAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text =  ("Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v1VPAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text =  ("Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v1VPAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text =  ("Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v1VPAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text =  ("Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word below and check if this automaton accepts it.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel1v2VPAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = ("Please write a word, a state and a stack separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word, a state and a stack below and check in which state and stack automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v2VPAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = ("Please write a word, a state and a stack separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word, a state and a stack below and check in which state and stack automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v2VPAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = ("Please write a word, a state and a stack separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = (f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word, a state and a stack below and check in which state and stack automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v2VPAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.dvpa = self.manager.generator.generate_random_dvpa(["a"], ["b"], ["c"], ["Z", "A"], 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = ("Please write a word, a state and a stack separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n"
-            f"   Alphabets of automaton (in order calls, return, internal): {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}\n"
-            f" States of automaton: {self.manager.dvpa.states}\n Initial state of automaton: {self.manager.dvpa.initial_state}\n Stack alphabet: {self.manager.dvpa.stack_alphabet}\n"
-            f" Initial stack symbol: {self.manager.dvpa.initial_stack_symbol}")
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text =(f" Your task is to guess a target automaton.\n" 
+            f" Automaton is over the alphabets: {self.manager.dvpa.calls_alphabet}, {self.manager.dvpa.return_alphabet}, {self.manager.dvpa.internal_alpahbet}.\n It has states: {self.manager.dvpa.states} (where 0 is the initial state).\n It has stack alphabet: {self.manager.dvpa.stack_alphabet} (where Z is the initial stack symbol).\n" 
+            " You can write a word, a state and a stack below and check in which state and stack automata will finish.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
+        )
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel1v1WFAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 5, 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 5"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word below and check weight of this word.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v1WFAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 10, 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 10"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word below and check weight of this word.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v1WFAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 15, 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 15"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word below and check weight of this word.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v1WFAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 20, 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 20"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word below and check weight of this word.\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel1v2WFAPage(WinLevel1Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 5, 2, 4)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 5"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish and weight of visited path\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel2v2WFAPage(WinLevel2Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 10, 4, 6)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 10"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish and weight of visited path\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel3v2WFAPage(WinLevel3Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 15, 6, 8)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 15"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish and weight of visited path\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 
 class WinLevel4v2WFAPage(WinLevel4Page):
     def go_to_next_level(self):
         self.manager.wfa = self.manager.generator.generate_random_dwfa(["a", "b"], 20, 8, 10)
-        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f"Please write a word and a state separated by space in the input.\n Note, if you want to write empty word, please type epsilon.\n  Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: 20"
+        self.manager.screens[game_screens_ids[self.next_page]].automaton_text = f" Your task is to guess a target automaton.\n Automaton is over the alphabet: {self.manager.wfa.alphabet}.\n It has states: {self.manager.wfa.states} (where 0 is the initial state).\n You can write a word and a state below and check in which state automata will finish and weight of visited path\n You can also click \"Equivalence Check...\", to provide automaton's final states and transitions.\n After providing all the neccessary items you can check the correctness of your automaton."
         self.manager.screens[game_screens_ids[self.next_page]].answer_text = ""
         super().go_to_next_level()
 

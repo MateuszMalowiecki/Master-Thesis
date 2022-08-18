@@ -162,7 +162,7 @@ class DVPA:
                             return subword + letter
                 for letter in self.calls_alphabet:
                     if self.transitions[(state, letter)][0] == actual_state:
-                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state]) 
+                        subword = self.find_word_in_language(state, reachable, visited_states + [actual_state])
                         if subword is not None:
                             return subword + letter
                 for letter in self.return_alphabet:

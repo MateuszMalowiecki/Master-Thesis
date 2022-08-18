@@ -9,6 +9,7 @@ First you need to install Python. Then you need to install all required packages
 pip install kivy
 pip install matplotlib
 pip install networkx
+pip install kivymd
 ```
 
 You will also need to install library kivy.garden.matplotlib. The method of installation depends on the operating system you are working on.

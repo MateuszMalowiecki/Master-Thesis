@@ -101,41 +101,44 @@ WindowManager:
     name: "main"
     GridLayout:
         cols: 2
+        spacing: 20
 
-        Button:
+        HoverButton:
+            default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess DFA"
             color: 1, 0, 0, 1
             background_normal: "dfa.jpg"
-            background_down: "dfa.jpg"
             on_release:
                 app.root.current = "dfa_choose"
                 root.manager.transition.direction = "right"
-        Button:
+
+        HoverButton:
+            default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess VPA"
             color: 1, 0, 0, 1
             background_normal: "vpa.jpg"
-            background_down: "vpa.jpg"
             on_release:
                 app.root.current = "vpa_choose"
                 root.manager.transition.direction = "right"
 
-        Button:
+        HoverButton:
+            default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess WFA"
             color: 1, 0, 0, 1
             background_normal: "wfa.png"
-            background_down: "wfa.png"
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
-        Button:
+
+        HoverButton:
+            default_size_values: .2, .2
             size_hint: .2, .2
             text: "Exit game"
             color: 1, 0, 0, 1
             background_normal: "exit.jpg"
-            background_down: "exit.jpg"
             on_release: app.stop() 
 
 <DFAChooseVersionWindow>:
@@ -146,19 +149,22 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a DFA game v1"
                 on_release:
                     root.go_to_new_game("game_dfa1_lvl1")
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a DFA game v2"
                 on_release:
                     root.go_to_new_game("game_dfa2_lvl1")
-        Button:
-            text: "Return to main menu"
+        HoverButton:
+            text: "Main Menu"
+            default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
@@ -173,20 +179,23 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a VPA game v1"
                 on_release:
                     root.go_to_new_game("game_vpa1_lvl1")
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a VPA game v2"
                 on_release:
                     root.go_to_new_game("game_vpa2_lvl1")
 
-        Button:
-            text: "Return to main menu"
+        HoverButton:
+            text: "Main Menu"
+            default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
@@ -201,20 +210,23 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a WFA game v1"
                 on_release:
                     root.go_to_new_game("game_wfa1_lvl1")
 
-            Button:
+            HoverButton:
+                default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a WFA game v2"
                 on_release:
                     root.go_to_new_game("game_wfa2_lvl1")
 
-        Button:
-            text: "Return to main menu"
+        HoverButton:
+            text: "Main Menu"
+            default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
@@ -228,7 +240,7 @@ WindowManager:
     FloatLayout:
         Label:
             text: root.automaton_text
-            size_hint: .5, .2
+            size_hint: .8, .3
             pos_hint: {'x': .1, 'y': .55}
         Label:
             text: root.answer_text
@@ -244,12 +256,12 @@ WindowManager:
             pos_hint: {'x': .6, 'y': 0}
             on_press: root.check_word()
         Button:
-            text: "Return to main menu"
+            text: "Main Menu"
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: root.go_to_main_menu()
         Button:
-            text: "Guess an automaton now"
+            text: "Equivalence Check..."
             size_hint: .4, .2
             pos_hint: {'x': 0, 'y': .8}
             on_release: root.go_to_guess_form() 
@@ -394,8 +406,14 @@ WindowManager:
         cols:1
         BoxLayout:
 
-        Label:
-            text: root.automaton_text
+        GridLayout:
+            cols:2
+            Label:
+                text: root.automaton_text
+            Button:
+                size_hint: .3, 1
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
 
         Label:
             text: root.guess_text
@@ -406,19 +424,14 @@ WindowManager:
 
         GridLayout:
             cols:2
-            Label:
-                text: root.transitions_text
             TextInput:
                 id: automaton_input
             Button:
-                text: "Go back to tips form"
-                on_release: root.go_to_tips_form()
+                text: root.button_text
+                on_release: root.add_new_transition()
             Button:
                 text: "Draw automata"
                 on_release: root.draw_graph()
-            Button:
-                text: root.button_text
-                on_release: root.add_new_transition()
             Button:
                 text: "Check"
                 on_release: root.check_automaton()
@@ -473,7 +486,6 @@ WindowManager:
     last_game_name: "game_dfa2_lvl5"
     win_level_page_name: "win_lvl5_page"
 
-
 <VPAGuessForm>:
     name: "vpa_guess_form"
     last_game_name: ""
@@ -485,8 +497,14 @@ WindowManager:
         cols:1
         BoxLayout:
 
-        Label:
-            text: root.automaton_text
+        GridLayout:
+            cols:2
+            Label:
+                text: root.automaton_text
+            Button:
+                size_hint: .3, 1
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
 
         Label:
             text: root.guess_text
@@ -497,23 +515,17 @@ WindowManager:
 
         GridLayout:
             cols:2
-            Label:
-                text: root.transitions_text
             TextInput:
                 id: automaton_input
-            Button:
-                text: "Go back to tips form"
-                on_release: root.go_to_tips_form()
-            Button:
-                text: "Draw automata"
-                on_release: root.draw_graph()
             Button:
                 text: root.button_text
                 on_release: root.add_new_transition()
             Button:
+                text: "Draw automata"
+                on_release: root.draw_graph()
+            Button:
                 text: "Check"
                 on_release: root.check_automaton()
-
 
 <VPAGuessFormv1>:
     name: "vpa_guess_form_v1"
@@ -576,8 +588,14 @@ WindowManager:
         cols:1
         BoxLayout:
 
-        Label:
-            text: root.automaton_text
+        GridLayout:
+            cols:2
+            Label:
+                text: root.automaton_text
+            Button:
+                size_hint: .3, 1
+                text: "Go back to tips form"
+                on_release: root.go_to_tips_form()
 
         Label:
             text: root.guess_text
@@ -588,19 +606,14 @@ WindowManager:
 
         GridLayout:
             cols:2
-            Label:
-                text: root.transitions_text
             TextInput:
                 id: automaton_input
             Button:
-                text: "Go back to tips form"
-                on_release: root.go_to_tips_form()
+                text: root.button_text
+                on_release: root.add_new_transition()
             Button:
                 text: "Draw automata"
                 on_release: root.draw_graph()
-            Button:
-                text: root.button_text
-                on_release: root.add_new_transition()
             Button:
                 text: "Check"
                 on_release: root.check_automaton()
