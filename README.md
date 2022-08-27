@@ -20,7 +20,7 @@ pip install Kivy-Garden
 garden install matplotlib --kivy
 ```
 in the command line.
-#### For Linux users:
+#### For Unix based OS users:
 Download the repo https://github.com/kivy-garden/garden. Go to directory garden/bin and execute command:
 ```
 python3 garden install matplotlib --kivy
