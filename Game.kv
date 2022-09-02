@@ -103,7 +103,7 @@ WindowManager:
         cols: 2
         spacing: 20
 
-        HoverButton:
+        Button:
             default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess DFA"
@@ -113,7 +113,7 @@ WindowManager:
                 app.root.current = "dfa_choose"
                 root.manager.transition.direction = "right"
 
-        HoverButton:
+        Button:
             default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess VPA"
@@ -123,7 +123,7 @@ WindowManager:
                 app.root.current = "vpa_choose"
                 root.manager.transition.direction = "right"
 
-        HoverButton:
+        Button:
             default_size_values: .2, .2
             size_hint: .2, .2
             text: "Guess WFA"
@@ -133,7 +133,7 @@ WindowManager:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
 
-        HoverButton:
+        Button:
             default_size_values: .2, .2
             size_hint: .2, .2
             text: "Exit game"
@@ -149,20 +149,20 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a DFA game v1"
                 on_release:
                     root.go_to_new_game("game_dfa1_lvl1")
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a DFA game v2"
                 on_release:
                     root.go_to_new_game("game_dfa2_lvl1")
-        HoverButton:
+        Button:
             text: "Main Menu"
             default_size_values: .4, .2
             size_hint: .4, .2
@@ -179,21 +179,21 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a VPA game v1"
                 on_release:
                     root.go_to_new_game("game_vpa1_lvl1")
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a VPA game v2"
                 on_release:
                     root.go_to_new_game("game_vpa2_lvl1")
 
-        HoverButton:
+        Button:
             text: "Main Menu"
             default_size_values: .4, .2
             size_hint: .4, .2
@@ -210,21 +210,21 @@ WindowManager:
         GridLayout:
             cols: 2
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a WFA game v1"
                 on_release:
                     root.go_to_new_game("game_wfa1_lvl1")
 
-            HoverButton:
+            Button:
                 default_size_values: .2, .2
                 size_hint: .2, .2
                 text: "Start a WFA game v2"
                 on_release:
                     root.go_to_new_game("game_wfa2_lvl1")
 
-        HoverButton:
+        Button:
             text: "Main Menu"
             default_size_values: .4, .2
             size_hint: .4, .2

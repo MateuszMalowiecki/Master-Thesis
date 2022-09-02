@@ -45,6 +45,23 @@ def test_give_state_when_starting_from_given_configuration():
             else:
                 assert dvpa2.give_state_and_stack_when_starting_from_given_configuration(i, "abccbacaccbabaa", stack) == (i, ["A", "A"] + stack)
 
+
+def test_get_all_reachable_states():
+    dvpa1=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
+        {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 
+            (0, "c"): 1, (1, "a"): (0, "A"), (1, "b", "A"): 0, (1, "b", "Z"): 0, (1, "c"): 0})
+    dvpa2=DVPA(["a"], ["b"], ["c"], [0, 1, 2, 3], ["A", "Z"], 0, [0], "Z", 
+        {(0, "a"): (1, "A"), (0, "b", "A"): 2, (0, "b", "Z"): 2, (0, "c"): 0, 
+            (1, "a"): (0, "A"), (1, "b", "A"): 3, (1, "b", "Z"): 3, (1, "c"): 1,
+            (2, "a"): (3, "A"), (2, "b", "A"): 0, (2, "b", "Z"): 0, (2, "c"): 2, 
+            (3, "a"): (2, "A"), (3, "b", "A"): 1, (3, "b", "Z"): 1, (3, "c"): 3})
+    intersected = dvpa1.take_intersection(dvpa2)
+    intersected_with_itself = dvpa2.take_intersection(dvpa2)
+    assert dvpa1.get_all_reachable_states() == [0, 1]
+    assert dvpa2.get_all_reachable_states() == [0, 1, 2, 3]
+    assert intersected.get_all_reachable_states() == [(0, 0), (1, 0), (1, 1), (1, 2), (0, 1), (0, 2), (0, 3), (1, 3)]
+    assert intersected_with_itself.get_all_reachable_states() == [(0, 0), (1, 1), (2, 2), (3, 3)]
+
 def test_complement():
     dvpa1=DVPA(["a"], ["b"], ["c"], [0, 1], ["A", "Z"], 0, [0], "Z", 
         {(0, "a"): (1, "A"), (0, "b", "A"): 1, (0, "b", "Z"): 1, 

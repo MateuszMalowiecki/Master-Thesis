@@ -127,6 +127,28 @@ class DVPA:
         return DVPA(self.calls_alphabet, self.return_alphabet, self.internal_alpahbet, 
             states, stack_alphabet, initial_state, finals, initial_stack_symbol, transitions)
 
+    def get_all_reachable_states(self):
+        reachable=[self.initial_state]
+        for i in range(len(self.states)):
+            for state in reachable:
+                try:
+                    for letter in self.internal_alpahbet:
+                        new_state=self.transitions[(state,letter)]
+                        if new_state not in reachable:
+                            reachable.append(new_state)
+                    for letter in self.calls_alphabet:
+                        (new_state, _)=self.transitions[(state,letter)]
+                        if new_state not in reachable:
+                            reachable.append(new_state)
+                    for letter in self.return_alphabet:
+                        for stack_letter in self.stack_alphabet:
+                            new_state=self.transitions[(state,letter, stack_letter)]
+                            if new_state not in reachable:
+                                reachable.append(new_state)
+                except:
+                    pass
+        return reachable
+
     def have_empty_language(self):
         grammar = self.to_CFG()
         return grammar.is_empty()

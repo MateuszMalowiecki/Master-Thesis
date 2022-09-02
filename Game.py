@@ -17,7 +17,7 @@ from kivy.core.window import Window
 from kivy.uix.button import Button
 from kivy.animation import Animation
 from kivy.garden.matplotlib import FigureCanvasKivyAgg
-from kivymd.uix.behaviors import HoverBehavior
+#from kivymd.uix.behaviors import HoverBehavior
 
 import networkx as nx
 import random
@@ -54,6 +54,7 @@ guess_form_screens_ids={"dfa_guess_form_v1": 65, "dfa_guess_form_v1_lvl2": 66, "
         "wfa_guess_form_v1_lvl5": 91, "wfa_guess_form_v2": 92, "wfa_guess_form_v2_lvl2": 93, "wfa_guess_form_v2_lvl3": 94,
         "wfa_guess_form_v2_lvl4": 95, "wfa_guess_form_v2_lvl5": 96}
 
+'''
 class HoverButton(Button, HoverBehavior):
     default_size_values = ObjectProperty(None)
     def on_enter(self):
@@ -61,7 +62,7 @@ class HoverButton(Button, HoverBehavior):
 
     def on_leave(self):
         Animation(size_hint=self.default_size_values).start(self)
-
+'''
 class MainWindow(Screen):
     pass
 
@@ -658,9 +659,10 @@ class VPAGuessForm(Screen):
                 new_state = actual_state + 1
                 if new_state >= len(self.manager.dvpa.states):
                     self.actual_input=(0, "b", "Z")
+                    self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give single number (state) in the input."
                 else:
                     self.actual_input = (new_state, "a")
-                self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give single number (state) in the input."
+                    self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give state and stack letter separated by a comma in the input."
             elif len(self.actual_input) == 3 and self.actual_input[1] in self.manager.dvpa.return_alphabet:
                 actual_state, _, actual_stack_top = self.actual_input
                 state = int(self.automaton_input.text.replace(" ", ""))

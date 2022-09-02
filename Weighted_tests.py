@@ -53,6 +53,20 @@ def test_give_state_when_starting_from_given_configuration():
             assert dwfa1.give_state_and_weight_when_starting_from_given_configuration(i, w) == configurations_dwfa1[(w, i)]
             assert dwfa2.give_state_and_weight_when_starting_from_given_configuration(i, w) == configurations_dwfa2[(w, i)]
 
+def test_get_all_reachable_states():
+    dwfa1 = DWFA(["a", "b"], [0, 1, 2, 3], 0, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
+        {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 
+            (2, "a") : (6, 3), (2, "b") : (11, 3), (3, "a") : (8, 0), (3, "b") : (5, 0)})
+    dwfa2 = DWFA(["a", "b"], [0, 1, 2, 3], 0, {0 : 2, 1 : 6, 2 : 4, 3 : 1},
+        {(0, "a") : (7, 1), (0, "b") : (5, 2), (1, "a") : (8, 0), (1, "b") : (6, 3), 
+            (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
+    dwfa_difference = dwfa1.take_difference_automaton(dwfa2)
+    dwfa_difference_with_itself = dwfa2.take_difference_automaton(dwfa2)
+    assert dwfa1.get_all_reachable_states() == [0, 1, 2, 3]
+    assert dwfa2.get_all_reachable_states() == [0, 1, 2, 3]
+    assert dwfa_difference.get_all_reachable_states() == [(0, 0), (1, 1), (1, 2), (2, 0), (2, 3), (3, 1), (3, 2), (0, 3)]
+    assert dwfa_difference_with_itself.get_all_reachable_states() == [(0, 0), (1, 1), (2, 2), (3, 3)]
+
 def test_is_equal_to():
     dwfa1 = DWFA(["a", "b"], [0, 1, 2, 3], 0, {0 : 11, 1 : 5, 2 : 3, 3 : 7},
         {(0, "a") : (2, 1), (0, "b") : (3, 1), (1, "a") : (7, 2), (1, "b") : (9, 2), 

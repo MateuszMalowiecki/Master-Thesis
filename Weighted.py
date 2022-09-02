@@ -98,3 +98,13 @@ class DWFA:
             if weight + self.final_weight_function[state] < threshold:
                 return True, word
         return False, ""
+
+    def get_all_reachable_states(self):
+        reachable=[self.initial_state]
+        for _ in range(len(self.states)):
+            for state in reachable:
+                for letter in self.alphabet:
+                    _, new_state=self.transitions[(state,letter)]
+                    if new_state not in reachable:
+                        reachable.append(new_state)
+        return reachable

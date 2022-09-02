@@ -29,6 +29,18 @@ def test_give_state_when_starting_from_given_configuration():
         assert dfa2.give_state_when_starting_from_given_configuration(i, "ab") == 3 - i
         assert dfa2.give_state_when_starting_from_given_configuration(i, "abbabbbabaababaaba") == 3 - i   
 
+def test_get_all_reachable_states():
+    dfa1=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
+        (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
+    dfa2=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 2, (1, "a") : 0, (1, "b") : 3, 
+        (2, "a") : 3, (2, "b") : 0, (3, "a") : 2, (3, "b") : 1})
+    intersected = dfa1.take_intersection(dfa2)
+    intersected_with_itself = dfa2.take_intersection(dfa2)
+    assert dfa1.get_all_reachable_states() == [0, 1, 2, 3]
+    assert dfa2.get_all_reachable_states() == [0, 1, 2, 3]
+    assert intersected.get_all_reachable_states() == [(0, 0), (1, 1), (1, 2), (2, 0), (2, 3), (3, 1), (3, 2), (3, 0), (3, 3)]
+    assert intersected_with_itself.get_all_reachable_states() == [(0, 0), (1, 1), (2, 2), (3, 3)]
+
 def test_complement():
     dfa1=DFA(["a", "b"], [0, 1, 2, 3], 0, [3], {(0, "a") : 1, (0, "b") : 1, (1, "a") : 2, (1, "b") : 2, 
         (2, "a") : 3, (2, "b") : 3, (3, "a") : 3, (3, "b") : 3})
