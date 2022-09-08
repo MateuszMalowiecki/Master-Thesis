@@ -12,25 +12,7 @@ pip install networkx
 pip install kivymd
 ```
 
-You will also need to install library kivy.garden.matplotlib. The method of installation depends on the operating system you are working on.
-#### For Windows users:
-Just type
-```
-pip install Kivy-Garden
-garden install matplotlib --kivy
-```
-in the command line.
-#### For Unix based OS users:
-Download the repo https://github.com/kivy-garden/garden. Go to directory garden/bin and execute command:
-```
-python3 garden install matplotlib --kivy
-```
-
-Also for linux users it is recommended to install two additional packages:
-```
-sudo apt-get install xclip
-sudo apt-get install xsel
-``` 
+You will also need to install dot library. To install it, please follow instructions on page: https://graphviz.org/download/
 
 #### Starting the program
 After installing packages you can start the application by running the command:

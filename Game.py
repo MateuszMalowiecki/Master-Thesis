@@ -1,5 +1,6 @@
 from gettext import translation
 from inspect import stack
+from turtle import color
 from unittest import expectedFailure
 from kivy.app import App
 from kivy.lang import Builder
@@ -15,11 +16,10 @@ from matplotlib import pyplot as plt
 from kivy.core.window import Window
 
 from kivy.uix.button import Button
-from kivy.animation import Animation
-from kivy.garden.matplotlib import FigureCanvasKivyAgg
-#from kivymd.uix.behaviors import HoverBehavior
+from kivy.uix.image import Image
 
 import networkx as nx
+import graphviz as gv
 import random
 import os
 from kivy.app import App
@@ -448,7 +448,7 @@ class GameWFAv2WindowLevel5(GameWFAv2Window):
 class DFAGuessForm(Screen):
     automaton_input = ObjectProperty(None)
     automaton_text = StringProperty("")
-    answer_text=StringProperty("")
+    answer_text = StringProperty("")
     guess_text=StringProperty("")
     button_text = StringProperty("")
 
@@ -457,6 +457,8 @@ class DFAGuessForm(Screen):
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.counter = 0
+        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -523,10 +525,15 @@ class DFAGuessForm(Screen):
         if len(box_layout.children) > 0:
             for elem in box_layout.children:
                 box_layout.remove_widget(elem)
+        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
+            os.remove(f"example_directed_graph_{self.counter}.png")
+        
 
-    def add_graph_to_box_layout(self):
+    def add_graph_to_box_layout(self, edges_with_labels, finals):
         box_layout=self.children[0].children[-1]
-        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+        self.dump_example_directed_graph(edges_with_labels, finals)
+        self.im.source = f"example_directed_graph_{self.counter}.png"
+        box_layout.add_widget(self.im)
 
     def get_edges_and_final_states_from_input(self):
         try:
@@ -554,22 +561,30 @@ class DFAGuessForm(Screen):
             letters = edges_with_labels[edge]
             edges_with_labels[edge] = ', '.join(letters)
 
-        plt.clf()
         self.G.remove_edges_from(list(self.G.edges))
         for u, v in edges_with_labels.keys():
             self.G.add_edge(u, v)
-        pos = nx.spring_layout(self.G)
-        colours_map={}
-        for final in finals:
-            colours_map[final]='blue'
-        values = [colours_map.get(node, 'pink') for node in self.G.nodes()]
-        nx.draw(
-            self.G, pos, edge_color='black', width=1, linewidths=1,
-            node_size=500, node_color=values, alpha=0.9,
-            labels={node: node for node in self.G.nodes()}
-        )
-        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
-        self.add_graph_to_box_layout()
+        self.add_graph_to_box_layout(edges_with_labels, finals)
+
+    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def networkx_to_graphviz(self, g, edges_with_labels, finals):
+        h = gv.Digraph()
+        for u, _ in g.nodes(data=True):
+            if u in finals:
+                h.node(str(u), label=str(u), color = "green")
+            else:
+                h.node(str(u), label=str(u), color = "red")
+        for u, v, _ in g.edges(data=True):
+            h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
+        return h
+
+    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def dump_example_directed_graph(self, edges_with_labels, finals):
+        self.counter += 1
+        h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
+        filename = f'example_directed_graph_{self.counter}'
+        fileformat = 'png'
+        h.render(filename, format=fileformat, cleanup=True)
 
     def check_automaton_correctness(self):
         try:
@@ -634,6 +649,8 @@ class VPAGuessForm(Screen):
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.counter = 0
+        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -727,10 +744,14 @@ class VPAGuessForm(Screen):
         if len(box_layout.children) > 0:
             for elem in box_layout.children:
                 box_layout.remove_widget(elem)
+        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
+            os.remove(f"example_directed_graph_{self.counter}.png")
     
-    def add_graph_to_box_layout(self):
+    def add_graph_to_box_layout(self, edges_with_labels, finals):
         box_layout=self.children[0].children[-1]
-        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+        self.dump_example_directed_graph(edges_with_labels, finals)
+        self.im.source = f"example_directed_graph_{self.counter}.png"
+        box_layout.add_widget(self.im)
 
     def get_edges_and_final_states_from_input(self):
         try:
@@ -775,22 +796,30 @@ class VPAGuessForm(Screen):
             letters = edges_with_labels[edge]
             edges_with_labels[edge] = ', '.join([str(letter) for letter in letters])
 
-        plt.clf()
         self.G.remove_edges_from(list(self.G.edges))
         for u, v in edges_with_labels.keys():
             self.G.add_edge(u, v)
-        pos = nx.spring_layout(self.G)
-        colours_map={}
-        for final in finals:
-            colours_map[final]='blue'
-        values = [colours_map.get(node, 'pink') for node in self.G.nodes()]
-        nx.draw(
-            self.G, pos, edge_color='black', width=1, linewidths=1,
-            node_size=500, node_color=values, alpha=0.9,
-            labels={node: node for node in self.G.nodes()}
-        )
-        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
-        self.add_graph_to_box_layout()
+        self.add_graph_to_box_layout(edges_with_labels, finals)
+
+      #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def networkx_to_graphviz(self, g, edges_with_labels, finals):
+        h = gv.Digraph()
+        for u, _ in g.nodes(data=True):
+            if u in finals:
+                h.node(str(u), label=str(u), color = "green")
+            else:
+                h.node(str(u), label=str(u), color = "red")
+        for u, v, _ in g.edges(data=True):
+            h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
+        return h
+
+    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def dump_example_directed_graph(self, edges_with_labels, finals):
+        self.counter += 1
+        h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
+        filename = f'example_directed_graph_{self.counter}'
+        fileformat = 'png'
+        h.render(filename, format=fileformat, cleanup=True)
 
     def check_automaton_correctness(self):
         try:
@@ -857,6 +886,8 @@ class WFAGuessForm(Screen):
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
+        self.counter = 0
+        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -931,10 +962,14 @@ class WFAGuessForm(Screen):
         if len(box_layout.children) > 0:
             for elem in box_layout.children:
                 box_layout.remove_widget(elem)
+        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
+            os.remove(f"example_directed_graph_{self.counter}.png")
 
-    def add_graph_to_box_layout(self):
+    def add_graph_to_box_layout(self, edges_with_labels):
         box_layout=self.children[0].children[-1]
-        box_layout.add_widget(FigureCanvasKivyAgg(plt.gcf()))
+        self.dump_example_directed_graph(edges_with_labels)
+        self.im.source = f"example_directed_graph_{self.counter}.png"
+        box_layout.add_widget(self.im)
 
     def get_edges_from_input(self):
         try:
@@ -961,18 +996,27 @@ class WFAGuessForm(Screen):
             letters = edges_with_labels[edge]
             edges_with_labels[edge] = ', '.join([str(letter) for letter in letters])
 
-        plt.clf()
         self.G.remove_edges_from(list(self.G.edges))
         for u, v in edges_with_labels.keys():
             self.G.add_edge(u, v)
-        pos = nx.spring_layout(self.G)
-        nx.draw(
-            self.G, pos, edge_color='black', width=1, linewidths=1,
-            node_size=500, node_color='pink', alpha=0.9,
-            labels={node: node for node in self.G.nodes()}
-        )
-        nx.draw_networkx_edge_labels(self.G, pos, edge_labels=edges_with_labels, font_color='red')
-        self.add_graph_to_box_layout()
+        self.add_graph_to_box_layout(edges_with_labels)
+
+    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def networkx_to_graphviz(self, g, edges_with_labels):
+        h = gv.Digraph()
+        for u, _ in g.nodes(data=True):
+            h.node(str(u), label=str(u))
+        for u, v, _ in g.edges(data=True):
+            h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
+        return h
+
+    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    def dump_example_directed_graph(self, edges_with_labels):
+        self.counter += 1
+        h = self.networkx_to_graphviz(self.G, edges_with_labels)
+        filename = f'example_directed_graph_{self.counter}'
+        fileformat = 'png'
+        h.render(filename, format=fileformat, cleanup=True)
 
     def check_automaton_correctness(self):
         try:
