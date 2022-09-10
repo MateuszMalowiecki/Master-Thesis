@@ -100,51 +100,63 @@ WindowManager:
 <MainWindow>:
     name: "main"
     GridLayout:
-        cols: 2
-        spacing: 20
+        cols: 1
 
         Button:
             default_size_values: .2, .2
-            size_hint: .2, .2
-            text: "Guess DFA"
-            color: 1, 0, 0, 1
-            background_normal: "dfa.jpg"
+            text: "Guessing DFA Automaton"
+            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "dfa_choose"
-                root.manager.transition.direction = "right"
+                root.manager.transition.direction = "right" 
+            Image:
+                source: "dfa.jpg"
+                size_hint: .8, .8 
+                center_x: self.parent.center_x * 1.8
+                center_y: self.parent.center_y
 
         Button:
             default_size_values: .2, .2
-            size_hint: .2, .2
-            text: "Guess VPA"
-            color: 1, 0, 0, 1
-            background_normal: "vpa.jpg"
+            text: "Guessing VPA Automaton"
+            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "vpa_choose"
                 root.manager.transition.direction = "right"
+            Image:
+                source: "vpa.jpg"
+                # size_hint: .2, .2 
+                center_x: self.parent.center_x * 1.8
+                center_y: self.parent.center_y
 
         Button:
             default_size_values: .2, .2
-            size_hint: .2, .2
-            text: "Guess WFA"
-            color: 1, 0, 0, 1
-            background_normal: "wfa.png"
+            text: "Guessing WFA Automaton"
+            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
+            Image:
+                source: "wfa.png"
+                # size_hint: .2, .2 
+                center_x: self.parent.center_x * 1.8
+                center_y: self.parent.center_y
 
         Button:
             default_size_values: .2, .2
-            size_hint: .2, .2
+            # size_hint: 1, .5
             text: "Exit game"
-            color: 1, 0, 0, 1
-            background_normal: "exit.jpg"
+            # color: 1, 0, 0, 1
+            # background_normal: "exit.jpg"
             on_release: app.stop() 
 
 <DFAChooseVersionWindow>:
     name: "dfa_choose"
     GridLayout:
         cols: 1
+
+        Label:
+            size_hint: .2, .2
+            text: "There are 2 possible versions of the game. You can choose one of them.\nVersion 1 - As a hint you can check the membership of a given word in a language.\nVersion 2 - As a hint you can check the run on a given word from a given state."
 
         GridLayout:
             cols: 2
@@ -163,7 +175,7 @@ WindowManager:
                 on_release:
                     root.go_to_new_game("game_dfa2_lvl1")
         Button:
-            text: "Main Menu"
+            background_normal: "left_arrow.png"
             default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
@@ -175,6 +187,10 @@ WindowManager:
     name: "vpa_choose"
     GridLayout:
         cols: 1
+
+        Label:
+            size_hint: .2, .2
+            text: "There are 2 possible versions of the game. You can choose one of them.\nVersion 1 - As a hint you can check the membership of a given word in a language.\nVersion 2 - As a hint you can check the run on a given word from a given state and a given stack."
 
         GridLayout:
             cols: 2
@@ -194,7 +210,7 @@ WindowManager:
                     root.go_to_new_game("game_vpa2_lvl1")
 
         Button:
-            text: "Main Menu"
+            background_normal: "left_arrow.png"
             default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
@@ -206,6 +222,10 @@ WindowManager:
     name: "wfa_choose"
     GridLayout:
         cols: 1
+
+        Label:
+            size_hint: .2, .2
+            text: "There are 2 possible versions of the game. You can choose one of them.\nVersion 1 - As a hint you can check the weight of a given word. \nVersion 2 - As a hint you can check the run on a given word from a given state."
 
         GridLayout:
             cols: 2
@@ -225,7 +245,7 @@ WindowManager:
                     root.go_to_new_game("game_wfa2_lvl1")
 
         Button:
-            text: "Main Menu"
+            background_normal: "left_arrow.png"
             default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
@@ -241,29 +261,29 @@ WindowManager:
         Label:
             text: root.automaton_text
             size_hint: .8, .3
-            pos_hint: {'x': .1, 'y': .55}
+            pos_hint: {'x': .1, 'y': .45}
         Label:
             text: root.answer_text
             size_hint: .5, .2
-            pos_hint: {'x': .1, 'y': .30}
+            pos_hint: {'x': .1, 'y': .20}
         TextInput:
             id: my_input
             size_hint: .5, .2
             pos_hint: {'x': 0, 'y': 0}
         Button:
             text: root.button_text
-            size_hint: .4, .2
-            pos_hint: {'x': .6, 'y': 0}
+            size_hint: .5, .2
+            pos_hint: {'x': .5, 'y': 0}
             on_press: root.check_word()
         Button:
-            text: "Main Menu"
-            size_hint: .4, .2
-            pos_hint: {'x': .6, 'y': .8}
+            background_normal: "left_arrow.png"
+            size_hint: .5, .2
+            pos_hint: {'x': 0, 'y': .8}
             on_release: root.go_to_main_menu()
         Button:
             text: "Equivalence Check..."
-            size_hint: .4, .2
-            pos_hint: {'x': 0, 'y': .8}
+            size_hint: .5, .2
+            pos_hint: {'x': .5, 'y': .8}
             on_release: root.go_to_guess_form() 
 
 <GameDFAv1WindowLevel1>:
@@ -407,15 +427,17 @@ WindowManager:
         BoxLayout:
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             Label:
                 text: root.automaton_text
             Button:
                 size_hint: .3, 1
-                text: "Go back to tips form"
+                background_normal: "left_arrow.png"
                 on_release: root.go_to_tips_form()
 
         Label:
+            size_hint: 1, 0.5
             text: root.guess_text
 
         Label:
@@ -423,6 +445,7 @@ WindowManager:
             text: root.answer_text
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             TextInput:
                 id: automaton_input
@@ -498,15 +521,17 @@ WindowManager:
         BoxLayout:
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             Label:
                 text: root.automaton_text
             Button:
                 size_hint: .3, 1
-                text: "Go back to tips form"
+                background_normal: "left_arrow.png"
                 on_release: root.go_to_tips_form()
 
         Label:
+            size_hint: 1, 0.5
             text: root.guess_text
 
         Label:
@@ -514,6 +539,7 @@ WindowManager:
             text: root.answer_text
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             TextInput:
                 id: automaton_input
@@ -589,15 +615,17 @@ WindowManager:
         BoxLayout:
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             Label:
                 text: root.automaton_text
             Button:
                 size_hint: .3, 1
-                text: "Go back to tips form"
+                background_normal: "left_arrow.png"
                 on_release: root.go_to_tips_form()
 
         Label:
+            size_hint: 1, 0.5
             text: root.guess_text
 
         Label:
@@ -605,6 +633,7 @@ WindowManager:
             text: root.answer_text
 
         GridLayout:
+            size_hint: 1, 0.5
             cols:2
             TextInput:
                 id: automaton_input
