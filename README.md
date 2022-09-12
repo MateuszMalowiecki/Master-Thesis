@@ -10,9 +10,8 @@ pip install kivy
 pip install matplotlib
 pip install networkx
 pip install kivymd
+pip install graphviz
 ```
-
-You will also need to install dot library. To install it, please follow instructions on page: https://graphviz.org/download/
 
 #### Starting the program
 After installing packages you can start the application by running the command:

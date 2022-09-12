@@ -1,7 +1,3 @@
-from gettext import translation
-from inspect import stack
-from turtle import color
-from unittest import expectedFailure
 from kivy.app import App
 from kivy.lang import Builder
 from kivy.uix.screenmanager import ScreenManager, Screen
