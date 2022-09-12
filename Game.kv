@@ -104,8 +104,8 @@ WindowManager:
 
         Button:
             default_size_values: .2, .2
+            font_size: '40sp'
             text: "Guessing DFA Automaton"
-            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "dfa_choose"
                 root.manager.transition.direction = "right" 
@@ -117,36 +117,32 @@ WindowManager:
 
         Button:
             default_size_values: .2, .2
+            font_size: '40sp'
             text: "Guessing VPA Automaton"
-            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "vpa_choose"
                 root.manager.transition.direction = "right"
             Image:
                 source: "vpa.jpg"
-                # size_hint: .2, .2 
                 center_x: self.parent.center_x * 1.8
                 center_y: self.parent.center_y
 
         Button:
             default_size_values: .2, .2
+            font_size: '40sp'
             text: "Guessing WFA Automaton"
-            # color: 1, 0, 0, 1
             on_release:
                 app.root.current = "wfa_choose"
                 root.manager.transition.direction = "right"
             Image:
                 source: "wfa.png"
-                # size_hint: .2, .2 
                 center_x: self.parent.center_x * 1.8
                 center_y: self.parent.center_y
 
         Button:
             default_size_values: .2, .2
-            # size_hint: 1, .5
+            font_size: '40sp'
             text: "Exit game"
-            # color: 1, 0, 0, 1
-            # background_normal: "exit.jpg"
             on_release: app.stop() 
 
 <DFAChooseVersionWindow>:
@@ -163,6 +159,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a DFA game v1"
                 on_release:
@@ -170,6 +167,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a DFA game v2"
                 on_release:
@@ -177,6 +175,7 @@ WindowManager:
         Button:
             background_normal: "left_arrow.png"
             default_size_values: .4, .2
+            font_size: '40sp'
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
             on_release: 
@@ -197,6 +196,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a VPA game v1"
                 on_release:
@@ -204,6 +204,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a VPA game v2"
                 on_release:
@@ -211,6 +212,7 @@ WindowManager:
 
         Button:
             background_normal: "left_arrow.png"
+            font_size: '40sp'
             default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
@@ -232,6 +234,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a WFA game v1"
                 on_release:
@@ -239,6 +242,7 @@ WindowManager:
 
             Button:
                 default_size_values: .2, .2
+                font_size: '40sp'
                 size_hint: .2, .2
                 text: "Start a WFA game v2"
                 on_release:
@@ -246,6 +250,7 @@ WindowManager:
 
         Button:
             background_normal: "left_arrow.png"
+            font_size: '40sp'
             default_size_values: .4, .2
             size_hint: .4, .2
             pos_hint: {'x': .6, 'y': .8}
@@ -264,7 +269,7 @@ WindowManager:
             pos_hint: {'x': .1, 'y': .45}
         Label:
             text: root.answer_text
-            size_hint: .5, .2
+            size_hint: .5, .25
             pos_hint: {'x': .1, 'y': .20}
         TextInput:
             id: my_input
@@ -272,16 +277,19 @@ WindowManager:
             pos_hint: {'x': 0, 'y': 0}
         Button:
             text: root.button_text
+            font_size: '30sp'
             size_hint: .5, .2
             pos_hint: {'x': .5, 'y': 0}
             on_press: root.check_word()
         Button:
             background_normal: "left_arrow.png"
+            font_size: '30sp'
             size_hint: .5, .2
             pos_hint: {'x': 0, 'y': .8}
             on_release: root.go_to_main_menu()
         Button:
             text: "Equivalence Check..."
+            font_size: '30sp'
             size_hint: .5, .2
             pos_hint: {'x': .5, 'y': .8}
             on_release: root.go_to_guess_form() 
@@ -419,45 +427,59 @@ WindowManager:
 <DFAGuessForm>:
     name: "dfa_guess_form"
     automaton_input: automaton_input
+    automaton_image: automaton_image
     last_game_name: ""
     win_level_page_name: ""
     number_of_tries: 0
-    GridLayout:
-        cols:1
-        BoxLayout:
+    FloatLayout:
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            Label:
-                text: root.automaton_text
-            Button:
-                size_hint: .3, 1
-                background_normal: "left_arrow.png"
-                on_release: root.go_to_tips_form()
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .9}
+            background_normal: "left_arrow.png"
+            on_release: root.go_to_tips_form()
+
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .9}
+            font_size: '30sp'
+            text: "Draw automaton"
+            on_release: root.draw_graph()
+        Image:
+            id: automaton_image
+            size_hint: 1, .4
+            pos_hint: {'x' : 0, 'y': .5}
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .40}
+            text: root.automaton_text
+        Label:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .30}
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .2}
             text: root.answer_text
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            TextInput:
-                id: automaton_input
-            Button:
-                text: root.button_text
-                on_release: root.add_new_transition()
-            Button:
-                text: "Draw automaton"
-                on_release: root.draw_graph()
-            Button:
-                text: "Check"
-                on_release: root.check_automaton()
+        TextInput:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .1}
+            id: automaton_input
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .1}
+            font_size: '30sp'
+            text: root.button_text
+            on_release: root.add_new_transition()
+        Button:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': 0}
+            font_size: '30sp'
+            text: "Check"
+            on_release: root.check_automaton()
 
 <DFAGuessFormv1>:
     name: "dfa_guess_form_v1"
@@ -511,47 +533,60 @@ WindowManager:
 
 <VPAGuessForm>:
     name: "vpa_guess_form"
+    automaton_input: automaton_input
+    automaton_image: automaton_image
     last_game_name: ""
     win_level_page_name: ""
-    automaton_input: automaton_input
     number_of_tries: 0
+    FloatLayout:
 
-    GridLayout:
-        cols:1
-        BoxLayout:
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .9}
+            background_normal: "left_arrow.png"
+            on_release: root.go_to_tips_form()
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            Label:
-                text: root.automaton_text
-            Button:
-                size_hint: .3, 1
-                background_normal: "left_arrow.png"
-                on_release: root.go_to_tips_form()
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .9}
+            font_size: '30sp'
+            text: "Draw automaton"
+            on_release: root.draw_graph()
+        Image:
+            id: automaton_image
+            size_hint: 1, .4
+            pos_hint: {'x' : 0, 'y': .5}
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .40}
+            text: root.automaton_text
+        Label:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .30}
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .2}
             text: root.answer_text
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            TextInput:
-                id: automaton_input
-            Button:
-                text: root.button_text
-                on_release: root.add_new_transition()
-            Button:
-                text: "Draw automaton"
-                on_release: root.draw_graph()
-            Button:
-                text: "Check"
-                on_release: root.check_automaton()
+        TextInput:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .1}
+            id: automaton_input
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .1}
+            font_size: '30sp'
+            text: root.button_text
+            on_release: root.add_new_transition()
+        Button:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': 0}
+            font_size: '30sp'
+            text: "Check"
+            on_release: root.check_automaton()
 
 <VPAGuessFormv1>:
     name: "vpa_guess_form_v1"
@@ -607,45 +642,59 @@ WindowManager:
 <WFAGuessForm>:
     name: "wfa_guess_form"
     automaton_input: automaton_input
+    automaton_image: automaton_image
     last_game_name: ""
     win_level_page_name: ""
     number_of_tries: 0
-    GridLayout:
-        cols:1
-        BoxLayout:
+    FloatLayout:
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            Label:
-                text: root.automaton_text
-            Button:
-                size_hint: .3, 1
-                background_normal: "left_arrow.png"
-                on_release: root.go_to_tips_form()
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .9}
+            background_normal: "left_arrow.png"
+            on_release: root.go_to_tips_form()
+
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .9}
+            font_size: '30sp'
+            text: "Draw automaton"
+            on_release: root.draw_graph()
+        Image:
+            id: automaton_image
+            size_hint: 1, .4
+            pos_hint: {'x' : 0, 'y': .5}
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .40}
+            text: root.automaton_text
+        Label:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .30}
             text: root.guess_text
 
         Label:
-            size_hint: 1, 0.5
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': .2}
             text: root.answer_text
 
-        GridLayout:
-            size_hint: 1, 0.5
-            cols:2
-            TextInput:
-                id: automaton_input
-            Button:
-                text: root.button_text
-                on_release: root.add_new_transition()
-            Button:
-                text: "Draw automaton"
-                on_release: root.draw_graph()
-            Button:
-                text: "Check"
-                on_release: root.check_automaton()
+        TextInput:
+            size_hint: .5, .1
+            pos_hint: {'x': 0, 'y': .1}
+            id: automaton_input
+        Button:
+            size_hint: .5, .1
+            pos_hint: {'x': .5, 'y': .1}
+            font_size: '30sp'
+            text: root.button_text
+            on_release: root.add_new_transition()
+        Button:
+            size_hint: 1, .1
+            pos_hint: {'x': 0, 'y': 0}
+            font_size: '30sp'
+            text: "Check"
+            on_release: root.check_automaton()
 
 <WFAGuessFormv1>:
     name: "wfa_guess_form_v1"
@@ -708,6 +757,7 @@ WindowManager:
             pos_hint: {'x': .25, 'y': .5}
             text: root.label_text
         Button:
+            font_size: '30sp'
             size_hint: .5, .2
             pos_hint: {'x': .25, 'y': .25}
             text: root.button_text

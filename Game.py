@@ -54,15 +54,6 @@ guess_form_screens_ids={"dfa_guess_form_v1": 65, "dfa_guess_form_v1_lvl2": 66, "
         "wfa_guess_form_v1_lvl5": 91, "wfa_guess_form_v2": 92, "wfa_guess_form_v2_lvl2": 93, "wfa_guess_form_v2_lvl3": 94,
         "wfa_guess_form_v2_lvl4": 95, "wfa_guess_form_v2_lvl5": 96}
 
-'''
-class HoverButton(Button, HoverBehavior):
-    default_size_values = ObjectProperty(None)
-    def on_enter(self):
-        Animation(size_hint=tuple(sum(x) for x in zip(self.default_size_values, (0.05, 0.05)))).start(self)
-
-    def on_leave(self):
-        Animation(size_hint=self.default_size_values).start(self)
-'''
 class MainWindow(Screen):
     pass
 
@@ -159,6 +150,7 @@ class GameDFAWindow(GameWindow):
         self.manager.screens[guess_form_screens_ids[self.guess_form_name]].automaton_text = f" Alphabet of automaton: {self.manager.dfa.alphabet}\n States of automaton: {self.manager.dfa.states},\n Initial state of automaton: {self.manager.dfa.initial_state}"
         for state in self.manager.dfa.states:
             self.manager.screens[guess_form_screens_ids[self.guess_form_name]].G.add_node(state)
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].draw_graph()
         super().go_to_guess_form()
 
 class GameDFAv1Window(GameDFAWindow):
@@ -170,7 +162,7 @@ class GameDFAv1Window(GameDFAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 11:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
@@ -214,7 +206,7 @@ class GameDFAv2Window(GameDFAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 11:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
@@ -269,6 +261,7 @@ class GameVPAWindow(GameWindow):
             )
         for state in self.manager.dvpa.states:
             self.manager.screens[guess_form_screens_ids[self.guess_form_name]].G.add_node(state)
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].draw_graph()
         super().go_to_guess_form()
 
 class GameVPAv1Window(GameVPAWindow):
@@ -280,7 +273,7 @@ class GameVPAv1Window(GameVPAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 9:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
@@ -325,7 +318,7 @@ class GameVPAv2Window(GameVPAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 9:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 3, "\nError: You should give exactly 3 values separated by space."
@@ -380,6 +373,7 @@ class GameWFAWindow(GameWindow):
         self.manager.screens[guess_form_screens_ids[self.guess_form_name]].automaton_text = f" Alphabet of automaton: {self.manager.wfa.alphabet}\n States of automaton: {self.manager.wfa.states}\n Initial state of automaton: {self.manager.wfa.initial_state}\n Maximal weight of automaton: {self.max_automaton_weight}"
         for state in self.manager.wfa.states:
             self.manager.screens[guess_form_screens_ids[self.guess_form_name]].G.add_node(state)
+        self.manager.screens[guess_form_screens_ids[self.guess_form_name]].draw_graph()
         super().go_to_guess_form()
 
 class GameWFAv1Window(GameWFAWindow):
@@ -391,7 +385,7 @@ class GameWFAv1Window(GameWFAWindow):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 11:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
@@ -432,7 +426,7 @@ class GameWFAv2Window(GameWFAWindow):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 11:
+                if self.answer_text.count("\n") >= 7:
                     self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
@@ -473,18 +467,18 @@ class GameWFAv2WindowLevel5(GameWFAv2Window):
 
 class DFAGuessForm(Screen):
     automaton_input = ObjectProperty(None)
+    automaton_image = ObjectProperty(None)
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text=StringProperty("")
     button_text = StringProperty("")
+    counter=0
 
     def __init__(self, **kw):
         super().__init__(**kw)
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
-        self.counter = 0
-        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -547,19 +541,13 @@ class DFAGuessForm(Screen):
         self.parent.current = self.last_game_name
 
     def remove_graph_from_box_layout(self):
-        box_layout=self.children[0].children[-1]
-        if len(box_layout.children) > 0:
-            for elem in box_layout.children:
-                box_layout.remove_widget(elem)
-        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
-            os.remove(f"example_directed_graph_{self.counter}.png")
+        if os.path.exists(f"example_directed_dfa_{DFAGuessForm.counter}.png"):
+            os.remove(f"example_directed_dfa_{DFAGuessForm.counter}.png")
         
 
     def add_graph_to_box_layout(self, edges_with_labels, finals):
-        box_layout=self.children[0].children[-1]
         self.dump_example_directed_graph(edges_with_labels, finals)
-        self.im.source = f"example_directed_graph_{self.counter}.png"
-        box_layout.add_widget(self.im)
+        self.automaton_image.source = f"example_directed_dfa_{DFAGuessForm.counter}.png"
 
     def get_edges_and_final_states_from_input(self):
         try:
@@ -606,9 +594,9 @@ class DFAGuessForm(Screen):
 
     #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels, finals):
-        self.counter += 1
+        DFAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
-        filename = f'example_directed_graph_{self.counter}'
+        filename = f'example_directed_dfa_{DFAGuessForm.counter}'
         fileformat = 'png'
         h.render(filename, format=fileformat, cleanup=True)
 
@@ -665,18 +653,18 @@ class DFAGuessFormv2Level5(DFAGuessForm):
 
 class VPAGuessForm(Screen):
     automaton_input = ObjectProperty(None)
+    automaton_image = ObjectProperty(None)
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text=StringProperty("")
     button_text = StringProperty("")
+    counter=0
 
     def __init__(self, **kw):
         super().__init__(**kw)
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
-        self.counter = 0
-        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -766,18 +754,12 @@ class VPAGuessForm(Screen):
         self.parent.current = self.last_game_name
     
     def remove_graph_from_box_layout(self):
-        box_layout=self.children[0].children[-1]
-        if len(box_layout.children) > 0:
-            for elem in box_layout.children:
-                box_layout.remove_widget(elem)
-        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
-            os.remove(f"example_directed_graph_{self.counter}.png")
+        if os.path.exists(f"example_directed_vpa_{VPAGuessForm.counter}.png"):
+            os.remove(f"example_directed_vpa_{VPAGuessForm.counter}.png")
     
     def add_graph_to_box_layout(self, edges_with_labels, finals):
-        box_layout=self.children[0].children[-1]
         self.dump_example_directed_graph(edges_with_labels, finals)
-        self.im.source = f"example_directed_graph_{self.counter}.png"
-        box_layout.add_widget(self.im)
+        self.automaton_image.source = f"example_directed_vpa_{VPAGuessForm.counter}.png"
 
     def get_edges_and_final_states_from_input(self):
         try:
@@ -827,7 +809,7 @@ class VPAGuessForm(Screen):
             self.G.add_edge(u, v)
         self.add_graph_to_box_layout(edges_with_labels, finals)
 
-      #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    # Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def networkx_to_graphviz(self, g, edges_with_labels, finals):
         h = gv.Digraph()
         for u, _ in g.nodes(data=True):
@@ -841,9 +823,9 @@ class VPAGuessForm(Screen):
 
     #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels, finals):
-        self.counter += 1
+        VPAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
-        filename = f'example_directed_graph_{self.counter}'
+        filename = f'example_directed_vpa_{VPAGuessForm.counter}'
         fileformat = 'png'
         h.render(filename, format=fileformat, cleanup=True)
 
@@ -902,18 +884,18 @@ class VPAGuessFormv2Level5(VPAGuessForm):
 
 class WFAGuessForm(Screen):
     automaton_input = ObjectProperty(None)
+    automaton_image = ObjectProperty(None)
     automaton_text = StringProperty("")
     answer_text = StringProperty("")
     guess_text = StringProperty("")
     button_text = StringProperty("")
+    counter=0
 
     def __init__(self, **kw):
         super().__init__(**kw)
         self.reset()
         self.answer_text = ""
         self.G = nx.DiGraph()
-        self.counter = 0
-        self.im = Image()
 
     def add_new_transition(self):
         try:
@@ -984,18 +966,12 @@ class WFAGuessForm(Screen):
         self.parent.current = self.last_game_name
 
     def remove_graph_from_box_layout(self):
-        box_layout=self.children[0].children[-1]
-        if len(box_layout.children) > 0:
-            for elem in box_layout.children:
-                box_layout.remove_widget(elem)
-        if os.path.exists(f"example_directed_graph_{self.counter}.png"):
-            os.remove(f"example_directed_graph_{self.counter}.png")
+        if os.path.exists(f"example_directed_wfa_{WFAGuessForm.counter}.png"):
+            os.remove(f"example_directed_wfa_{WFAGuessForm.counter}.png")
 
     def add_graph_to_box_layout(self, edges_with_labels):
-        box_layout=self.children[0].children[-1]
         self.dump_example_directed_graph(edges_with_labels)
-        self.im.source = f"example_directed_graph_{self.counter}.png"
-        box_layout.add_widget(self.im)
+        self.automaton_image.source = f"example_directed_wfa_{WFAGuessForm.counter}.png"
 
     def get_edges_from_input(self):
         try:
@@ -1038,9 +1014,9 @@ class WFAGuessForm(Screen):
 
     #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels):
-        self.counter += 1
+        WFAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels)
-        filename = f'example_directed_graph_{self.counter}'
+        filename = f'example_directed_wfa_{WFAGuessForm.counter}'
         fileformat = 'png'
         h.render(filename, format=fileformat, cleanup=True)
 
