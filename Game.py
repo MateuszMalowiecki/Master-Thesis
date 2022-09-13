@@ -152,14 +152,12 @@ class GameDFAWindow(GameWindow):
 class GameDFAv1Window(GameDFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check Membership."
+        self.button_text = "Check membership"
 
     def check_word(self):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -196,14 +194,12 @@ class GameDFAv1WindowLevel5(GameDFAv1Window):
 class GameDFAv2Window(GameDFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check State."
+        self.button_text = "Check state"
 
     def check_word(self):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
                 word, state = input_content[0], int(input_content[1])
@@ -263,14 +259,12 @@ class GameVPAWindow(GameWindow):
 class GameVPAv1Window(GameVPAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check Membership."
+        self.button_text = "Check membership"
 
     def check_word(self):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -308,14 +302,12 @@ class GameVPAv1WindowLevel5(GameVPAv1Window):
 class GameVPAv2Window(GameVPAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check State and Stack."
+        self.button_text = "Check state and stack"
 
     def check_word(self):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 3, "\nError: You should give exactly 3 values separated by space."
                 word, state, stack_string = input_content[0], int(input_content[1]), input_content[2]
@@ -375,14 +367,12 @@ class GameWFAWindow(GameWindow):
 class GameWFAv1Window(GameWFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check Weight."
+        self.button_text = "Check weight"
 
     def check_word(self):
         try:
             words = self.input.text.replace(" ", "").split("\n")
             for word in words:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 if word == "epsilon":
                     word = ""
                 for letter in word:
@@ -416,14 +406,12 @@ class GameWFAv1WindowLevel5(GameWFAv1Window):
 class GameWFAv2Window(GameWFAWindow):
     def __init__(self, **kw):
         super().__init__(**kw)
-        self.button_text = "Check State and Weight."
+        self.button_text = "Check state and weight"
 
     def check_word(self):
         try:
             input_contents = self.input.text.split("\n")
             for input_content_string in input_contents:
-                if self.answer_text.count("\n") >= 7:
-                    self.answer_text = self.answer_text.split("\n", 1)[1]
                 input_content = input_content_string.split()
                 assert len(input_content) == 2, "\nError: You should give exactly 2 values separated by space."
                 word, state = input_content[0], int(input_content[1])
@@ -486,7 +474,7 @@ class DFAGuessForm(Screen):
                 for i in finals:
                     assert i in self.manager.dfa.states, f"invalid state number {i}" 
                 self.actual_finals=finals
-                self.button_text = "Add Transition"
+                self.button_text = "Add transition"
                 self.actual_input = (0, "a")
             else:
                 state = int(self.automaton_input.text.replace(" ", ""))
@@ -672,7 +660,7 @@ class VPAGuessForm(Screen):
                 for i in finals:
                     assert i in self.manager.dvpa.states, f"invalid state number {i}" 
                 self.actual_finals = finals
-                self.button_text = "Add Transition"
+                self.button_text = "Add transition"
                 self.actual_input = (0, "a")
                 self.guess_text = f" Please give transition for {self.actual_input} in the input.\n Note: You should give state and stack letter separated by a comma in the input."
             elif len(self.actual_input) == 2 and self.actual_input[1] in self.manager.dvpa.calls_alphabet:
@@ -905,7 +893,7 @@ class WFAGuessForm(Screen):
                 if new_state >= len(self.manager.wfa.states):
                     self.actual_input = (0, "a")
                     self.guess_text = f" Please give transition for {self.actual_input}.\n Note: You should give transition weight and state separated by a comma in the input."
-                    self.button_text = "Add Transition"
+                    self.button_text = "Add transition"
                 else:
                     self.actual_input = ("Finals", new_state)
                     self.guess_text = f" Please give final function value for {new_state}.\n Note: You should give single number (weight) for given state"
@@ -1393,9 +1381,9 @@ class WindowManager(ScreenManager):
 
 kv = Builder.load_file("Game.kv")
 
-class GameApp(App):
+class AutomataInferenceGameApp(App):
     def build(self):
         return kv
 
 if __name__ == "__main__":
-    GameApp().run()
+    AutomataInferenceGameApp().run()
