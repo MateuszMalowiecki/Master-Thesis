@@ -1,10 +1,5 @@
 import math
 
-def sum_modulo_n(list, n):
-    res=0
-    for elem in list:
-        res = (res + elem) % n
-    return res 
 
 class DWFA:
     def __init__(self, alphabet, states, initial_state, final_weight_function, transitions):
@@ -34,7 +29,7 @@ class DWFA:
 
     def weight_of_word_from_given_state(self, state, word):
         path=self.get_path_edges_weights_from_given_state(state, word)
-        return sum_modulo_n(path, 1000000000000)
+        return sum(path)
 
     def weight_of_word(self, word):
         return self.weight_of_word_from_given_state(self.initial_state, word)

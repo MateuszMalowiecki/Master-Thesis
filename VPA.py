@@ -1,4 +1,3 @@
-#With help of: https://github.com/theodoregold/pushdown-automata/blob/3ce36cdfdd1f4e260121fb43dea988b96288fed0/main.py#L36
 
 class DVPA:
     def __init__(self, calls_alphabet, return_alphabet, internal_alpahbet, states, stack_alphabet, initial_state, final_states, initial_stack_symbol, transitions):
@@ -166,7 +165,6 @@ class DVPA:
         nonterminals = ["S"]
         for first_state in self.states:
             for second_state in self.states:
-                #nonterminal_representations[(first_state, second_state)] = f"A_{first_state}, {second_state}"
                 nonterminals.append((first_state, second_state))
         terminals = self.calls_alphabet + self.return_alphabet + self.internal_alpahbet
         productions = []

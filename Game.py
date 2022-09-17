@@ -564,7 +564,7 @@ class DFAGuessForm(Screen):
             self.G.add_edge(u, v)
         self.add_graph_to_box_layout(edges_with_labels, finals)
 
-    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def networkx_to_graphviz(self, g, edges_with_labels, finals):
         h = gv.Digraph()
         for u, _ in g.nodes(data=True):
@@ -576,7 +576,7 @@ class DFAGuessForm(Screen):
             h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
         return h
 
-    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels, finals):
         DFAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
@@ -793,7 +793,7 @@ class VPAGuessForm(Screen):
             self.G.add_edge(u, v)
         self.add_graph_to_box_layout(edges_with_labels, finals)
 
-    # Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def networkx_to_graphviz(self, g, edges_with_labels, finals):
         h = gv.Digraph()
         for u, _ in g.nodes(data=True):
@@ -805,7 +805,7 @@ class VPAGuessForm(Screen):
             h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
         return h
 
-    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels, finals):
         VPAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels, finals)
@@ -987,7 +987,7 @@ class WFAGuessForm(Screen):
             self.G.add_edge(u, v)
         self.add_graph_to_box_layout(edges_with_labels)
 
-    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def networkx_to_graphviz(self, g, edges_with_labels):
         h = gv.Digraph()
         for u, _ in g.nodes(data=True):
@@ -996,7 +996,7 @@ class WFAGuessForm(Screen):
             h.edge(str(u), str(v), label=edges_with_labels[(u, v)])
         return h
 
-    #Code taken from: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
+    #Function based on code from stack overflow: https://stackoverflow.com/questions/60657926/drawing-labels-that-follow-their-edges-in-a-networkx-graph
     def dump_example_directed_graph(self, edges_with_labels):
         WFAGuessForm.counter += 1
         h = self.networkx_to_graphviz(self.G, edges_with_labels)

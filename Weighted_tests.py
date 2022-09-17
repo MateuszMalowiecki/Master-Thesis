@@ -87,7 +87,7 @@ def test_take_difference_automaton():
             (2, "a") : (3, 3), (2, "b") : (2, 0), (3, "a") : (11, 2), (3, "b") : (9, 1)})
     dwfa_difference = dwfa1.take_difference_automaton(dwfa2)
     assert dwfa_difference.weight_of_word("") == 9
-    assert dwfa_difference.weight_of_word("aba") == 999999999996
+    assert dwfa_difference.weight_of_word("aba") == -4
     assert dwfa_difference.weight_of_word("ab") == 0
     
 def test_has_word_with_weight_lower_than():
